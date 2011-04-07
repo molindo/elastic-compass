@@ -1,0 +1,212 @@
+/*
+ * Copyright 2004-2009 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.compass.core.impl;
+
+import org.compass.core.CompassException;
+import org.compass.core.CompassHits;
+import org.compass.core.Resource;
+import org.compass.core.cache.first.FirstLevelCache;
+import org.compass.core.config.CompassSettings;
+import org.compass.core.engine.SearchEngine;
+import org.compass.core.mapping.CompassMapping;
+import org.compass.core.marshall.MarshallingContext;
+import org.compass.core.metadata.CompassMetaData;
+import org.compass.core.spi.DirtyOperationContext;
+import org.compass.core.spi.InternalCompass;
+import org.compass.core.spi.InternalCompassSession;
+
+/**
+ * @author kimchy
+ */
+public class ExistingCompassSession implements InternalCompassSession {
+
+    private final InternalCompassSession session;
+
+    public ExistingCompassSession(InternalCompassSession session) {
+        this.session = session;
+    }
+
+    public InternalCompassSession getActualSession() {
+        return this.session;
+    }
+
+    public void close() throws CompassException {
+        // do nothing, works with existing one
+    }
+
+    // simple delegates
+
+    public InternalCompass getCompass() {
+        return session.getCompass();
+    }
+
+    public SearchEngine getSearchEngine() {
+        return session.getSearchEngine();
+    }
+
+    public FirstLevelCache getFirstLevelCache() {
+        return session.getFirstLevelCache();
+    }
+
+    public Object get(String alias, Object id, MarshallingContext context) throws CompassException {
+        return session.get(alias, id, context);
+    }
+
+    public void setReadOnly() {
+        session.setReadOnly();
+    }
+
+    public boolean isReadOnly() {
+        return session.isReadOnly();
+    }
+
+    public CompassSettings getSettings() {
+        return session.getSettings();
+    }
+
+    public void flush() throws CompassException {
+        session.flush();
+    }
+
+    public boolean isClosed() {
+        return session.isClosed();
+    }
+
+
+	@Override
+	public void create(Object object) {
+		session.create(object);
+	}
+
+	@Override
+	public Object get(String alias, Object id) throws CompassException {
+		return session.get(alias, id);
+	}
+
+	@Override
+	public Object get(String alias, Object... ids) throws CompassException {
+		return session.get(alias, ids);
+	}
+
+	@Override
+	public void evictAll() {
+		session.evictAll();
+	}
+
+	public <T> T get(Class<T> clazz, Object id) throws CompassException {
+		return session.get(clazz, id);
+	}
+
+	public <T> T load(Class<T> clazz, Object id) throws CompassException {
+		return session.load(clazz, id);
+	}
+
+	public Object load(String alias, Object id) {
+		return session.load(alias, id);
+	}
+
+	public void create(String alias, Resource obj) {
+		session.create(alias, obj);
+	}
+
+	public void create(String alias, Object obj) {
+		session.create(alias, obj);
+	}
+
+	public void delete(Resource resource) {
+		session.delete(resource);
+	}
+
+	public void delete(Object obj) {
+		session.delete(obj);
+	}
+
+	public CompassHits find(String query) {
+		return session.find(query);
+	}
+
+	public void delete(Class<?> clazz, Object obj) {
+		session.delete(clazz, obj);
+	}
+
+	public void delete(String alias, Object obj) {
+		session.delete(alias, obj);
+	}
+
+	public Resource getResource(Class<?> clazz, Object id) {
+		return session.getResource(clazz, id);
+	}
+
+	public Resource getResource(String alias, Object id) {
+		return session.getResource(alias, id);
+	}
+
+	public Resource loadResource(Class<?> clazz, Object id) {
+		return session.loadResource(clazz, id);
+	}
+
+	public Resource loadResource(String alias, Object id) {
+		return session.loadResource(alias, id);
+	}
+
+	public void save(Object obj) {
+		session.save(obj);
+	}
+
+	public void save(String alias, Object obj) {
+		session.save(alias, obj);
+	}
+
+	public void evict(Object obj) {
+		session.evict(obj);
+	}
+
+	public void evict(String alias, Object id) {
+		session.evict(alias, id);
+	}
+
+	@Override
+	public CompassMapping getMapping() {
+		return session.getMapping();
+	}
+
+	@Override
+	public CompassMetaData getMetaData() {
+		return session.getMetaData();
+	}
+
+	@Override
+	public void delete(Object value, DirtyOperationContext context) {
+		session.delete(value, context);
+	}
+
+	@Override
+	public void create(Object value, DirtyOperationContext context) {
+		session.create(value, context);
+	}
+
+	@Override
+	public void save(Object value, DirtyOperationContext context) {
+		session.save(value, context);
+	}
+
+	@Override
+	public Object getByResource(Resource resource) throws CompassException {
+		return session.getByResource(resource);
+	}
+	
+}
