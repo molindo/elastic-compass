@@ -159,6 +159,16 @@ public class ElasticSearchEngine implements SearchEngine {
 		_client.find((ElasticSearchEngineQuery) query);
 	}
 
+	@Override
+	public void setReadOnly() {
+		_readOnly = true;
+	}
+
+	@Override
+	public boolean isReadOnly() {
+		return _readOnly;
+	}
+
 	public void verifyNotReadOnly() throws SearchEngineException {
 		if (_readOnly) {
 			throw new SearchEngineException("Transaction is set as read only");

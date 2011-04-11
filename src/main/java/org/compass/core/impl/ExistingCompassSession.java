@@ -18,6 +18,7 @@ package org.compass.core.impl;
 
 import org.compass.core.CompassException;
 import org.compass.core.CompassHits;
+import org.compass.core.CompassQuery;
 import org.compass.core.Resource;
 import org.compass.core.cache.first.FirstLevelCache;
 import org.compass.core.config.CompassSettings;
@@ -36,58 +37,57 @@ import org.compass.core.spi.InternalSessionDelegateClose;
  */
 public class ExistingCompassSession implements InternalCompassSession {
 
-    private final InternalCompassSession session;
+	private final InternalCompassSession session;
 
-    public ExistingCompassSession(InternalCompassSession session) {
-        this.session = session;
-    }
+	public ExistingCompassSession(InternalCompassSession session) {
+		this.session = session;
+	}
 
-    public InternalCompassSession getActualSession() {
-        return this.session;
-    }
+	public InternalCompassSession getActualSession() {
+		return this.session;
+	}
 
-    public void close() throws CompassException {
-        // do nothing, works with existing one
-    }
+	public void close() throws CompassException {
+		// do nothing, works with existing one
+	}
 
-    // simple delegates
+	// simple delegates
 
-    public InternalCompass getCompass() {
-        return session.getCompass();
-    }
+	public InternalCompass getCompass() {
+		return session.getCompass();
+	}
 
-    public SearchEngine getSearchEngine() {
-        return session.getSearchEngine();
-    }
+	public SearchEngine getSearchEngine() {
+		return session.getSearchEngine();
+	}
 
-    public FirstLevelCache getFirstLevelCache() {
-        return session.getFirstLevelCache();
-    }
+	public FirstLevelCache getFirstLevelCache() {
+		return session.getFirstLevelCache();
+	}
 
-    public Object get(String alias, Object id, MarshallingContext context) throws CompassException {
-        return session.get(alias, id, context);
-    }
+	public Object get(String alias, Object id, MarshallingContext context) throws CompassException {
+		return session.get(alias, id, context);
+	}
 
-    public void setReadOnly() {
-        session.setReadOnly();
-    }
+	public void setReadOnly() {
+		session.setReadOnly();
+	}
 
-    public boolean isReadOnly() {
-        return session.isReadOnly();
-    }
+	public boolean isReadOnly() {
+		return session.isReadOnly();
+	}
 
-    public CompassSettings getSettings() {
-        return session.getSettings();
-    }
+	public CompassSettings getSettings() {
+		return session.getSettings();
+	}
 
-    public void flush() throws CompassException {
-        session.flush();
-    }
+	public void flush() throws CompassException {
+		session.flush();
+	}
 
-    public boolean isClosed() {
-        return session.isClosed();
-    }
-
+	public boolean isClosed() {
+		return session.isClosed();
+	}
 
 	@Override
 	public void create(Object object) {
@@ -135,6 +135,21 @@ public class ExistingCompassSession implements InternalCompassSession {
 
 	public void delete(Object obj) {
 		session.delete(obj);
+	}
+
+	@Override
+	public void delete(String alias, Object... ids) throws CompassException {
+		session.delete(alias, ids);
+	}
+
+	@Override
+	public void delete(Class<?> clazz, Object... ids) throws CompassException {
+		session.delete(clazz, ids);
+	}
+
+	@Override
+	public void delete(CompassQuery query) throws CompassException {
+		session.delete(query);
 	}
 
 	public CompassHits find(String query) {
@@ -220,6 +235,5 @@ public class ExistingCompassSession implements InternalCompassSession {
 	public MarshallingStrategy getMarshallingStrategy() {
 		return session.getMarshallingStrategy();
 	}
-	
-	
+
 }

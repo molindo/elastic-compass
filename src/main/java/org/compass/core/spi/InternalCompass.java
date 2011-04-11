@@ -1,10 +1,10 @@
 package org.compass.core.spi;
 
 import org.compass.core.Compass;
+import org.compass.core.CompassSessionFactory;
 import org.compass.core.config.CompassSettings;
 import org.compass.core.converter.ConverterLookup;
 import org.compass.core.engine.SearchEngineFactory;
-import org.compass.core.engine.SearchEngineIndexManager;
 import org.compass.core.events.CompassEventManager;
 import org.compass.core.events.RebuildEventListener;
 import org.compass.core.mapping.CompassMapping;
@@ -25,5 +25,9 @@ public interface InternalCompass extends Compass {
 	ConverterLookup getConverterLookup();
 
 	CompassEventManager getEventManager();
+
+    CompassSessionFactory getCompassSessionFactory();
+
+    CompassSessionFactory getLocalCompassSessionFactory();
 
 }

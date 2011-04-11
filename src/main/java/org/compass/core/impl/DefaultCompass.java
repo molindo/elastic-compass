@@ -4,8 +4,13 @@ import java.lang.ref.WeakReference;
 
 import org.compass.core.Compass;
 import org.compass.core.CompassException;
+import org.compass.core.CompassIndexSession;
+import org.compass.core.CompassSearchSession;
 import org.compass.core.CompassSession;
+import org.compass.core.CompassSessionFactory;
+import org.compass.core.LocalCompassSessionFactory;
 import org.compass.core.ResourceFactory;
+import org.compass.core.SessionFactoryFactory;
 import org.compass.core.cache.first.FirstLevelCache;
 import org.compass.core.cache.first.FirstLevelCacheFactory;
 import org.compass.core.config.CompassEnvironment;
@@ -49,6 +54,10 @@ public class DefaultCompass implements InternalCompass {
 
 	private CompassEventManager eventManager;
 
+	private CompassSessionFactory sessionFactory;
+
+	private LocalCompassSessionFactory localSessionFactory;
+
 	public DefaultCompass(CompassMapping mapping, ConverterLookup converterLookup, CompassMetaData compassMetaData, PropertyNamingStrategy propertyNamingStrategy, ExecutorManager executorManager, CompassSettings settings) throws CompassException {
 		this(mapping, converterLookup, compassMetaData, propertyNamingStrategy, executorManager, settings, false);
 	}
@@ -71,6 +80,10 @@ public class DefaultCompass implements InternalCompass {
         this.eventManager = new CompassEventManager(this, mapping);
         eventManager.configure(settings);
 		
+        // build the session factory
+        sessionFactory = SessionFactoryFactory.createSessionFactory(this, settings);
+        localSessionFactory = SessionFactoryFactory.createLocalSessionFactory(this, settings);
+        
 		firstLevelCacheFactory = new FirstLevelCacheFactory();
 		firstLevelCacheFactory.configure(settings);
 
@@ -124,6 +137,17 @@ public class DefaultCompass implements InternalCompass {
 		}
 	}
 
+    public CompassSearchSession openSearchSession() {
+        CompassSession session = openSession();
+        session.setReadOnly();
+        return session;
+    }
+	
+    public CompassIndexSession openIndexSession() {
+        CompassSession session = openSession();
+        return session;
+    }
+    
 	public CompassSession openSession() {
 		return openSession(true);
 	}
@@ -136,7 +160,7 @@ public class DefaultCompass implements InternalCompass {
 		if (checkClosed) {
 			checkClosed();
 		}
-		CompassSession session = getTransactionBoundSession();
+		CompassSession session = sessionFactory.getTransactionBoundSession();
 
 		if (session != null) {
 			return new ExistingCompassSession((InternalCompassSession) session);
@@ -151,9 +175,16 @@ public class DefaultCompass implements InternalCompass {
 		return new DefaultCompassSession(runtimeSettings, this, searchEngineFactory.openSearchEngine(runtimeSettings), firstLevelCache);
 	}
 
-	private CompassSession getTransactionBoundSession() {
-		// TODO
-		return null;
+	
+	
+	@Override
+	public CompassSessionFactory getCompassSessionFactory() {
+		return sessionFactory;
+	}
+
+	@Override
+	public LocalCompassSessionFactory getLocalCompassSessionFactory() {
+		return localSessionFactory;
 	}
 
 	@Override

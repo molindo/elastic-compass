@@ -16,8 +16,35 @@
 
 package org.compass.core;
 
+import org.compass.core.config.CompassSettings;
+
 import at.molindo.elastic.compass.CompassAdapted;
 
 @CompassAdapted
 public interface CompassSearchSession {
+
+	CompassSettings getSettings();
+	
+    Object get(String alias, Object id) throws CompassException;
+    
+    <T> T get(Class<T> clazz, Object id) throws CompassException;
+	
+    Object get(String alias, Object... ids) throws CompassException;
+    
+    <T> T load(Class<T> clazz, Object id) throws CompassException;
+
+	Object load(String alias, Object id);
+
+	Resource getResource(Class<?> clazz, Object id);
+
+	Resource getResource(String alias, Object id);
+
+	Resource loadResource(Class<?> clazz, Object id);
+	
+	Resource loadResource(String alias, Object id);
+	
+	CompassHits find(String query);
+	
+	void close();
+	
 }

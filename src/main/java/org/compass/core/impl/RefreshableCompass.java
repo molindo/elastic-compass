@@ -7,7 +7,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.compass.core.Compass;
 import org.compass.core.CompassException;
+import org.compass.core.CompassSearchSession;
 import org.compass.core.CompassSession;
+import org.compass.core.CompassSessionFactory;
 import org.compass.core.ResourceFactory;
 import org.compass.core.config.CompassConfiguration;
 import org.compass.core.config.CompassEnvironment;
@@ -110,12 +112,27 @@ public class RefreshableCompass implements InternalCompass {
 		return compass.openSession();
 	}
 
+	@Override
+	public CompassSearchSession openSearchSession() {
+		return compass.openSearchSession();
+	}
+
 	public CompassSettings getSettings() {
 		return compass.getSettings();
 	}
 
 	public CompassMapping getMapping() {
 		return compass.getMapping();
+	}
+
+	@Override
+	public CompassSessionFactory getCompassSessionFactory() {
+		return compass.getCompassSessionFactory();
+	}
+
+	@Override
+	public CompassSessionFactory getLocalCompassSessionFactory() {
+		return compass.getLocalCompassSessionFactory();
 	}
 
 	public SearchEngineFactory getSearchEngineFactory() {

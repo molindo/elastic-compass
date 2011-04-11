@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.compass.core.CompassException;
 import org.compass.core.CompassHits;
+import org.compass.core.CompassQuery;
 import org.compass.core.CompassQueryBuilder;
 import org.compass.core.Resource;
 import org.compass.core.cache.first.FirstLevelCache;
@@ -164,20 +165,16 @@ public class DefaultCompassSession implements InternalCompassSession {
 		return value;
 	}
 
-	@Override
-	public void evictAll() {
-		// TODO Auto-generated method stub
-
-	}
-
 	public void addDelegateClose(InternalSessionDelegateClose delegateClose) {
 		this.delegateClose.add(delegateClose);
 	}
 
-	@Override
 	public void setReadOnly() {
-		// TODO Auto-generated method stub
+		searchEngine.setReadOnly();
+	}
 
+	public boolean isReadOnly() {
+		return searchEngine.isReadOnly();
 	}
 
 	@Override
@@ -214,12 +211,6 @@ public class DefaultCompassSession implements InternalCompassSession {
 	@Override
 	public CompassMetaData getMetaData() {
 		return compassMetaData;
-	}
-
-	@Override
-	public boolean isReadOnly() {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 	public CompassQueryBuilder queryBuilder() throws CompassException {
@@ -280,10 +271,10 @@ public class DefaultCompassSession implements InternalCompassSession {
 
 	}
 
-    public CompassHits find(String query) throws CompassException {
-        checkClosed();
-        return queryBuilder().queryString(query).toQuery().hits();
-    }
+	public CompassHits find(String query) throws CompassException {
+		checkClosed();
+		return queryBuilder().queryString(query).toQuery().hits();
+	}
 
 	@Override
 	public void delete(Class<?> clazz, Object obj) {
@@ -293,6 +284,24 @@ public class DefaultCompassSession implements InternalCompassSession {
 
 	@Override
 	public void delete(String alias, Object obj) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void delete(String alias, Object... ids) throws CompassException {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void delete(Class<?> clazz, Object... ids) throws CompassException {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void delete(CompassQuery query) throws CompassException {
 		// TODO Auto-generated method stub
 
 	}
@@ -362,6 +371,12 @@ public class DefaultCompassSession implements InternalCompassSession {
 
 	@Override
 	public void save(String alias, Object obj) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void evictAll() {
 		// TODO Auto-generated method stub
 
 	}

@@ -17,4 +17,8 @@ public interface SearchEngine {
 
 	void delete(SearchEngineQuery searchEngineQuery);
 
+	void setReadOnly();
+
+	boolean isReadOnly();
+
 }

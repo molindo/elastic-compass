@@ -26,6 +26,8 @@ public interface Compass {
 
 	SearchEngineIndexManager getSearchEngineIndexManager();
 
+	CompassSearchSession openSearchSession();
+	
 	CompassSession openSession();
 
 	Compass clone(CompassSettings indexCompassSettings);
