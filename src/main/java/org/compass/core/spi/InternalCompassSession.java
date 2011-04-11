@@ -6,6 +6,7 @@ import org.compass.core.Resource;
 import org.compass.core.cache.first.FirstLevelCache;
 import org.compass.core.engine.SearchEngine;
 import org.compass.core.mapping.CompassMapping;
+import org.compass.core.marshall.MarshallingStrategy;
 import org.compass.core.metadata.CompassMetaData;
 
 import at.molindo.elastic.compass.CompassAdapted;
@@ -23,6 +24,8 @@ public interface InternalCompassSession extends CompassSession {
 	
 	SearchEngine getSearchEngine();
 
+	MarshallingStrategy getMarshallingStrategy();
+	
 	boolean isReadOnly();
 
 	boolean isClosed();
@@ -34,4 +37,7 @@ public interface InternalCompassSession extends CompassSession {
 	void save(Object value, DirtyOperationContext context);
 
 	Object getByResource(Resource resource) throws CompassException;
+
+	void addDelegateClose(InternalSessionDelegateClose delegateClose);
+
 }

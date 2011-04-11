@@ -29,6 +29,7 @@ import org.compass.core.Property.TermVector;
 import org.compass.core.config.CompassConfigurable;
 import org.compass.core.config.CompassSettings;
 import org.compass.core.engine.SearchEngineException;
+import org.compass.core.engine.SearchEngineFactory;
 import org.compass.core.mapping.AllMapping;
 import org.compass.core.mapping.BoostPropertyMapping;
 import org.compass.core.mapping.ExcludeFromAll;
@@ -258,5 +259,12 @@ public class ElasticNode implements CompassConfigurable {
 			_node.stop();
 			_node = null;
 		}
+	}
+
+	public ElasticSettings getSettings() {
+		if (_settings == null) {
+			throw new IllegalStateException("ElasticNode not yet configured");
+		}
+		return _settings;
 	}
 }

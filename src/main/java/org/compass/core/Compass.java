@@ -30,5 +30,4 @@ public interface Compass {
 
 	Compass clone(CompassSettings indexCompassSettings);
 
-
 }

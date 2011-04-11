@@ -20,6 +20,9 @@ import org.compass.core.Resource;
 import org.compass.core.config.RuntimeCompassSettings;
 import org.compass.core.engine.SearchEngine;
 import org.compass.core.engine.SearchEngineException;
+import org.compass.core.engine.SearchEngineHits;
+import org.compass.core.engine.SearchEngineQuery;
+import org.compass.core.engine.SearchEngineQueryBuilder;
 import org.compass.core.mapping.ResourceMapping;
 import org.compass.core.spi.InternalResource;
 import org.compass.core.spi.MultiResource;
@@ -32,26 +35,26 @@ public class ElasticSearchEngine implements SearchEngine {
 			.getLogger(ElasticSearchEngine.class);
 
 	private final RuntimeCompassSettings _runtimeSettings;
-	private final ElasticSearchEngineFactory _dummySearchEngineFactory;
-	private boolean onlyReadOnlyOperations;
-	private boolean readOnly;
+	private final ElasticSearchEngineFactory _searchEngineFactory;
+	private boolean _onlyReadOnlyOperations;
+	private boolean _readOnly;
 
 	private ElasticClient _client;
 
 	public ElasticSearchEngine(RuntimeCompassSettings runtimeSettings, ElasticSearchEngineFactory dummySearchEngineFactory) {
 		_runtimeSettings = runtimeSettings;
-		_dummySearchEngineFactory = dummySearchEngineFactory;
+		_searchEngineFactory = dummySearchEngineFactory;
 
 		_client = dummySearchEngineFactory.openElasticClient();
 	}
 
 	@Override
 	public ElasticSearchEngineFactory getSearchEngineFactory() {
-		return _dummySearchEngineFactory;
+		return _searchEngineFactory;
 	}
 
 	public void create(Resource resource) throws SearchEngineException {
-		onlyReadOnlyOperations = false;
+		_onlyReadOnlyOperations = false;
 		createOrUpdate(resource, false);
 	}
 
@@ -87,7 +90,7 @@ public class ElasticSearchEngine implements SearchEngine {
 
 	private void createOrUpdate(final Resource resource, boolean update) throws SearchEngineException {
 		verifyNotReadOnly();
-		onlyReadOnlyOperations = false;
+		_onlyReadOnlyOperations = false;
 		String alias = resource.getAlias();
 		ResourceMapping resourceMapping = getSearchEngineFactory().getMapping()
 				.getRootMappingByAlias(alias);
@@ -126,6 +129,20 @@ public class ElasticSearchEngine implements SearchEngine {
 		}
 	}
 
+	@Override
+	public SearchEngineQueryBuilder queryBuilder() {
+		return _searchEngineFactory.queryBuilder();
+	}
+
+	public SearchEngineHits find(SearchEngineQuery searchEngineQuery) {
+		return _client.find((ElasticSearchEngineQuery) searchEngineQuery);
+	}
+
+	@Override
+	public void delete(SearchEngineQuery searchEngineQuery) {
+		// TODO Auto-generated method stub
+	}
+
 	private Resource[] doGet(ResourceKey key) {
 		return _client.get(key);
 	}
@@ -138,8 +155,12 @@ public class ElasticSearchEngine implements SearchEngine {
 		_client.update((ElasticResource) resource);
 	}
 
+	private void doFind(SearchEngineQuery query) {
+		_client.find((ElasticSearchEngineQuery) query);
+	}
+
 	public void verifyNotReadOnly() throws SearchEngineException {
-		if (readOnly) {
+		if (_readOnly) {
 			throw new SearchEngineException("Transaction is set as read only");
 		}
 	}

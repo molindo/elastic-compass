@@ -516,7 +516,10 @@ public class CompassEnvironment {
 
         /**
          * The default name for the "all" property. Defaults to <code>zzz-all</code>.
+         * 
+         * @deprecated not supported by ES
          */
+        @Deprecated
         public static final String DEFAULT_NAME = "zzz-all";
 
         /**
@@ -588,6 +591,8 @@ public class CompassEnvironment {
 
         /**
          * The default name for the "alias" property: <code>alias</code>.
+         * 
+         * @deprecated fixed name _type with ES
          */
         public static final String DEFAULT_NAME = "alias";
 

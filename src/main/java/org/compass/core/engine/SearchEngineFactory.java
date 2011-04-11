@@ -23,4 +23,16 @@ public interface SearchEngineFactory {
 
 	SearchEngine openSearchEngine(RuntimeCompassSettings runtimeSettings);
 
+    /**
+     * Returns the name of the alias property.
+     *
+     * @return The name of the alias property.
+     */
+    String getAliasProperty();
+
+    /**
+     * Returns the name of the extending alias property name.
+     */
+    String getExtendedAliasProperty();
+	
 }

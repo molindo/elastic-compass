@@ -19,6 +19,11 @@ package at.molindo.elastic.compass;
 
 public class ElasticEnvironment {
 
+    /**
+     * The default search that will be used for non prefixed query values.
+     * Defaults to the value of the "all" property.
+     */
+    public static final String DEFAULT_SEARCH = "compass.engine.defaultsearch";
 
 	/**
 	 * A set of configuration settings for index.
@@ -38,4 +43,25 @@ public class ElasticEnvironment {
 
 	}
 
+    /**
+     * Settings for different query parser implementations.
+     */
+    public static abstract class QueryParser {
+
+        /**
+         * The prefix used for query parser groups.
+         */
+        public static final String PREFIX = "compass.engine.queryParser";
+
+        /**
+         * The default operator when parsing query strings. Defaults to <code>AND</code>. Can be either
+         * <code>AND</code> or <code>OR</code>.
+         */
+        public static final String DEFAULT_PARSER_DEFAULT_OPERATOR = "defaultOperator";
+    }
+
+    public static abstract class Mapping {
+    	public static final String ALL_FIELD = "_all";
+    	public static final String TYPE_FIELD = "_type";
+    }
 }

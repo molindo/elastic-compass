@@ -18,11 +18,14 @@ package org.compass.core;
 
 import java.io.Serializable;
 
+import at.molindo.elastic.compass.CompassAdapted;
+
 /**
  * Mutual operations for hits, for both detached and transactional hits.
  *
  * @author kimchy
  */
+@CompassAdapted
 public interface CompassHitsOperations extends Serializable, Iterable<CompassHit> {
 
     /**
@@ -93,10 +96,4 @@ public interface CompassHitsOperations extends Serializable, Iterable<CompassHit
      */
     CompassQuery getQuery();
 
-    /**
-     * Returns a suggested query (based on spell check).
-     *
-     * @see CompassQuery#getSuggestedQuery() 
-     */
-    CompassQuery getSuggestedQuery();
 }

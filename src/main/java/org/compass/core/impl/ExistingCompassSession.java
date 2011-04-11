@@ -24,10 +24,12 @@ import org.compass.core.config.CompassSettings;
 import org.compass.core.engine.SearchEngine;
 import org.compass.core.mapping.CompassMapping;
 import org.compass.core.marshall.MarshallingContext;
+import org.compass.core.marshall.MarshallingStrategy;
 import org.compass.core.metadata.CompassMetaData;
 import org.compass.core.spi.DirtyOperationContext;
 import org.compass.core.spi.InternalCompass;
 import org.compass.core.spi.InternalCompassSession;
+import org.compass.core.spi.InternalSessionDelegateClose;
 
 /**
  * @author kimchy
@@ -208,5 +210,16 @@ public class ExistingCompassSession implements InternalCompassSession {
 	public Object getByResource(Resource resource) throws CompassException {
 		return session.getByResource(resource);
 	}
+
+	@Override
+	public void addDelegateClose(InternalSessionDelegateClose delegateClose) {
+		session.addDelegateClose(delegateClose);
+	}
+
+	@Override
+	public MarshallingStrategy getMarshallingStrategy() {
+		return session.getMarshallingStrategy();
+	}
+	
 	
 }

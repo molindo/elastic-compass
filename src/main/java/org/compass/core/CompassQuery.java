@@ -18,6 +18,8 @@ package org.compass.core;
 
 import java.util.Locale;
 
+import at.molindo.elastic.compass.CompassAdapted;
+
 /**
  * An object representing a Compass query. The query is created using the
  * {@link org.compass.core.CompassQueryBuilder}, and used to get the
@@ -29,6 +31,7 @@ import java.util.Locale;
  *
  * @author kimchy
  */
+@CompassAdapted
 public interface CompassQuery {
 
     /**
@@ -267,15 +270,6 @@ public interface CompassQuery {
     CompassQuery addSort(String propertyName, Locale locale);
 
     /**
-     * Narrows down the query to be executed only against the given sub indexes.
-     * If set to <code>null</code>, will use all sub indexes.
-     *
-     * @param subIndexes sub indexes the query will be executed against
-     * @return The query
-     */
-    CompassQuery setSubIndexes(String... subIndexes);
-
-    /**
      * Narrows down the query to be executed only against the given aliases.
      * If set to <code>null</code>, will use all aliases.
      *
@@ -315,14 +309,14 @@ public interface CompassQuery {
      */
     CompassQuery rewrite();
 
-    /**
-     * Returns the suggested query (based on spell check). If spell check is disabled
-     * the same query is returned.
-     *
-     * <p>In order to know if the query was actually replaced with a suggested one, call
-     * {@link CompassQuery#isSuggested()}.
-     */
-    CompassQuery getSuggestedQuery();
+//    /**
+//     * Returns the suggested query (based on spell check). If spell check is disabled
+//     * the same query is returned.
+//     *
+//     * <p>In order to know if the query was actually replaced with a suggested one, call
+//     * {@link CompassQuery#isSuggested()}.
+//     */
+//    CompassQuery getSuggestedQuery();
 
     /**
      * Returns <code>true</code> if this is a suggested query. For example, when performing

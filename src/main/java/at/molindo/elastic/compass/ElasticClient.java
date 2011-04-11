@@ -19,6 +19,7 @@ package at.molindo.elastic.compass;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -27,9 +28,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.compass.core.Property;
 import org.compass.core.Property.Store;
 import org.compass.core.Resource;
-import org.compass.core.ResourceFactory;
 import org.compass.core.engine.SearchEngineException;
-import org.compass.core.engine.naming.DefaultPropertyPath;
+import org.compass.core.engine.SearchEngineHits;
 import org.compass.core.engine.naming.StaticPropertyPath;
 import org.compass.core.mapping.ResourceMapping;
 import org.compass.core.mapping.ResourcePropertyMapping;
@@ -39,8 +39,12 @@ import org.elasticsearch.action.get.GetField;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.client.action.search.SearchRequestBuilder;
 import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHitField;
 
+import at.molindo.utils.collections.ArrayUtils;
 import at.molindo.utils.collections.CollectionUtils;
 
 public class ElasticClient {
@@ -54,7 +58,7 @@ public class ElasticClient {
 	private final Map<String, String[]> _typeFields;
 
 	private ConcurrentHashMap<String, StaticPropertyPath> _pathCache = new ConcurrentHashMap<String, StaticPropertyPath>();
-	
+
 	public ElasticClient(ElasticSearchEngineFactory searchEngineFactory, String index, Client client) {
 		if (searchEngineFactory == null) {
 			throw new NullPointerException("searchEngineFactory");
@@ -152,27 +156,14 @@ public class ElasticClient {
 				.getRootMappingByAlias(key.getAlias());
 
 		for (int i = 0; i < ids.length; i++) {
+			// TODO batch instead of loop?
 			GetResponse response = _client
 					.prepareGet(_index, key.getAlias(), ids[i].getStringValue()).setFields(fields)
 					.execute().actionGet();
 
 			resources[i] = new ElasticResource(response.getType(), _searchEngineFactory);
 			for (Map.Entry<String, GetField> e : response.getFields().entrySet()) {
-
-				// we handle collections internally, i.e. the Compass-way
-				String value = (String) CollectionUtils.first(e.getValue().getValues());
-
-				ResourcePropertyMapping propertyMapping = mapping.getResourcePropertyMappingByPath(toPath(e
-						.getKey()));
-				if (propertyMapping == null) {
-					throw new SearchEngineException("No resource property mapping is defined for alias ["
-							+ key.getAlias() + "] and resource property [" + e.getKey() + "]");
-				}
-				Property property = _searchEngineFactory.getResourceFactory()
-						.createProperty(value, propertyMapping);
-				property.setBoost(propertyMapping.getBoost());
-
-				resources[i].addProperty(property);
+				resources[i].addProperty(toProperty(mapping, e.getKey(), e.getValue().getValues()));
 			}
 		}
 		return resources;
@@ -187,7 +178,7 @@ public class ElasticClient {
 		}
 		return p;
 	}
-	
+
 	protected XContentBuilder toXContentBuilder(ElasticResource resource) throws IOException {
 		XContentBuilder builder = jsonBuilder().startObject();
 
@@ -196,5 +187,59 @@ public class ElasticClient {
 		}
 
 		return builder.endObject();
+	}
+
+	public SearchEngineHits find(ElasticSearchEngineQuery query) throws SearchEngineException {
+
+		SearchRequestBuilder search = _client.prepareSearch(_index).setQuery(query.getQuery()
+				.getBuilder());
+
+		String[] aliases = query.getAliases();
+		if (ArrayUtils.empty(aliases)) {
+			aliases = _typeFields.keySet().toArray(new String[_typeFields.size()]);
+		}
+		
+		search.setTypes(aliases);
+		for (String alias : aliases) {
+			String[] fields = _typeFields.get(alias);
+			if (fields == null) {
+				throw new SearchEngineException("unknown alias: '" + alias + "'");
+			}
+			// TODO handle duplicates?
+			search.addFields(fields);
+		}
+
+		return new ElasticSearchEngineHits(this, search.execute().actionGet().hits());
+	}
+
+	public ElasticResource toResource(SearchHit hit) {
+		String alias = hit.getType();
+
+		ResourceMapping mapping = _searchEngineFactory.getMapping().getRootMappingByAlias(alias);
+		ElasticResource resource = new ElasticResource(hit.getType(), _searchEngineFactory);
+		for (Map.Entry<String, SearchHitField> e : hit.getFields().entrySet()) {
+			resource.addProperty(toProperty(mapping, e.getKey(), e.getValue().getValues()));
+		}
+
+		return resource;
+	}
+
+	private ElasticProperty toProperty(ResourceMapping mapping, String name, Collection<?> values) {
+		// we handle collections internally, i.e. the Compass-way, i.e. no
+		// collections should be in ES
+		return toProperty(mapping, name, (String) CollectionUtils.first(values));
+	}
+
+	private ElasticProperty toProperty(ResourceMapping mapping, String name, String value) {
+		ResourcePropertyMapping propertyMapping = mapping
+				.getResourcePropertyMappingByPath(toPath(name));
+		if (propertyMapping == null) {
+			throw new SearchEngineException("No resource property mapping is defined for alias ["
+					+ mapping.getAlias() + "] and resource property [" + name + "]");
+		}
+		ElasticProperty property = (ElasticProperty) _searchEngineFactory.getResourceFactory()
+				.createProperty(value, propertyMapping);
+		property.setBoost(propertyMapping.getBoost());
+		return property;
 	}
 }

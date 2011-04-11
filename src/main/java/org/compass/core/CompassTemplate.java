@@ -242,7 +242,11 @@ public class CompassTemplate implements CompassOperations {
     }
 
     public CompassDetachedHits findWithDetach(final String query) throws CompassException {
-        return find(query).detach();
+        return execute(new CompassCallback<CompassDetachedHits>() {
+            public CompassDetachedHits doInCompass(CompassSession session) throws CompassException {
+                return session.find(query).detach();
+            }
+        });
     }
 
     public CompassDetachedHits findWithDetach(final String query, final int from, final int size)

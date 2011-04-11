@@ -13,4 +13,8 @@ public interface SearchEngine {
 
 	Resource get(Resource idResource);
 
+	SearchEngineQueryBuilder queryBuilder();
+
+	void delete(SearchEngineQuery searchEngineQuery);
+
 }
