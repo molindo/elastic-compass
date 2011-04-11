@@ -29,7 +29,6 @@ import org.compass.core.Property.TermVector;
 import org.compass.core.config.CompassConfigurable;
 import org.compass.core.config.CompassSettings;
 import org.compass.core.engine.SearchEngineException;
-import org.compass.core.engine.SearchEngineFactory;
 import org.compass.core.mapping.AllMapping;
 import org.compass.core.mapping.BoostPropertyMapping;
 import org.compass.core.mapping.ExcludeFromAll;
@@ -80,7 +79,7 @@ public class ElasticNode implements CompassConfigurable {
 
 			log.debug("starting ElasticNode");
 
-			_node = nodeBuilder().client(true).node();
+			_node = nodeBuilder().client(!_settings.getLocal()).local(_settings.getLocal()).node();
 
 			Client client = _node.client();
 			AdminClient adminClient = client.admin();

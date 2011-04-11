@@ -28,11 +28,12 @@ public class ElasticSettings {
 	
 	private String _aliasName;
 
-	private String _aliasProperty;
 	private String _extendedAliasProperty;
 
 	private String _defaultSearchPropery;
 	private Operator _defaultOperator;
+
+	private boolean _local;
 	
 	public ElasticSettings() {
 
@@ -63,6 +64,11 @@ public class ElasticSettings {
         if (log.isDebugEnabled()) {
             log.debug("Using default search operator [" + _defaultOperator + "]");
         }
+        
+        _local = settings.getSettingAsBoolean(ElasticEnvironment.LOCAL, false);
+        if (log.isDebugEnabled()) {
+            log.debug("Using default search property [" + _defaultSearchPropery + "]");
+        }
 	}
 
 	public String getAliasName() {
@@ -79,6 +85,10 @@ public class ElasticSettings {
 
 	public Operator getDefaultOperator() {
 		return _defaultOperator;
+	}
+
+	public boolean getLocal() {
+		return _local;
 	}
 	
 	

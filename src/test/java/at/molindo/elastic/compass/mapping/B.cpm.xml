@@ -21,7 +21,7 @@
     "-//Compass/Compass Core Mapping DTD 2.2//EN"
     "http://www.compass-project.org/dtd/compass-core-mapping-2.2.dtd">
 
-<compass-core-mapping package="at.molindo.elastic.mapping">
+<compass-core-mapping package="at.molindo.elastic.compass.mapping">
 	<class name="B" alias="foo" root="true">
 		<id name="id" />
 

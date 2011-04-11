@@ -31,6 +31,8 @@ import org.compass.core.mapping.ResourceMapping;
 import org.compass.core.spi.InternalCompass;
 import org.junit.Test;
 
+import at.molindo.elastic.compass.ElasticEnvironment;
+
 public class MappingTest {
 
     protected Compass buildCompass() throws IOException {
@@ -40,7 +42,7 @@ public class MappingTest {
 
     protected CompassConfiguration buildConf() throws IOException {
         CompassConfiguration conf = createConfiguration()
-                .configure("/at/molindo/elastic/mapping/compass.cfg.xml");
+                .configure(getPackagePrefix() + "/compass.cfg.xml");
         File testPropsFile = new File("compass.test.properties");
         if (testPropsFile.exists()) {
             Properties testProps = new Properties();
@@ -52,6 +54,7 @@ public class MappingTest {
         }
         conf.getSettings().setSetting(CompassEnvironment.Cache.FirstLevel.TYPE, NullFirstLevelCache.class.getName());
         conf.getSettings().setBooleanSetting(CompassEnvironment.DEBUG, true);
+        conf.getSettings().setBooleanSetting(ElasticEnvironment.LOCAL, true);
         addExtraConf(conf);
         return conf;
     }
@@ -65,7 +68,7 @@ public class MappingTest {
     }
     
     protected String getPackagePrefix() {
-        return "at/molindo/elastic/mapping/";
+        return  File.separatorChar + MappingTest.class.getPackage().getName().replace('.', File.separatorChar);
     }
     
     protected void addExtraConf(CompassConfiguration conf) {

@@ -24,6 +24,12 @@ public class ElasticEnvironment {
      * Defaults to the value of the "all" property.
      */
     public static final String DEFAULT_SEARCH = "compass.engine.defaultsearch";
+    
+    /**
+     * Create a local node
+     * Defaults to false
+     */
+	public static final String LOCAL = "compass.engine.local";
 
 	/**
 	 * A set of configuration settings for index.
