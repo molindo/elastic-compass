@@ -43,7 +43,7 @@ public interface CompassOperations {
      * @return The resource, returns <code>null</code> if not found
      * @throws CompassException
      */
-    Resource getResource(Class clazz, Object id) throws CompassException;
+    Resource getResource(Class<?> clazz, Object id) throws CompassException;
 
     /**
      * Returns a Resource that match the mapping specified for the defined class
@@ -54,7 +54,7 @@ public interface CompassOperations {
      * @return The resource, returns <code>null</code> if not found
      * @throws CompassException
      */
-    Resource getResource(Class clazz, Object... ids) throws CompassException;
+    Resource getResource(Class<?> clazz, Object... ids) throws CompassException;
 
     /**
      * Returns a Resource that match the mapping specified for the defined alias
@@ -93,7 +93,7 @@ public interface CompassOperations {
      * @return The resource
      * @throws CompassException
      */
-    Resource loadResource(Class clazz, Object id) throws CompassException;
+    Resource loadResource(Class<?> clazz, Object id) throws CompassException;
 
     /**
      * Loads and returns a Resource that match the mapping specified for the
@@ -105,7 +105,7 @@ public interface CompassOperations {
      * @return The resource
      * @throws CompassException
      */
-    Resource loadResource(Class clazz, Object... ids) throws CompassException;
+    Resource loadResource(Class<?> clazz, Object... ids) throws CompassException;
 
     /**
      * Loads and returns a Resource that match the mapping specified for the
@@ -171,7 +171,7 @@ public interface CompassOperations {
      * @param obj   The object to delete
      * @throws CompassException
      */
-    void delete(Class clazz, Object obj) throws CompassException;
+    void delete(Class<?> clazz, Object obj) throws CompassException;
 
     /**
      * Deletes an object from Compass that match the mapping specified for the defined class
@@ -181,7 +181,7 @@ public interface CompassOperations {
      * @param ids   The object ids to delete
      * @throws CompassException
      */
-    void delete(Class clazz, Object... ids) throws CompassException;
+    void delete(Class<?> clazz, Object... ids) throws CompassException;
 
     /**
      * Returns an object that match the mapping specified for the defined class,

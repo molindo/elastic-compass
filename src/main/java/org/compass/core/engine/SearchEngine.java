@@ -11,14 +11,21 @@ public interface SearchEngine {
 
 	void create(Resource resource);
 
+	Resource load(Resource idResource);
+	
 	Resource get(Resource idResource);
 
+	void delete(Resource resource);
+	
 	SearchEngineQueryBuilder queryBuilder();
-
+	
 	void delete(SearchEngineQuery searchEngineQuery);
 
 	void setReadOnly();
 
 	boolean isReadOnly();
 
+	void save(Resource resource);
+
+	void flush();
 }

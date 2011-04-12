@@ -19,6 +19,7 @@ package at.molindo.elastic.compass;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -39,6 +40,7 @@ import org.elasticsearch.action.get.GetField;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.client.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.client.action.search.SearchRequestBuilder;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.search.SearchHit;
@@ -57,7 +59,7 @@ public class ElasticClient {
 	private final Client _client;
 	private final Map<String, String[]> _typeFields;
 
-	private ConcurrentHashMap<String, StaticPropertyPath> _pathCache = new ConcurrentHashMap<String, StaticPropertyPath>();
+	private final ConcurrentHashMap<String, StaticPropertyPath> _pathCache = new ConcurrentHashMap<String, StaticPropertyPath>();
 
 	public ElasticClient(ElasticSearchEngineFactory searchEngineFactory, String index, Client client) {
 		if (searchEngineFactory == null) {
@@ -156,7 +158,6 @@ public class ElasticClient {
 				.getRootMappingByAlias(key.getAlias());
 
 		for (int i = 0; i < ids.length; i++) {
-			// TODO batch instead of loop?
 			GetResponse response = _client
 					.prepareGet(_index, key.getAlias(), ids[i].getStringValue()).setFields(fields)
 					.execute().actionGet();
@@ -167,6 +168,22 @@ public class ElasticClient {
 			}
 		}
 		return resources;
+	}
+
+	public void delete(ResourceKey key) {
+		Property[] ids = key.getIds();
+
+		if (ArrayUtils.empty(ids)) {
+			return;
+		} else if (ids.length == 1) {
+			_client.prepareDelete(_index, key.getAlias(), ids[0].getStringValue()).execute();
+		} else {
+			BulkRequestBuilder bulk = _client.prepareBulk();
+			for (Property id : ids) {
+				bulk.add(_client.prepareDelete(_index, key.getAlias(), id.getStringValue()));
+			}
+			bulk.execute();
+		}
 	}
 
 	private StaticPropertyPath toPath(String path) {
@@ -194,22 +211,45 @@ public class ElasticClient {
 		SearchRequestBuilder search = _client.prepareSearch(_index).setQuery(query.getQuery()
 				.getBuilder());
 
+		String[] aliases = toAliases(query);
+
+		search.setTypes(aliases);
+
+		// fields
+		String[] fields;
+		if (aliases.length == 1) {
+			String alias = aliases[0];
+			fields = _typeFields.get(alias);
+			if (fields == null) {
+				throw new SearchEngineException("unknown alias: '" + alias + "'");
+			}
+		} else {
+			HashSet<String> fieldSet = new HashSet<String>();
+			for (String alias : aliases) {
+				String[] aliasFields = _typeFields.get(alias);
+				if (aliasFields == null) {
+					throw new SearchEngineException("unknown alias: '" + alias + "'");
+				}
+				fieldSet.addAll(Arrays.asList(aliasFields));
+			}
+			fields = fieldSet.toArray(new String[fieldSet.size()]);
+		}
+		search.addFields(fields);
+
+		return new ElasticSearchEngineHits(this, search.execute().actionGet().hits());
+	}
+
+	public void delete(ElasticSearchEngineQuery query) {
+		_client.prepareDeleteByQuery(_index).setQuery(query.getQuery().getBuilder())
+				.setTypes(toAliases(query)).execute();
+	}
+
+	private String[] toAliases(ElasticSearchEngineQuery query) {
 		String[] aliases = query.getAliases();
 		if (ArrayUtils.empty(aliases)) {
 			aliases = _typeFields.keySet().toArray(new String[_typeFields.size()]);
 		}
-		
-		search.setTypes(aliases);
-		for (String alias : aliases) {
-			String[] fields = _typeFields.get(alias);
-			if (fields == null) {
-				throw new SearchEngineException("unknown alias: '" + alias + "'");
-			}
-			// TODO handle duplicates?
-			search.addFields(fields);
-		}
-
-		return new ElasticSearchEngineHits(this, search.execute().actionGet().hits());
+		return aliases;
 	}
 
 	public ElasticResource toResource(SearchHit hit) {
@@ -242,4 +282,5 @@ public class ElasticClient {
 		property.setBoost(propertyMapping.getBoost());
 		return property;
 	}
+
 }

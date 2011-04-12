@@ -3,7 +3,7 @@ package org.compass.core;
 import at.molindo.elastic.compass.CompassAdapted;
 
 @CompassAdapted
-public interface CompassSession extends CompassSearchSession, CompassIndexSession {
+public interface CompassSession extends CompassSearchSession, CompassIndexSession, CompassOperations {
 
 	void create(Object object);
 
@@ -12,8 +12,6 @@ public interface CompassSession extends CompassSearchSession, CompassIndexSessio
 	void evictAll();
 
 	void flush();
-
-	void create(String alias, Resource obj);
 
 	void create(String alias, Object obj);
 

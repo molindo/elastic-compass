@@ -221,6 +221,48 @@ public class ExistingCompassSession implements InternalCompassSession {
 		session.save(value, context);
 	}
 
+	
+	
+	@Override
+	public Resource getResource(Class<?> clazz, Object... ids) throws CompassException {
+		return session.getResource(clazz, ids);
+	}
+
+	@Override
+	public Resource getResource(String alias, Object... ids) throws CompassException {
+		return session.getResource(alias, ids);
+	}
+
+	@Override
+	public Resource loadResource(Class<?> clazz, Object... ids) throws CompassException {
+		return session.loadResource(clazz, ids);
+	}
+
+	@Override
+	public Resource loadResource(String alias, Object... ids) throws CompassException {
+		return session.loadResource(alias, ids);
+	}
+
+	@Override
+	public <T> T get(Class<T> clazz, Object... ids) throws CompassException {
+		return session.get(clazz, ids);
+	}
+
+	@Override
+	public <T> T load(Class<T> clazz, Object... ids) throws CompassException {
+		return session.load(clazz, ids);
+	}
+
+	@Override
+	public Object load(String alias, Object... ids) throws CompassException {
+		return session.load(alias, ids);
+	}
+
+	@Override
+	public void evict(Resource resource) {
+		session.evict(resource);
+	}
+
 	@Override
 	public Object getByResource(Resource resource) throws CompassException {
 		return session.getByResource(resource);
