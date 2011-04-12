@@ -31,4 +31,5 @@ public interface CompassSession extends CompassSearchSession, CompassIndexSessio
 
 	void evict(String alias, Object id);
 
+	CompassQueryBuilder queryBuilder() throws CompassException;
 }

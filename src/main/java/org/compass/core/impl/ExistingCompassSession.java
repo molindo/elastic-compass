@@ -19,6 +19,7 @@ package org.compass.core.impl;
 import org.compass.core.CompassException;
 import org.compass.core.CompassHits;
 import org.compass.core.CompassQuery;
+import org.compass.core.CompassQueryBuilder;
 import org.compass.core.Resource;
 import org.compass.core.cache.first.FirstLevelCache;
 import org.compass.core.config.CompassSettings;
@@ -194,6 +195,11 @@ public class ExistingCompassSession implements InternalCompassSession {
 
 	public void evict(String alias, Object id) {
 		session.evict(alias, id);
+	}
+
+	@Override
+	public CompassQueryBuilder queryBuilder() throws CompassException {
+		return session.queryBuilder();
 	}
 
 	@Override
