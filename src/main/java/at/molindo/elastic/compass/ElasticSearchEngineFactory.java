@@ -21,9 +21,11 @@ import org.compass.core.config.CompassEnvironment;
 import org.compass.core.config.CompassSettings;
 import org.compass.core.config.RuntimeCompassSettings;
 import org.compass.core.engine.SearchEngine;
+import org.compass.core.engine.SearchEngineException;
 import org.compass.core.engine.SearchEngineFactory;
 import org.compass.core.engine.SearchEngineIndexManager;
 import org.compass.core.engine.SearchEngineQueryBuilder;
+import org.compass.core.engine.SearchEngineQueryFilterBuilder;
 import org.compass.core.engine.naming.PropertyNamingStrategy;
 import org.compass.core.engine.spi.InternalSearchEngineFactory;
 import org.compass.core.executor.ExecutorManager;
@@ -85,7 +87,7 @@ public class ElasticSearchEngineFactory implements InternalSearchEngineFactory {
     }
 
     public String getExtendedAliasProperty() {
-    	// TODO TYPE_FIELD as well?
+    	// TODO TYPE_FIELD as well, i.e. getAliasProperty()?
         return _node.getSettings().getExtendedAliasProperty();
     }
 
@@ -124,6 +126,10 @@ public class ElasticSearchEngineFactory implements InternalSearchEngineFactory {
 		return new ElasticSearchEngineQueryBuilder(this);
 	}
 
+    public SearchEngineQueryFilterBuilder queryFilterBuilder() throws SearchEngineException {
+        return new ElasticSearchEngineQueryFilterBuilder();
+    }
+	
 	public ElasticSettings getElasticSettings() {
 		return _node.getSettings();
 	}

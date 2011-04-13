@@ -16,7 +16,7 @@ public interface CompassSession extends CompassSearchSession, CompassIndexSessio
 	void create(String alias, Object obj);
 
 	void delete(Resource resource);
-	
+
 	void delete(Object obj);
 
 	void delete(Class<?> clazz, Object obj);
@@ -32,4 +32,6 @@ public interface CompassSession extends CompassSearchSession, CompassIndexSessio
 	void evict(String alias, Object id);
 
 	CompassQueryBuilder queryBuilder() throws CompassException;
+
+	CompassQueryFilterBuilder queryFilterBuilder() throws CompassException;
 }

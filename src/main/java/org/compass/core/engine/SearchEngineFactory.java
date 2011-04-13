@@ -2,6 +2,7 @@ package org.compass.core.engine;
 
 import org.compass.core.ResourceFactory;
 import org.compass.core.config.RuntimeCompassSettings;
+import org.compass.core.engine.naming.PropertyNamingStrategy;
 import org.compass.core.mapping.CompassMapping;
 
 import at.molindo.elastic.compass.CompassAdapted;
@@ -34,5 +35,9 @@ public interface SearchEngineFactory {
      * Returns the name of the extending alias property name.
      */
     String getExtendedAliasProperty();
+
+	SearchEngineQueryBuilder queryBuilder() throws SearchEngineException;
+
+	SearchEngineQueryFilterBuilder queryFilterBuilder() throws SearchEngineException;
 	
 }

@@ -20,6 +20,7 @@ import org.compass.core.CompassException;
 import org.compass.core.CompassHits;
 import org.compass.core.CompassQuery;
 import org.compass.core.CompassQueryBuilder;
+import org.compass.core.CompassQueryFilterBuilder;
 import org.compass.core.Resource;
 import org.compass.core.cache.first.FirstLevelCache;
 import org.compass.core.config.CompassSettings;
@@ -203,6 +204,11 @@ public class ExistingCompassSession implements InternalCompassSession {
 	}
 
 	@Override
+	public CompassQueryFilterBuilder queryFilterBuilder() throws CompassException {
+		return session.queryFilterBuilder();
+	}
+
+	@Override
 	public CompassMapping getMapping() {
 		return session.getMapping();
 	}
@@ -227,8 +233,6 @@ public class ExistingCompassSession implements InternalCompassSession {
 		session.save(value, context);
 	}
 
-	
-	
 	@Override
 	public Resource getResource(Class<?> clazz, Object... ids) throws CompassException {
 		return session.getResource(clazz, ids);

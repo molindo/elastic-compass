@@ -22,7 +22,6 @@ public interface Compass {
 	PropertyNamingStrategy getPropertyNamingStrategy();
 
 	ResourceFactory getResourceFactory();
-	
 
 	SearchEngineIndexManager getSearchEngineIndexManager();
 
@@ -30,6 +29,10 @@ public interface Compass {
 	
 	CompassSession openSession();
 
+	CompassQueryBuilder queryBuilder() throws CompassException;
+	
+	CompassQueryFilterBuilder queryFilterBuilder() throws CompassException;
+	
 	Compass clone(CompassSettings indexCompassSettings);
 
 }

@@ -7,6 +7,7 @@ import org.compass.core.CompassException;
 import org.compass.core.CompassHits;
 import org.compass.core.CompassQuery;
 import org.compass.core.CompassQueryBuilder;
+import org.compass.core.CompassQueryFilterBuilder;
 import org.compass.core.Resource;
 import org.compass.core.cache.first.FirstLevelCache;
 import org.compass.core.cascade.CascadingManager;
@@ -320,6 +321,11 @@ public class DefaultCompassSession implements InternalCompassSession {
 		return new DefaultCompassQueryBuilder(searchEngineQueryBuilder, compass, this);
 	}
 
+    public CompassQueryFilterBuilder queryFilterBuilder() throws CompassException {
+        checkClosed();
+        return compass.queryFilterBuilder();
+    }
+	
 	public <T> T load(Class<T> clazz, Object... ids) throws CompassException {
 		return load(clazz, (Object) ids);
 	}
