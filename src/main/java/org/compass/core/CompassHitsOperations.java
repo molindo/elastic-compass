@@ -95,5 +95,12 @@ public interface CompassHitsOperations extends Serializable, Iterable<CompassHit
      * Retrurn the query that resulted in this search hits.
      */
     CompassQuery getQuery();
+    
+    /**
+     * Returns a suggested query (based on spell check).
+     *
+     * @see CompassQuery#getSuggestedQuery() 
+     */
+    CompassQuery getSuggestedQuery();
 
 }

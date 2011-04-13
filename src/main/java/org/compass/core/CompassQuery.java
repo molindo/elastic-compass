@@ -309,14 +309,14 @@ public interface CompassQuery {
      */
     CompassQuery rewrite();
 
-//    /**
-//     * Returns the suggested query (based on spell check). If spell check is disabled
-//     * the same query is returned.
-//     *
-//     * <p>In order to know if the query was actually replaced with a suggested one, call
-//     * {@link CompassQuery#isSuggested()}.
-//     */
-//    CompassQuery getSuggestedQuery();
+    /**
+     * Returns the suggested query (based on spell check). If spell check is disabled
+     * the same query is returned.
+     *
+     * <p>In order to know if the query was actually replaced with a suggested one, call
+     * {@link CompassQuery#isSuggested()}.
+     */
+    CompassQuery getSuggestedQuery();
 
     /**
      * Returns <code>true</code> if this is a suggested query. For example, when performing
@@ -353,4 +353,5 @@ public interface CompassQuery {
      * Clones the given query.
      */
     Object clone() throws CloneNotSupportedException;
+
 }

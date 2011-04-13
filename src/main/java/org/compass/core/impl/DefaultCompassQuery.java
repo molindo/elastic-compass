@@ -170,6 +170,15 @@ public class DefaultCompassQuery implements InternalCompassQuery, Cloneable {
         return this;
     }
 
+    public CompassQuery getSuggestedQuery() {
+//        if (compass.getSpellCheckManager() == null) {
+//            return this;
+//        }
+//        return compass.getSpellCheckManager().suggest(this);
+    	// TODO spellchecking not implemented
+    	return this;
+    }
+    
     public boolean isSuggested() {
         return searchEngineQuery.isSuggested();
     }
