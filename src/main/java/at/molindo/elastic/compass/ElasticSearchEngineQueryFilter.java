@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-package at.molindo.elastic.query;
+package at.molindo.elastic.compass;
 
-import org.elasticsearch.index.query.xcontent.XContentQueryBuilder;
+import org.compass.core.engine.SearchEngineQueryFilter;
 
-// TODO change to interface?
-public abstract class Query {
-	
-	public abstract XContentQueryBuilder getBuilder();
+import at.molindo.elastic.filter.Filter;
+
+public class ElasticSearchEngineQueryFilter implements SearchEngineQueryFilter {
+
+	public ElasticSearchEngineQueryFilter(Filter filter) {
+		// TODO Auto-generated constructor stub
+	}
 
 }

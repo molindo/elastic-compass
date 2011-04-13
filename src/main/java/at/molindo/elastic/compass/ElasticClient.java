@@ -283,4 +283,9 @@ public class ElasticClient {
 		return property;
 	}
 
+	public String[] findPropertyValues(String propertyName) {
+		// TODO use facetted search?
+		throw new NotImplementedException();
+	}
+
 }

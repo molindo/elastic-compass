@@ -85,7 +85,15 @@ public class DefaultCompassHits extends AbstractCompassHits implements InternalC
         return this.query;
     }
 
-    public int getLength() {
+    @Override
+	public CompassQuery getSuggestedQuery() {
+        if (suggestedQuery == null) {
+            suggestedQuery = getQuery().getSuggestedQuery();
+        }
+        return suggestedQuery;
+	}
+
+	public int getLength() {
         return hits.getLength();
     }
 

@@ -3,6 +3,7 @@ package org.compass.core.engine;
 import org.compass.core.Resource;
 
 import at.molindo.elastic.compass.CompassAdapted;
+import at.molindo.elastic.compass.ElasticSearchEngineInternalSearch;
 
 @CompassAdapted
 public interface SearchEngine {
@@ -28,4 +29,6 @@ public interface SearchEngine {
 	void save(Resource resource);
 
 	void flush();
+
+    SearchEngineInternalSearch internalSearch(String[] subIndexes, String[] aliases) throws SearchEngineException;
 }

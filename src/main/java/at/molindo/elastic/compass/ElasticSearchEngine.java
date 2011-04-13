@@ -16,11 +16,14 @@
 
 package at.molindo.elastic.compass;
 
+import java.util.Arrays;
+
 import org.compass.core.Resource;
 import org.compass.core.config.RuntimeCompassSettings;
 import org.compass.core.engine.SearchEngine;
 import org.compass.core.engine.SearchEngineException;
 import org.compass.core.engine.SearchEngineHits;
+import org.compass.core.engine.SearchEngineInternalSearch;
 import org.compass.core.engine.SearchEngineQuery;
 import org.compass.core.engine.SearchEngineQueryBuilder;
 import org.compass.core.mapping.ResourceMapping;
@@ -28,6 +31,8 @@ import org.compass.core.spi.InternalResource;
 import org.compass.core.spi.MultiResource;
 import org.compass.core.spi.ResourceKey;
 import org.compass.core.util.StringUtils;
+
+import at.molindo.utils.collections.ArrayUtils;
 
 import com.sun.org.apache.regexp.internal.recompile;
 
@@ -228,4 +233,13 @@ public class ElasticSearchEngine implements SearchEngine {
 		}
 	}
 
+	@Override
+	public SearchEngineInternalSearch internalSearch(String[] subIndexes, String[] aliases) throws SearchEngineException {
+		if (!ArrayUtils.empty(subIndexes)) {
+			log.warn("sub indexes not supported, ignoring " + Arrays.toString(aliases));
+		}
+		return new ElasticSearchEngineInternalSearch(_client, aliases);
+	}
+
+	
 }
