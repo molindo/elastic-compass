@@ -37,7 +37,9 @@ import org.compass.core.util.StringUtils;
  */
 public class ElasticMultiResource implements MultiResource, Map<String, Property[]> {
 
-    private ElasticResource currentResource;
+    private static final long serialVersionUID = 1L;
+
+	private ElasticResource currentResource;
 
     private ArrayList<InternalResource> resources = new ArrayList<InternalResource>();
 

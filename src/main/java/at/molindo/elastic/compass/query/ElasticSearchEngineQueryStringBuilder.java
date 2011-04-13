@@ -16,21 +16,14 @@
 
 package at.molindo.elastic.compass.query;
 
-import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.compass.core.engine.SearchEngineQuery;
 import org.compass.core.engine.SearchEngineQueryBuilder;
 import org.compass.core.engine.SearchEngineQueryBuilder.SearchEngineQueryStringBuilder;
-import org.compass.core.lucene.engine.queryparser.QueryHolder;
-import org.elasticsearch.common.base.Strings;
-import org.elasticsearch.index.query.xcontent.QueryBuilders;
-import org.elasticsearch.index.query.xcontent.QueryStringQueryBuilder;
+import org.elasticsearch.index.query.xcontent.QueryStringQueryBuilder.Operator;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import at.molindo.elastic.compass.ElasticSearchEngineFactory;
 import at.molindo.elastic.compass.ElasticSearchEngineQuery;
-import at.molindo.elastic.query.Query;
 import at.molindo.elastic.query.StringQuery;
 import at.molindo.utils.data.StringUtils;
 
@@ -96,7 +89,7 @@ public class ElasticSearchEngineQueryStringBuilder implements SearchEngineQueryS
 		String defaultField = !StringUtils.empty(_defaultSearchProperty) ? _defaultSearchProperty : _searchEngineFactory
 				.getElasticSettings().getDefaultSearchPropery();
 
-		StringQuery query = new StringQuery(_queryString).setAnalyzer(_analyzer).setDefaultField(defaultField);
+		StringQuery query = new StringQuery(_queryString).setAnalyzer(_analyzer).setDefaultOperator(_operator).setDefaultField(defaultField);
 		return new ElasticSearchEngineQuery(_searchEngineFactory, query);
 	}
 }

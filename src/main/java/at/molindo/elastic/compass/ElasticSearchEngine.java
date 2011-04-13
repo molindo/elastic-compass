@@ -34,21 +34,19 @@ import org.compass.core.util.StringUtils;
 
 import at.molindo.utils.collections.ArrayUtils;
 
-import com.sun.org.apache.regexp.internal.recompile;
-
 public class ElasticSearchEngine implements SearchEngine {
 
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory
 			.getLogger(ElasticSearchEngine.class);
 
-	private final RuntimeCompassSettings _runtimeSettings;
+//	private final RuntimeCompassSettings _runtimeSettings;
 	private final ElasticSearchEngineFactory _searchEngineFactory;
 	private boolean _readOnly;
 
 	private ElasticClient _client;
 
 	public ElasticSearchEngine(RuntimeCompassSettings runtimeSettings, ElasticSearchEngineFactory dummySearchEngineFactory) {
-		_runtimeSettings = runtimeSettings;
+//		_runtimeSettings = runtimeSettings;
 		_searchEngineFactory = dummySearchEngineFactory;
 
 		_client = dummySearchEngineFactory.openElasticClient();

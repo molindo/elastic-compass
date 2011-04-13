@@ -38,9 +38,9 @@ public class ElasticSearchEngineFactory implements InternalSearchEngineFactory {
 	private static final String ELASTIC_NODE_KEY = ElasticNode.class.getName();
 
 	private final PropertyNamingStrategy _propertyNamingStrategy;
-	private final CompassSettings _settings;
+//	private final CompassSettings _settings;
 	private final CompassMapping _mapping;
-	private final ExecutorManager _executorManager;
+//	private final ExecutorManager _executorManager;
 	private final SearchEngineIndexManager _indexManager;
 	private final boolean _debug;
 	private final ResourceFactory _resourceFactory;
@@ -48,9 +48,9 @@ public class ElasticSearchEngineFactory implements InternalSearchEngineFactory {
 
 	public ElasticSearchEngineFactory(PropertyNamingStrategy propertyNamingStrategy, CompassSettings settings, CompassMapping mapping, ExecutorManager executorManager) {
 		_propertyNamingStrategy = propertyNamingStrategy;
-		_settings = settings;
+//		_settings = settings;
 		_mapping = mapping;
-		_executorManager = executorManager;
+//		_executorManager = executorManager;
 		_indexManager = new ElasticSearchEngineIndexManager(new DefaultElasticSearchEngineStore(this, mapping));
 		_resourceFactory = new ElasticResourceFactory(this);
 

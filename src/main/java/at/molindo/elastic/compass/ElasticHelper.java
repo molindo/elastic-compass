@@ -16,15 +16,11 @@
 
 package at.molindo.elastic.compass;
 
-import java.io.IOException;
-import java.util.ArrayList;
-
 import org.compass.core.Compass;
 import org.compass.core.CompassHits;
 import org.compass.core.CompassQuery;
 import org.compass.core.CompassQueryFilter;
 import org.compass.core.CompassSession;
-import org.compass.core.Resource;
 import org.compass.core.engine.SearchEngineException;
 import org.compass.core.engine.SearchEngineQuery;
 import org.compass.core.engine.SearchEngineQueryFilter;
@@ -34,7 +30,6 @@ import org.compass.core.impl.DefaultCompassQueryFilter;
 import org.compass.core.spi.InternalCompass;
 import org.compass.core.spi.InternalCompassQuery;
 import org.compass.core.spi.InternalCompassSession;
-import org.compass.core.spi.InternalResource;
 
 import at.molindo.elastic.filter.Filter;
 import at.molindo.elastic.query.Query;

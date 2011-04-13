@@ -16,9 +16,6 @@
 
 package at.molindo.elastic.compass;
 
-import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
-
-import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,7 +36,6 @@ import org.compass.core.mapping.ResourcePropertyMapping;
 import org.compass.core.spi.AliasedObject;
 import org.compass.core.spi.InternalResource;
 import org.compass.core.spi.ResourceKey;
-import org.elasticsearch.common.xcontent.XContentBuilder;
 
 public class ElasticResource implements AliasedObject, InternalResource, Map<String, Property[]> {
 
