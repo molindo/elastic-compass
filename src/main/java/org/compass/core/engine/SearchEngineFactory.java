@@ -40,4 +40,5 @@ public interface SearchEngineFactory {
 
 	SearchEngineQueryFilterBuilder queryFilterBuilder() throws SearchEngineException;
 	
+    PropertyNamingStrategy getPropertyNamingStrategy();
 }

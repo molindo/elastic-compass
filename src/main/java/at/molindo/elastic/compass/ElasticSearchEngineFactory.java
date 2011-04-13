@@ -22,7 +22,6 @@ import org.compass.core.config.CompassSettings;
 import org.compass.core.config.RuntimeCompassSettings;
 import org.compass.core.engine.SearchEngine;
 import org.compass.core.engine.SearchEngineException;
-import org.compass.core.engine.SearchEngineFactory;
 import org.compass.core.engine.SearchEngineIndexManager;
 import org.compass.core.engine.SearchEngineQueryBuilder;
 import org.compass.core.engine.SearchEngineQueryFilterBuilder;
@@ -37,7 +36,7 @@ import org.compass.core.mapping.CompassMapping;
 public class ElasticSearchEngineFactory implements InternalSearchEngineFactory {
 
 	private static final String ELASTIC_NODE_KEY = ElasticNode.class.getName();
-	
+
 	private final PropertyNamingStrategy _propertyNamingStrategy;
 	private final CompassSettings _settings;
 	private final CompassMapping _mapping;
@@ -54,9 +53,9 @@ public class ElasticSearchEngineFactory implements InternalSearchEngineFactory {
 		_executorManager = executorManager;
 		_indexManager = new ElasticSearchEngineIndexManager(new DefaultElasticSearchEngineStore(this, mapping));
 		_resourceFactory = new ElasticResourceFactory(this);
-		
+
 		_debug = settings.getSettingAsBoolean(CompassEnvironment.DEBUG, false);
-		
+
 		ElasticNode node;
 		synchronized (ELASTIC_NODE_KEY) {
 			node = (ElasticNode) settings.getRegistry(ELASTIC_NODE_KEY);
@@ -82,14 +81,19 @@ public class ElasticSearchEngineFactory implements InternalSearchEngineFactory {
 		return _indexManager;
 	}
 
-    public String getAliasProperty() {
-        return ElasticEnvironment.Mapping.TYPE_FIELD;
-    }
+	@Override
+	public PropertyNamingStrategy getPropertyNamingStrategy() {
+		return _propertyNamingStrategy;
+	}
 
-    public String getExtendedAliasProperty() {
-    	// TODO TYPE_FIELD as well, i.e. getAliasProperty()?
-        return _node.getSettings().getExtendedAliasProperty();
-    }
+	public String getAliasProperty() {
+		return ElasticEnvironment.Mapping.TYPE_FIELD;
+	}
+
+	public String getExtendedAliasProperty() {
+		// TODO TYPE_FIELD as well, i.e. getAliasProperty()?
+		return _node.getSettings().getExtendedAliasProperty();
+	}
 
 	@Override
 	public void start() {
@@ -110,7 +114,7 @@ public class ElasticSearchEngineFactory implements InternalSearchEngineFactory {
 
 	@Override
 	public ResourceFactory getResourceFactory() {
-		return _resourceFactory ;
+		return _resourceFactory;
 	}
 
 	@Override
@@ -126,10 +130,10 @@ public class ElasticSearchEngineFactory implements InternalSearchEngineFactory {
 		return new ElasticSearchEngineQueryBuilder(this);
 	}
 
-    public SearchEngineQueryFilterBuilder queryFilterBuilder() throws SearchEngineException {
-        return new ElasticSearchEngineQueryFilterBuilder();
-    }
-	
+	public SearchEngineQueryFilterBuilder queryFilterBuilder() throws SearchEngineException {
+		return new ElasticSearchEngineQueryFilterBuilder();
+	}
+
 	public ElasticSettings getElasticSettings() {
 		return _node.getSettings();
 	}
