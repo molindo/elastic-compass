@@ -3,6 +3,7 @@ package org.compass.core.engine;
 import org.compass.core.ResourceFactory;
 import org.compass.core.config.RuntimeCompassSettings;
 import org.compass.core.engine.naming.PropertyNamingStrategy;
+import org.compass.core.engine.spellcheck.SearchEngineSpellCheckManager;
 import org.compass.core.mapping.CompassMapping;
 
 import at.molindo.elastic.compass.CompassAdapted;
@@ -41,4 +42,6 @@ public interface SearchEngineFactory {
 	SearchEngineQueryFilterBuilder queryFilterBuilder() throws SearchEngineException;
 	
     PropertyNamingStrategy getPropertyNamingStrategy();
+
+	SearchEngineSpellCheckManager getSpellCheckManager();
 }

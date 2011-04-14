@@ -22,6 +22,7 @@ import org.compass.core.converter.ConverterLookup;
 import org.compass.core.engine.SearchEngineFactory;
 import org.compass.core.engine.SearchEngineIndexManager;
 import org.compass.core.engine.naming.PropertyNamingStrategy;
+import org.compass.core.engine.spellcheck.SearchEngineSpellCheckManager;
 import org.compass.core.events.CompassEventManager;
 import org.compass.core.events.RebuildEventListener;
 import org.compass.core.executor.ExecutorManager;
@@ -108,6 +109,10 @@ public class DefaultCompass implements InternalCompass {
 		this.debug = settings.getSettingAsBoolean(CompassEnvironment.DEBUG, false);
 	}
 
+    public SearchEngineSpellCheckManager getSpellCheckManager() {
+        return searchEngineFactory.getSpellCheckManager();
+    }
+	
 	@Override
 	public CompassSettings getSettings() {
 		return settings;

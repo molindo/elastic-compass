@@ -26,6 +26,7 @@ import org.compass.core.engine.SearchEngineIndexManager;
 import org.compass.core.engine.SearchEngineQueryBuilder;
 import org.compass.core.engine.SearchEngineQueryFilterBuilder;
 import org.compass.core.engine.naming.PropertyNamingStrategy;
+import org.compass.core.engine.spellcheck.SearchEngineSpellCheckManager;
 import org.compass.core.engine.spi.InternalSearchEngineFactory;
 import org.compass.core.executor.ExecutorManager;
 import org.compass.core.mapping.CompassMapping;
@@ -93,6 +94,12 @@ public class ElasticSearchEngineFactory implements InternalSearchEngineFactory {
 	public String getExtendedAliasProperty() {
 		// TODO TYPE_FIELD as well, i.e. getAliasProperty()?
 		return _node.getSettings().getExtendedAliasProperty();
+	}
+
+	@Override
+	public SearchEngineSpellCheckManager getSpellCheckManager() {
+		// TODO not implemented
+		return null;
 	}
 
 	@Override

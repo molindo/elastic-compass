@@ -20,6 +20,7 @@ import org.compass.core.converter.ConverterLookup;
 import org.compass.core.engine.SearchEngineFactory;
 import org.compass.core.engine.SearchEngineIndexManager;
 import org.compass.core.engine.naming.PropertyNamingStrategy;
+import org.compass.core.engine.spellcheck.SearchEngineSpellCheckManager;
 import org.compass.core.events.CompassEventManager;
 import org.compass.core.events.RebuildEventListener;
 import org.compass.core.mapping.CompassMapping;
@@ -129,6 +130,11 @@ public class RefreshableCompass implements InternalCompass {
 	
 	public CompassSettings getSettings() {
 		return compass.getSettings();
+	}
+
+	@Override
+	public SearchEngineSpellCheckManager getSpellCheckManager() {
+		return compass.getSpellCheckManager();
 	}
 
 	public CompassMapping getMapping() {
