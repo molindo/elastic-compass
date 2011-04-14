@@ -29,6 +29,10 @@ import org.compass.core.config.CompassConfiguration;
 import org.compass.core.config.CompassEnvironment;
 import org.compass.core.config.CompassSettings;
 import org.compass.core.spi.InternalCompass;
+import org.compass.core.spi.InternalCompassSession;
+
+import at.molindo.elastic.compass.ElasticEnvironment;
+import at.molindo.elastic.compass.ElasticSearchEngine;
 
 /**
  * @author kimchy
@@ -102,6 +106,7 @@ public abstract class AbstractTestCase extends ExtendedTestCase {
         }
         conf.getSettings().setSetting(CompassEnvironment.Cache.FirstLevel.TYPE, NullFirstLevelCache.class.getName());
         conf.getSettings().setBooleanSetting(CompassEnvironment.DEBUG, true);
+        conf.getSettings().setBooleanSetting(ElasticEnvironment.ASYNC_WRITE, false);
         addSettings(conf.getSettings());
         addExtraConf(conf);
         return conf;
@@ -135,4 +140,7 @@ public abstract class AbstractTestCase extends ExtendedTestCase {
         return getCompass().getResourceFactory();
     }
 
+	protected void refresh(CompassSession session) {
+		((ElasticSearchEngine)((InternalCompassSession)session).getSearchEngine()).refresh();
+	}
 }

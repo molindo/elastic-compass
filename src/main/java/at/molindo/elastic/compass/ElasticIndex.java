@@ -46,6 +46,9 @@ import at.molindo.utils.collections.CollectionUtils;
  */
 public class ElasticIndex {
 
+	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory
+			.getLogger(ElasticIndex.class);
+	
 	private final Client _client;
 	private final CompassMapping _mapping;
 
@@ -147,6 +150,11 @@ public class ElasticIndex {
 			// end properties
 
 			AllMapping allMapping = mapping.getAllMapping();
+			
+			if (allMapping.isExcludeAlias()) {
+				log.warn("excluding _type from _all not supported, type " + mapping.getAlias());
+			}
+			
 			builder
 				.startObject("_all")
 					.field("enabled", allMapping.isSupported() != Boolean.FALSE)
