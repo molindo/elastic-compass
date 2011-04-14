@@ -59,13 +59,15 @@ public class ElasticClient {
 			.getLogger(ElasticClient.class);
 
 	private final ElasticSearchEngineFactory _searchEngineFactory;
-	private final String _index;
+	private final ElasticIndex _index;
+	private final String _indexName;
 	private final Client _client;
 	private final Map<String, String[]> _typeFields;
 
 	private final ConcurrentHashMap<String, StaticPropertyPath> _pathCache = new ConcurrentHashMap<String, StaticPropertyPath>();
 
-	public ElasticClient(ElasticSearchEngineFactory searchEngineFactory, String index, Client client) {
+
+	public ElasticClient(ElasticSearchEngineFactory searchEngineFactory, ElasticIndex index, Client client) {
 		if (searchEngineFactory == null) {
 			throw new NullPointerException("searchEngineFactory");
 		}
@@ -78,6 +80,7 @@ public class ElasticClient {
 
 		_searchEngineFactory = searchEngineFactory;
 		_index = index;
+		_indexName = index.getAlias(); // always use alias
 		_client = client;
 
 		_typeFields = new HashMap<String, String[]>();
@@ -98,7 +101,7 @@ public class ElasticClient {
 
 	public void create(final ElasticResource resource) {
 		try {
-			_client.prepareIndex(_index, resource.getAlias(), resource.getId())
+			_client.prepareIndex(_indexName, resource.getAlias(), resource.getId())
 					.setSource(toXContentBuilder(resource))
 					.execute(new ActionListener<IndexResponse>() {
 
@@ -123,7 +126,7 @@ public class ElasticClient {
 
 	public void update(final ElasticResource resource) {
 		try {
-			_client.prepareIndex(_index, resource.getAlias(), resource.getId())
+			_client.prepareIndex(_indexName, resource.getAlias(), resource.getId())
 					.setSource(toXContentBuilder(resource))
 					.execute(new ActionListener<IndexResponse>() {
 
@@ -163,7 +166,7 @@ public class ElasticClient {
 
 		for (int i = 0; i < ids.length; i++) {
 			GetResponse response = _client
-					.prepareGet(_index, key.getAlias(), ids[i].getStringValue()).setFields(fields)
+					.prepareGet(_indexName, key.getAlias(), ids[i].getStringValue()).setFields(fields)
 					.execute().actionGet();
 
 			if (response.getFields() != null) {
@@ -184,11 +187,11 @@ public class ElasticClient {
 		if (ArrayUtils.empty(ids)) {
 			return;
 		} else if (ids.length == 1) {
-			_client.prepareDelete(_index, key.getAlias(), ids[0].getStringValue()).execute();
+			_client.prepareDelete(_indexName, key.getAlias(), ids[0].getStringValue()).execute();
 		} else {
 			BulkRequestBuilder bulk = _client.prepareBulk();
 			for (Property id : ids) {
-				bulk.add(_client.prepareDelete(_index, key.getAlias(), id.getStringValue()));
+				bulk.add(_client.prepareDelete(_indexName, key.getAlias(), id.getStringValue()));
 			}
 			bulk.execute();
 		}
@@ -216,7 +219,7 @@ public class ElasticClient {
 
 	public SearchEngineHits find(ElasticSearchEngineQuery query) throws SearchEngineException {
 
-		SearchRequestBuilder search = _client.prepareSearch(_index).setQuery(query.getQuery()
+		SearchRequestBuilder search = _client.prepareSearch(_indexName).setQuery(query.getQuery()
 				.getBuilder());
 
 		String[] aliases = toAliases(query);
@@ -275,7 +278,7 @@ public class ElasticClient {
 	}
 
 	public void delete(ElasticSearchEngineQuery query) {
-		_client.prepareDeleteByQuery(_index).setQuery(query.getQuery().getBuilder())
+		_client.prepareDeleteByQuery(_indexName).setQuery(query.getQuery().getBuilder())
 				.setTypes(toAliases(query)).execute();
 	}
 
@@ -323,4 +326,12 @@ public class ElasticClient {
 		throw new NotImplementedException();
 	}
 
+	public void verifyIndex() {
+		_index.verifyIndex();
+	}
+	
+	public void deleteIndex() {
+		// TODO lock
+		_index.deleteIndex();
+	}
 }

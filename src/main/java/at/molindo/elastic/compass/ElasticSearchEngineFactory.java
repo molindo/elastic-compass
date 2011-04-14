@@ -36,8 +36,6 @@ import org.compass.core.mapping.CompassMapping;
  */
 public class ElasticSearchEngineFactory implements InternalSearchEngineFactory {
 
-	private static final String ELASTIC_NODE_KEY = ElasticNode.class.getName();
-
 	private final PropertyNamingStrategy _propertyNamingStrategy;
 //	private final CompassSettings _settings;
 	private final CompassMapping _mapping;
@@ -52,24 +50,14 @@ public class ElasticSearchEngineFactory implements InternalSearchEngineFactory {
 //		_settings = settings;
 		_mapping = mapping;
 //		_executorManager = executorManager;
-		_indexManager = new ElasticSearchEngineIndexManager(new DefaultElasticSearchEngineStore(this, mapping));
+		_indexManager = new DefaultElasticSearchEngineIndexManager(this, new DefaultElasticSearchEngineStore(this, mapping));
 		_resourceFactory = new ElasticResourceFactory(this);
 
 		_debug = settings.getSettingAsBoolean(CompassEnvironment.DEBUG, false);
 
-		ElasticNode node;
-		synchronized (ELASTIC_NODE_KEY) {
-			node = (ElasticNode) settings.getRegistry(ELASTIC_NODE_KEY);
-			if (node == null) {
-				node = new ElasticNode(this);
-				node.configure(settings);
-				node.start();
-				settings.setRegistry(ELASTIC_NODE_KEY, node);
-				// FIXME and who stops me?
-			}
-		}
-		_node = node;
-
+		_node = new ElasticNode(this);
+		_node.configure(settings);
+		_node.start();
 	}
 
 	@Override
