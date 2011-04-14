@@ -34,6 +34,8 @@ public class ElasticSettings {
 	private Operator _defaultOperator;
 
 	private boolean _local;
+
+	private boolean _asyncWrite;
 	
 	public ElasticSettings() {
 
@@ -67,7 +69,12 @@ public class ElasticSettings {
         
         _local = settings.getSettingAsBoolean(ElasticEnvironment.LOCAL, false);
         if (log.isDebugEnabled()) {
-            log.debug("Using default search property [" + _defaultSearchPropery + "]");
+            log.debug("Using local node [" + _local + "]");
+        }
+        
+        _asyncWrite = settings.getSettingAsBoolean(ElasticEnvironment.ASYNC_WRITE, true);
+        if (log.isDebugEnabled()) {
+            log.debug("Using async write [" + _asyncWrite + "]");
         }
 	}
 
@@ -89,6 +96,10 @@ public class ElasticSettings {
 
 	public boolean getLocal() {
 		return _local;
+	}
+
+	public boolean isAsyncWrite() {
+		return _asyncWrite;
 	}
 	
 	

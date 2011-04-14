@@ -3,7 +3,6 @@ package org.compass.core.engine;
 import org.compass.core.Resource;
 
 import at.molindo.elastic.compass.CompassAdapted;
-import at.molindo.elastic.compass.ElasticSearchEngineInternalSearch;
 
 @CompassAdapted
 public interface SearchEngine {

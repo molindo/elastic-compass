@@ -45,11 +45,11 @@ public class ElasticSearchEngine implements SearchEngine {
 
 	private ElasticClient _client;
 
-	public ElasticSearchEngine(RuntimeCompassSettings runtimeSettings, ElasticSearchEngineFactory dummySearchEngineFactory) {
+	public ElasticSearchEngine(RuntimeCompassSettings runtimeSettings, ElasticSearchEngineFactory searchEngineFactory) {
 //		_runtimeSettings = runtimeSettings;
-		_searchEngineFactory = dummySearchEngineFactory;
+		_searchEngineFactory = searchEngineFactory;
 
-		_client = dummySearchEngineFactory.openElasticClient();
+		_client = searchEngineFactory.openElasticClient();
 	}
 
 	@Override
@@ -188,9 +188,12 @@ public class ElasticSearchEngine implements SearchEngine {
 
 	@Override
 	public void flush() {
-		// TODO implement bulk api
 	}
 
+	public void refresh() {
+		_client.refresh();
+	}
+	
 	protected Resource[] doGet(ResourceKey key) {
 		return _client.get(key);
 	}

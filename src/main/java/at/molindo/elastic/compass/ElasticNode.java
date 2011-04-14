@@ -52,13 +52,16 @@ public class ElasticNode implements CompassConfigurable {
 		synchronized (ELASTIC_NODE_KEY) {
 			_node = (Node) settings.getRegistry(ELASTIC_NODE_KEY);
 			if (_node == null) {
-				_node = nodeBuilder().client(!_settings.getLocal()).local(_settings.getLocal()).node();
+				_node = nodeBuilder()
+					.client(!_settings.getLocal())
+					.local(_settings.getLocal())
+					.node();
 				settings.setRegistry(ELASTIC_NODE_KEY, _node);
 				// FIXME and who stops me?
 			}
 		}
 		
-		_index = new ElasticIndex(_settings.getAliasName(), _node.client(), _searchEngineFactory.getMapping());
+		_index = new ElasticIndex(_settings, _node.client(), _searchEngineFactory.getMapping());
 	}
 
 	public ElasticClient client() {
