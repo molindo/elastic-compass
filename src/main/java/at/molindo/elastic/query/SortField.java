@@ -22,22 +22,66 @@ public class SortField {
 
 	public enum SortType {
 		// TODO check what's even possible with ES
-		DOC, SCORE, STRING, INT, FLOAT, LONG, DOUBLE, SHORT, CUSTOM, BYTE, STRING_VAL;
+		FIELD,
+		SCORE,
+		DISTANCE,
+		DOC
 	}
 
+	private final String _property;
+	private final SortType _type;
+	private final Locale _locale;
+	private final boolean _reverse;
+
+	public static SortField reverseOrder(SortField field) {
+		return new SortField(field.getProperty(), field.getType(), field.getLocale(), !field.isReverse());
+	}
+
+	public SortField(String propertyName) {
+		this(propertyName, null, null, false);
+	}
+
+	public SortField(String propertyName, boolean sortReverse) {
+		this(propertyName, null, null, sortReverse);
+	}
+	
 	public SortField(String propertyName, SortType type) {
-		// TODO Auto-generated constructor stub
+		this(propertyName, type, null, false);
 	}
 
 	public SortField(String propertyName, SortType type, boolean sortReverse) {
-		// TODO Auto-generated constructor stub
-	}
-
-	public SortField(String propertyName, Locale locale, boolean sortReverse) {
-		// TODO Auto-generated constructor stub
+		this(propertyName, type, null, sortReverse);
 	}
 
 	public SortField(String propertyName, Locale locale) {
-		// TODO Auto-generated constructor stub
+		this(propertyName, null, locale, false);
 	}
+
+	public SortField(String propertyName, Locale locale, boolean sortReverse) {
+		this(propertyName, null, locale, sortReverse);
+	}
+
+	public SortField(String propertyName, SortType sortType, Locale locale, boolean sortReverse) {
+		_property = propertyName;
+		_type = sortType == null ? SortType.FIELD : sortType;
+		_locale = locale;
+		_reverse = sortReverse;
+	}
+
+	public String getProperty() {
+		return _property;
+	}
+
+	public SortType getType() {
+		return _type;
+	}
+
+	public Locale getLocale() {
+		return _locale;
+	}
+
+	public boolean isReverse() {
+		return _reverse;
+	}
+
 }

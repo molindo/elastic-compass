@@ -17,6 +17,7 @@
 package at.molindo.elastic.compass;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import org.compass.core.CompassQuery.SortDirection;
@@ -76,7 +77,7 @@ public class ElasticSearchEngineQuery implements SearchEngineQuery, Cloneable {
 
 	private final ElasticSearchEngineFactory searchEngineFactory;
 
-	private ArrayList<SortField> sortFields = new ArrayList<SortField>();
+	private ArrayList<SortField> sortFields = new ArrayList<SortField>(3);
 
 	private String[] aliases;
 
@@ -110,11 +111,13 @@ public class ElasticSearchEngineQuery implements SearchEngineQuery, Cloneable {
 	}
 
 	public SearchEngineQuery addSort(String propertyName) {
-		throw new NotImplementedException();
+		sortFields.add(new SortField(propertyName));
+		return this;
 	}
 
 	public SearchEngineQuery addSort(String propertyName, SortDirection direction) {
-		throw new NotImplementedException();
+		sortFields.add(new SortField(propertyName, getSortReverse(direction)));
+		return this;
 	}
 
 	public SearchEngineQuery addSort(String propertyName, SortPropertyType type) {
@@ -153,6 +156,10 @@ public class ElasticSearchEngineQuery implements SearchEngineQuery, Cloneable {
 		return this;
 	}
 
+	public List<SortField> getSorts() {
+		return sortFields;
+	}
+	
 	private SortType getImplicitSortField(SortImplicitType implicitType) {
 		switch (implicitType) {
 		case DOC:
@@ -173,20 +180,8 @@ public class ElasticSearchEngineQuery implements SearchEngineQuery, Cloneable {
 		switch (type) {
 		case AUTO:
 			return SortField.SortType.SCORE;
-		case BYTE:
-			return SortField.SortType.BYTE;
-		case DOUBLE:
-			return SortField.SortType.DOUBLE;
-		case FLOAT:
-			return SortField.SortType.FLOAT;
-		case INT:
-			return SortField.SortType.INT;
-		case LONG:
-			return SortField.SortType.LONG;
-		case STRING:
-			return SortField.SortType.STRING;
 		default:
-			throw new IllegalArgumentException("Failed to convert type [" + type + "]");
+			return SortField.SortType.FIELD;
 		}
 	}
 
@@ -284,4 +279,5 @@ public class ElasticSearchEngineQuery implements SearchEngineQuery, Cloneable {
 	public SearchEngineQuery setFilter(SearchEngineQueryFilter filter) {
 		throw new NotImplementedException();
 	}
+
 }

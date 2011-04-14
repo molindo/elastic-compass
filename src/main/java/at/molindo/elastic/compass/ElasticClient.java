@@ -45,7 +45,11 @@ import org.elasticsearch.client.action.search.SearchRequestBuilder;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHitField;
+import org.elasticsearch.search.sort.SortBuilder;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 
+import at.molindo.elastic.query.SortField;
 import at.molindo.utils.collections.ArrayUtils;
 import at.molindo.utils.collections.CollectionUtils;
 
@@ -162,9 +166,13 @@ public class ElasticClient {
 					.prepareGet(_index, key.getAlias(), ids[i].getStringValue()).setFields(fields)
 					.execute().actionGet();
 
-			resources[i] = new ElasticResource(response.getType(), _searchEngineFactory);
-			for (Map.Entry<String, GetField> e : response.getFields().entrySet()) {
-				resources[i].addProperty(toProperty(mapping, e.getKey(), e.getValue().getValues()));
+			if (response.getFields() != null) {
+				resources[i] = new ElasticResource(response.getType(), _searchEngineFactory);
+				for (Map.Entry<String, GetField> e : response.getFields().entrySet()) {
+					resources[i].addProperty(toProperty(mapping, e.getKey(), e.getValue().getValues()));
+				}
+			} else {
+				// TODO handle resource not found
 			}
 		}
 		return resources;
@@ -236,7 +244,34 @@ public class ElasticClient {
 		}
 		search.addFields(fields);
 
+		for (SortField sort : query.getSorts()) {
+			
+			SortBuilder builder;
+			switch (sort.getType()) {
+			case FIELD:
+				builder = SortBuilders.fieldSort(sort.getProperty());
+				break;
+			case DOC:
+				builder = SortBuilders.fieldSort("_id");
+				break;
+			case SCORE:
+				builder = SortBuilders.scoreSort();
+				break;
+			case DISTANCE:
+				builder = SortBuilders.geoDistanceSort(sort.getProperty());
+			default:
+				throw new SearchEngineException("unknown SortType " + sort.getType());
+			}
+			
+			builder.order(toOrder(sort.isReverse()));
+			search.addSort(builder);
+		}
+
 		return new ElasticSearchEngineHits(this, search.execute().actionGet().hits());
+	}
+
+	private SortOrder toOrder(boolean reverse) {
+		return reverse ? SortOrder.DESC : SortOrder.ASC;
 	}
 
 	public void delete(ElasticSearchEngineQuery query) {
