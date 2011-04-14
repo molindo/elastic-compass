@@ -49,12 +49,23 @@ public class ElasticIndex {
 	private final Client _client;
 	private final CompassMapping _mapping;
 
-	private final String _alias;
+	private final ElasticSettings _settings;
 	private String _index;
 
-	public ElasticIndex(String alias, Client client, CompassMapping mapping) {
-		_alias = alias;
+	public ElasticIndex(ElasticSettings settings, Client client, CompassMapping mapping) {
+		if (settings == null) {
+			throw new NullPointerException("settings");
+		}
+		_settings = settings;
+		
+		if (client == null) {
+			throw new NullPointerException("client");
+		}
 		_client = client;
+		
+		if (mapping == null) {
+			throw new NullPointerException("mapping");
+		}
 		_mapping = mapping;
 	}
 
@@ -63,7 +74,7 @@ public class ElasticIndex {
 
 		IndicesAdminClient indicesAdminClient = indicesAdminClient();
 		indicesAdminClient.prepareCreate(getIndex()).execute().actionGet();
-		indicesAdminClient.prepareAliases().addAlias(getIndex(), _alias).execute().actionGet();
+		indicesAdminClient.prepareAliases().addAlias(getIndex(), _settings.getAliasName()).execute().actionGet();
 
 		// push mappings
 		for (ResourceMapping mapping : _mapping.getRootMappings()) {
@@ -88,11 +99,11 @@ public class ElasticIndex {
 		IndicesAdminClient indicesAdminClient = indicesAdminClient();
 
 		try {
-			IndicesStatusResponse response = indicesAdminClient.prepareStatus(_alias).execute()
+			IndicesStatusResponse response = indicesAdminClient.prepareStatus(_settings.getAliasName()).execute()
 					.actionGet();
 			_index = CollectionUtils.firstValue(response.getIndices()).getIndex();
-			if (getIndex().equals(_alias)) {
-				throw new SearchEngineException("alias name must not point to index, was " + _alias);
+			if (getIndex().equals(_settings.getAliasName())) {
+				throw new SearchEngineException("alias name must not point to index, was " + _settings.getAliasName());
 			}
 		} catch (IndexMissingException e) {
 			// alias unknown, create new index
@@ -230,7 +241,7 @@ public class ElasticIndex {
 	}
 
 	public String getAlias() {
-		return _alias;
+		return _settings.getAliasName();
 	}
 
 	private String getIndex() {
@@ -242,6 +253,10 @@ public class ElasticIndex {
 			verifyIndex();
 		}
 		return _index;
+	}
+
+	public ElasticSettings getSettings() {
+		return _settings;
 	}
 
 }

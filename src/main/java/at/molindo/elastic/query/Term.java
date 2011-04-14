@@ -19,12 +19,16 @@ package at.molindo.elastic.query;
 import org.elasticsearch.index.query.xcontent.QueryBuilders;
 import org.elasticsearch.index.query.xcontent.XContentQueryBuilder;
 
-public abstract class Term<T> {
+public abstract class Term {
 
 	private String _name;
-	private T _value;
+	private Object _value;
 
-	public Term(String name, T value) {
+	public static StringTerm string(String name, String value) {
+		return new StringTerm(name, value);
+	}
+	
+	public Term(String name, Object value) {
 		_name = name;
 		_value = value;
 	}
@@ -33,13 +37,18 @@ public abstract class Term<T> {
 		return _name;
 	}
 
-	public T getValue() {
+	public Object getValue() {
 		return _value;
+	}
+
+	@Override
+	public String toString() {
+		return _name + ": " + _value;
 	}
 
 	protected abstract XContentQueryBuilder buildQuery();
 
-	public static class StringTerm extends Term<String> {
+	private static class StringTerm extends Term {
 
 		public StringTerm(String name, String value) {
 			super(name, value);

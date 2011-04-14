@@ -32,6 +32,12 @@ public class ElasticEnvironment {
 	public static final String LOCAL = "compass.engine.local";
 
 	/**
+	 * perform writes asynchronously
+	 * Defaults to true
+	 */
+	public static final String ASYNC_WRITE = "compass.engine.async";
+
+	/**
 	 * A set of configuration settings for index.
 	 */
 	public static abstract class Index {

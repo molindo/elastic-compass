@@ -55,4 +55,14 @@ public class BooleanQuery extends BoostQuery<BooleanQuery> {
 		_builder.boost(boost);
 		return this;
 	}
+
+	public BooleanQuery setMinimumNumberShouldMatch(int min) {
+		_builder.minimumNumberShouldMatch(min);
+		return this;
+	}
+	
+	public BooleanQuery setDisableCoord(boolean disableCoord) {
+		_builder.disableCoord(disableCoord);
+		return this;
+	}
 }

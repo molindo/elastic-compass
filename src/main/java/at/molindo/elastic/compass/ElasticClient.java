@@ -36,11 +36,17 @@ import org.compass.core.mapping.ResourceMapping;
 import org.compass.core.mapping.ResourcePropertyMapping;
 import org.compass.core.spi.ResourceKey;
 import org.elasticsearch.action.ActionListener;
+import org.elasticsearch.action.WriteConsistencyLevel;
+import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
+import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetField;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.action.bulk.BulkRequestBuilder;
+import org.elasticsearch.client.action.delete.DeleteRequestBuilder;
+import org.elasticsearch.client.action.index.IndexRequestBuilder;
 import org.elasticsearch.client.action.search.SearchRequestBuilder;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.search.SearchHit;
@@ -65,7 +71,6 @@ public class ElasticClient {
 	private final Map<String, String[]> _typeFields;
 
 	private final ConcurrentHashMap<String, StaticPropertyPath> _pathCache = new ConcurrentHashMap<String, StaticPropertyPath>();
-
 
 	public ElasticClient(ElasticSearchEngineFactory searchEngineFactory, ElasticIndex index, Client client) {
 		if (searchEngineFactory == null) {
@@ -101,24 +106,28 @@ public class ElasticClient {
 
 	public void create(final ElasticResource resource) {
 		try {
-			_client.prepareIndex(_indexName, resource.getAlias(), resource.getId())
-					.setSource(toXContentBuilder(resource))
-					.execute(new ActionListener<IndexResponse>() {
+			IndexRequestBuilder index = _client
+					.prepareIndex(_indexName, resource.getAlias(), resource.getId())
+					.setSource(toXContentBuilder(resource));
 
-						@Override
-						public void onResponse(IndexResponse response) {
-							if (log.isTraceEnabled()) {
-								log.trace("created id " + resource.getAlias() + "#"
-										+ response.getId());
-							}
-						}
+			if (_index.getSettings().isAsyncWrite()) {
+				index.execute(new ActionListener<IndexResponse>() {
 
-						@Override
-						public void onFailure(Throwable e) {
-							log.warn("failed to create " + resource.getAlias() + "#"
-									+ resource.getId(), e);
+					@Override
+					public void onResponse(IndexResponse response) {
+						if (log.isTraceEnabled()) {
+							log.trace("created id " + resource.getAlias() + "#" + response.getId());
 						}
-					});
+					}
+
+					@Override
+					public void onFailure(Throwable e) {
+						log.warn("failed to create " + resource.getAlias() + "#" + resource.getId(), e);
+					}
+				});
+			} else {
+				index.setOperationThreaded(false).execute().actionGet();
+			}
 		} catch (IOException e) {
 			throw new SearchEngineException("failed to create resource", e);
 		}
@@ -126,24 +135,28 @@ public class ElasticClient {
 
 	public void update(final ElasticResource resource) {
 		try {
-			_client.prepareIndex(_indexName, resource.getAlias(), resource.getId())
-					.setSource(toXContentBuilder(resource))
-					.execute(new ActionListener<IndexResponse>() {
+			IndexRequestBuilder index = _client
+					.prepareIndex(_indexName, resource.getAlias(), resource.getId())
+					.setSource(toXContentBuilder(resource));
 
-						@Override
-						public void onResponse(IndexResponse response) {
-							if (log.isTraceEnabled()) {
-								log.trace("updated id " + resource.getAlias() + "#"
-										+ response.getId());
-							}
-						}
+			if (_index.getSettings().isAsyncWrite()) {
+				index.execute(new ActionListener<IndexResponse>() {
 
-						@Override
-						public void onFailure(Throwable e) {
-							log.warn("failed to update " + resource.getAlias() + "#"
-									+ resource.getId(), e);
+					@Override
+					public void onResponse(IndexResponse response) {
+						if (log.isTraceEnabled()) {
+							log.trace("updated id " + resource.getAlias() + "#" + response.getId());
 						}
-					});
+					}
+
+					@Override
+					public void onFailure(Throwable e) {
+						log.warn("failed to update " + resource.getAlias() + "#" + resource.getId(), e);
+					}
+				});
+			} else {
+				index.setOperationThreaded(false).execute().actionGet();
+			}
 		} catch (IOException e) {
 			throw new SearchEngineException("failed to create resource", e);
 		}
@@ -166,34 +179,76 @@ public class ElasticClient {
 
 		for (int i = 0; i < ids.length; i++) {
 			GetResponse response = _client
-					.prepareGet(_indexName, key.getAlias(), ids[i].getStringValue()).setFields(fields)
-					.execute().actionGet();
+					.prepareGet(_indexName, key.getAlias(), ids[i].getStringValue())
+					.setFields(fields).execute().actionGet();
 
 			if (response.getFields() != null) {
 				resources[i] = new ElasticResource(response.getType(), _searchEngineFactory);
 				for (Map.Entry<String, GetField> e : response.getFields().entrySet()) {
-					resources[i].addProperty(toProperty(mapping, e.getKey(), e.getValue().getValues()));
+					resources[i].addProperty(toProperty(mapping, e.getKey(), e.getValue()
+							.getValues()));
 				}
-			} else {
-				// TODO handle resource not found
 			}
 		}
 		return resources;
 	}
 
-	public void delete(ResourceKey key) {
+	public void delete(final ResourceKey key) {
 		Property[] ids = key.getIds();
 
 		if (ArrayUtils.empty(ids)) {
 			return;
 		} else if (ids.length == 1) {
-			_client.prepareDelete(_indexName, key.getAlias(), ids[0].getStringValue()).execute();
+			// simple delete
+			DeleteRequestBuilder delete = _client.prepareDelete(_indexName, key.getAlias(), ids[0]
+					.getStringValue());
+			if (_index.getSettings().isAsyncWrite()) {
+				delete.execute(new ActionListener<DeleteResponse>() {
+
+					@Override
+					public void onResponse(DeleteResponse response) {
+						if (log.isTraceEnabled()) {
+							log.trace("deleted id " + key.getIds()[0] + " of type "
+									+ key.getAlias());
+						}
+					}
+
+					@Override
+					public void onFailure(Throwable e) {
+						log.warn("failed to delete id " + key.getIds()[0] + " of type "
+								+ key.getAlias(), e);
+					}
+				});
+			} else {
+				delete.setOperationThreaded(false).execute().actionGet();
+			}
 		} else {
+			// bulk delete
 			BulkRequestBuilder bulk = _client.prepareBulk();
 			for (Property id : ids) {
-				bulk.add(_client.prepareDelete(_indexName, key.getAlias(), id.getStringValue()));
+				bulk.add(_client.prepareDelete(_indexName, key.getAlias(), id.getStringValue())
+						.setOperationThreaded(_index.getSettings().isAsyncWrite()));
 			}
-			bulk.execute();
+			if (_index.getSettings().isAsyncWrite()) {
+				bulk.execute(new ActionListener<BulkResponse>() {
+
+					@Override
+					public void onResponse(BulkResponse response) {
+						if (log.isTraceEnabled()) {
+							log.trace("deleted ids " + Arrays.toString(key.getIds()) + " of type "
+									+ key.getAlias());
+						}
+					}
+
+					@Override
+					public void onFailure(Throwable e) {
+						log.warn("failed to delete ids " + Arrays.toString(key.getIds())
+								+ " of type " + key.getAlias(), e);
+					}
+				});
+			} else {
+				bulk.execute().actionGet();
+			}
 		}
 	}
 
@@ -248,7 +303,7 @@ public class ElasticClient {
 		search.addFields(fields);
 
 		for (SortField sort : query.getSorts()) {
-			
+
 			SortBuilder builder;
 			switch (sort.getType()) {
 			case FIELD:
@@ -265,7 +320,7 @@ public class ElasticClient {
 			default:
 				throw new SearchEngineException("unknown SortType " + sort.getType());
 			}
-			
+
 			builder.order(toOrder(sort.isReverse()));
 			search.addSort(builder);
 		}
@@ -329,9 +384,13 @@ public class ElasticClient {
 	public void verifyIndex() {
 		_index.verifyIndex();
 	}
-	
+
 	public void deleteIndex() {
 		// TODO lock
 		_index.deleteIndex();
+	}
+
+	public void refresh() {
+		_client.admin().indices().refresh(new RefreshRequest(_index.getAlias())).actionGet();
 	}
 }

@@ -22,7 +22,11 @@ public class TermQuery extends Query {
 
 	private XContentQueryBuilder _builder;
 
-	public TermQuery(Term<?> term) {
+	public static Query string(String name, String value) {
+		return new TermQuery(Term.string(name, value));
+	}
+	
+	public TermQuery(Term term) {
 		_builder = term.buildQuery();
 	}
 	
@@ -30,7 +34,5 @@ public class TermQuery extends Query {
 	public XContentQueryBuilder getBuilder() {
 		return _builder;
 	}
-	
-	
 
 }
