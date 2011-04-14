@@ -214,7 +214,7 @@ public class ElasticSearchEngineQuery implements SearchEngineQuery, Cloneable {
 		BooleanQuery boolQuery2 = new BooleanQuery();
 		for (String alias : aliases) {
 			boolQuery2
-					.add(new TermQuery(new Term.StringTerm(aliasProperty, alias)), BooleanClause.Occur.SHOULD);
+					.add(new TermQuery(Term.string(aliasProperty, alias)), BooleanClause.Occur.SHOULD);
 		}
 
 		BooleanQuery boolQuery = new BooleanQuery();

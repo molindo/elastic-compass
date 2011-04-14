@@ -24,7 +24,13 @@ import org.compass.core.engine.SearchEngineQuery;
 import org.compass.core.engine.SearchEngineQuery.SearchEngineSpanQuery;
 import org.compass.core.engine.SearchEngineQueryBuilder;
 
+import at.molindo.elastic.compass.query.ElasticSearchEngineBooleanQueryBuilder;
 import at.molindo.elastic.compass.query.ElasticSearchEngineQueryStringBuilder;
+import at.molindo.elastic.query.ConstantScoreQuery;
+import at.molindo.elastic.query.Query;
+import at.molindo.elastic.query.RangeQuery;
+import at.molindo.elastic.query.Term;
+import at.molindo.elastic.query.TermQuery;
 
 public class ElasticSearchEngineQueryBuilder implements SearchEngineQueryBuilder {
 
@@ -36,12 +42,12 @@ public class ElasticSearchEngineQueryBuilder implements SearchEngineQueryBuilder
 
 	@Override
 	public SearchEngineBooleanQueryBuilder bool() {
-		throw new NotImplementedException();
+		return bool(false);
 	}
 
 	@Override
 	public SearchEngineBooleanQueryBuilder bool(boolean disableCoord) {
-		throw new NotImplementedException();
+		return new ElasticSearchEngineBooleanQueryBuilder(_searchEngineFactory, disableCoord);
 	}
 
 	@Override
@@ -51,7 +57,7 @@ public class ElasticSearchEngineQueryBuilder implements SearchEngineQueryBuilder
 
 	@Override
 	public SearchEngineQueryStringBuilder queryString(String queryString) {
-        return new ElasticSearchEngineQueryStringBuilder(_searchEngineFactory, queryString);
+		return new ElasticSearchEngineQueryStringBuilder(_searchEngineFactory, queryString);
 	}
 
 	@Override
@@ -66,7 +72,7 @@ public class ElasticSearchEngineQueryBuilder implements SearchEngineQueryBuilder
 
 	@Override
 	public SearchEngineQuery term(String resourcePropertyName, String value) {
-		throw new NotImplementedException();
+		return new ElasticSearchEngineQuery(_searchEngineFactory, TermQuery.string(resourcePropertyName, value));
 	}
 
 	@Override
@@ -74,34 +80,44 @@ public class ElasticSearchEngineQueryBuilder implements SearchEngineQueryBuilder
 		throw new NotImplementedException();
 	}
 
-	@Override
 	public SearchEngineQuery between(String resourcePropertyName, String low, String high, boolean inclusive, boolean constantScore) {
-		throw new NotImplementedException();
+		Query query;
+		
+		Term lowTerm = null;
+		if (low != null) {
+			lowTerm = Term.string(resourcePropertyName, low);
+		}
+		Term highTerm = null;
+		if (high != null) {
+			highTerm = Term.string(resourcePropertyName, high);
+		}
+		query = new RangeQuery(resourcePropertyName).setFrom(lowTerm).setTo(highTerm).setIncludeBoth(inclusive);
+		
+		if (constantScore) {
+			query = new ConstantScoreQuery(query);
+		}
+		
+		return new ElasticSearchEngineQuery(_searchEngineFactory, query);
 	}
 
-	@Override
 	public SearchEngineQuery between(String resourcePropertyName, String low, String high, boolean inclusive) {
-		throw new NotImplementedException();
+		return between(resourcePropertyName, low, high, inclusive, true);
 	}
 
-	@Override
-	public SearchEngineQuery lt(String resourcePropertyName, String value) {
-		throw new NotImplementedException();
-	}
-
-	@Override
-	public SearchEngineQuery le(String resourcePropertyName, String value) {
-		throw new NotImplementedException();
-	}
-
-	@Override
-	public SearchEngineQuery gt(String resourcePropertyName, String value) {
-		throw new NotImplementedException();
-	}
-
-	@Override
 	public SearchEngineQuery ge(String resourcePropertyName, String value) {
-		throw new NotImplementedException();
+		return between(resourcePropertyName, value, null, true);
+	}
+
+	public SearchEngineQuery gt(String resourcePropertyName, String value) {
+		return between(resourcePropertyName, value, null, false);
+	}
+
+	public SearchEngineQuery le(String resourcePropertyName, String value) {
+		return between(resourcePropertyName, null, value, true);
+	}
+
+	public SearchEngineQuery lt(String resourcePropertyName, String value) {
+		return between(resourcePropertyName, null, value, false);
 	}
 
 	@Override
@@ -164,5 +180,4 @@ public class ElasticSearchEngineQueryBuilder implements SearchEngineQueryBuilder
 		throw new NotImplementedException();
 	}
 
-	
 }
