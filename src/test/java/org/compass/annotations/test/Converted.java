@@ -26,7 +26,9 @@ import org.compass.annotations.SearchableClassConverter;
 @SearchableClassConverter(ConvertedConverter.class)
 public class Converted implements Serializable {
 
-    public Converted() {
+    private static final long serialVersionUID = 1L;
+
+	public Converted() {
 
     }
 

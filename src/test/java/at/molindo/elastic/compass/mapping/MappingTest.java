@@ -16,8 +16,6 @@
 
 package at.molindo.elastic.compass.mapping;
 
-import static org.junit.Assert.*;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -29,11 +27,12 @@ import org.compass.core.config.CompassConfiguration;
 import org.compass.core.config.CompassEnvironment;
 import org.compass.core.mapping.ResourceMapping;
 import org.compass.core.spi.InternalCompass;
+import org.compass.core.test.AbstractTestCase;
 import org.junit.Test;
 
 import at.molindo.elastic.compass.ElasticEnvironment;
 
-public class MappingTest {
+public class MappingTest extends AbstractTestCase {
 
     protected Compass buildCompass() throws IOException {
         CompassConfiguration conf = buildConf();
