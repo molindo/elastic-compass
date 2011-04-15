@@ -106,6 +106,7 @@ public abstract class AbstractTestCase extends ExtendedTestCase {
         }
         conf.getSettings().setSetting(CompassEnvironment.Cache.FirstLevel.TYPE, NullFirstLevelCache.class.getName());
         conf.getSettings().setBooleanSetting(CompassEnvironment.DEBUG, true);
+        conf.getSettings().setBooleanSetting(ElasticEnvironment.LOCAL, true);
         conf.getSettings().setBooleanSetting(ElasticEnvironment.ASYNC_WRITE, false);
         addSettings(conf.getSettings());
         addExtraConf(conf);

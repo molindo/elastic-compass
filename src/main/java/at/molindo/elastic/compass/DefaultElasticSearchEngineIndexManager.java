@@ -34,11 +34,12 @@ public class DefaultElasticSearchEngineIndexManager implements ElasticSearchEngi
 			throw new NullPointerException("searchEngineFactory");
 		}
 		_searchEngineFactory = searchEngineFactory;
-		
+
 		if (store == null) {
 			throw new NullPointerException("store");
 		}
 		_store = store;
+		
 	}
 	
 	@Override
@@ -57,14 +58,20 @@ public class DefaultElasticSearchEngineIndexManager implements ElasticSearchEngi
 	public void cleanIndex() {
 	}
 
+	/**
+	 * replace index with index from indexManager
+	 */
 	@Override
 	public void replaceIndex(SearchEngineIndexManager indexManager, DefaultReplaceIndexCallback callback) {
-		// ignore indexManager?
-		doReplaceIndex(callback);
+		doReplaceIndex((DefaultElasticSearchEngineIndexManager) indexManager, callback);
 	}
-
-	protected void doReplaceIndex(final ReplaceIndexCallback callback) throws SearchEngineException {
+	
+	/**
+	 * replace index with index from indexManager
+	 */
+	protected void doReplaceIndex(DefaultElasticSearchEngineIndexManager indexManager, final ReplaceIndexCallback callback) throws SearchEngineException {
 		callback.buildIndexIfNeeded();
+		getSearchEngineFactory().getNode().replaceWith(indexManager.getSearchEngineFactory().getNode());
 	}
 
 	@Override
@@ -80,4 +87,13 @@ public class DefaultElasticSearchEngineIndexManager implements ElasticSearchEngi
         _searchEngineFactory.openElasticClient().deleteIndex();
 	}
 
+	public ElasticSearchEngineStore getStore() {
+		return _store;
+	}
+
+	public ElasticSearchEngineFactory getSearchEngineFactory() {
+		return _searchEngineFactory;
+	}
+
+	
 }

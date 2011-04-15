@@ -20,4 +20,7 @@ import org.compass.core.engine.SearchEngineIndexManager;
 
 public interface ElasticSearchEngineIndexManager extends SearchEngineIndexManager {
 
+    ElasticSearchEngineFactory getSearchEngineFactory();
+    
+    ElasticSearchEngineStore getStore();
 }

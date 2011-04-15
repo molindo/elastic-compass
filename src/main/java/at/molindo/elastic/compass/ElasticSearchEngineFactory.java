@@ -50,7 +50,6 @@ public class ElasticSearchEngineFactory implements InternalSearchEngineFactory {
 //		_settings = settings;
 		_mapping = mapping;
 //		_executorManager = executorManager;
-		_indexManager = new DefaultElasticSearchEngineIndexManager(this, new DefaultElasticSearchEngineStore(this, mapping));
 		_resourceFactory = new ElasticResourceFactory(this);
 
 		_debug = settings.getSettingAsBoolean(CompassEnvironment.DEBUG, false);
@@ -58,6 +57,8 @@ public class ElasticSearchEngineFactory implements InternalSearchEngineFactory {
 		_node = new ElasticNode(this);
 		_node.configure(settings);
 		_node.start();
+		
+		_indexManager = new DefaultElasticSearchEngineIndexManager(this, new DefaultElasticSearchEngineStore(this, mapping));
 	}
 
 	@Override
@@ -131,6 +132,10 @@ public class ElasticSearchEngineFactory implements InternalSearchEngineFactory {
 
 	public ElasticSettings getElasticSettings() {
 		return _node.getSettings();
+	}
+
+	public ElasticNode getNode() {
+		return _node;
 	}
 
 }

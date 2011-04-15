@@ -19,6 +19,7 @@ package at.molindo.elastic.compass;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.UUID;
 
 import org.compass.core.Property.Index;
@@ -31,11 +32,15 @@ import org.compass.core.mapping.CompassMapping;
 import org.compass.core.mapping.ExcludeFromAll;
 import org.compass.core.mapping.ResourceMapping;
 import org.compass.core.mapping.ResourcePropertyMapping;
+import org.elasticsearch.ElasticSearchException;
+import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse;
+import org.elasticsearch.action.admin.indices.status.IndexStatus;
 import org.elasticsearch.action.admin.indices.status.IndicesStatusResponse;
 import org.elasticsearch.client.AdminClient;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
+import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.indices.IndexMissingException;
 
@@ -48,7 +53,8 @@ public class ElasticIndex {
 
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory
 			.getLogger(ElasticIndex.class);
-	
+
+	private final String _alias;
 	private final Client _client;
 	private final CompassMapping _mapping;
 
@@ -60,12 +66,13 @@ public class ElasticIndex {
 			throw new NullPointerException("settings");
 		}
 		_settings = settings;
-		
+		_alias = _settings.getAliasName();
+
 		if (client == null) {
 			throw new NullPointerException("client");
 		}
 		_client = client;
-		
+
 		if (mapping == null) {
 			throw new NullPointerException("mapping");
 		}
@@ -75,9 +82,29 @@ public class ElasticIndex {
 	private void createIndex() {
 		_index = generateIndexName();
 
+		// fix dangling aliases
 		IndicesAdminClient indicesAdminClient = indicesAdminClient();
+		try {
+			IndicesStatusResponse response = indicesAdminClient.prepareStatus(_alias).execute()
+					.actionGet();
+			for (Map.Entry<String, IndexStatus> e : response.getIndices().entrySet()) {
+				// check for unknown indexes
+				try {
+					indicesAdminClient.prepareStatus(e.getKey()).execute().actionGet();
+					// index exists - don't delete
+					throw new SearchEngineException("can't crate index for alias '" + _alias
+							+ "' as it is mapped to '" + e.getKey() + "'");
+				} catch (IndexMissingException e1) {
+					// alias unknown pointing to unknown index, delete alias
+					indicesAdminClient.prepareAliases().removeAlias(e.getKey(), _alias);
+				}
+			}
+		} catch (IndexMissingException e) {
+			// alias unknown, that's what we want
+		}
+
 		indicesAdminClient.prepareCreate(getIndex()).execute().actionGet();
-		indicesAdminClient.prepareAliases().addAlias(getIndex(), _settings.getAliasName()).execute().actionGet();
+		indicesAdminClient.prepareAliases().addAlias(getIndex(), _alias).execute().actionGet();
 
 		// push mappings
 		for (ResourceMapping mapping : _mapping.getRootMappings()) {
@@ -94,23 +121,52 @@ public class ElasticIndex {
 	}
 
 	public synchronized void deleteIndex() {
-		indicesAdminClient().prepareDelete(getIndex()).execute().actionGet();
-		createIndex();
+		String index = getIndex(false);
+		if (index != null) {
+			log.info("deleting alias '" + _alias + "' of index '" + index + "'");
+			IndicesAdminClient client = indicesAdminClient();
+			client.prepareAliases().removeAlias(index, _alias).execute().actionGet();
+
+			ClusterStateResponse state = adminClient().cluster().prepareState().execute()
+					.actionGet();
+			IndexMetaData indexState = state.getState().getMetaData().getIndices().get(index);
+			if (indexState != null) {
+				if (indexState.getAliases().size() == 0) {
+					log.info("deleting index '" + index + "' without aliases");
+					indicesAdminClient().prepareDelete(index).execute().actionGet();
+				} else {
+					log.info("keeping index '" + index + "' with aliases " + indexState.getAliases());
+				}
+			}
+		}
 	}
 
 	public synchronized void verifyIndex() {
 		IndicesAdminClient indicesAdminClient = indicesAdminClient();
 
+		log.info("verifying index with alias '" + _alias + "'");
+
 		try {
-			IndicesStatusResponse response = indicesAdminClient.prepareStatus(_settings.getAliasName()).execute()
+			IndicesStatusResponse response = indicesAdminClient.prepareStatus(_alias).execute()
 					.actionGet();
-			_index = CollectionUtils.firstValue(response.getIndices()).getIndex();
-			if (getIndex().equals(_settings.getAliasName())) {
-				throw new SearchEngineException("alias name must not point to index, was " + _settings.getAliasName());
+
+			Map<String, IndexStatus> indices = response.getIndices();
+			if (indices.size() > 1) {
+				throw new SearchEngineException("alias name points to more than one index, was '"
+						+ _alias + "'");
 			}
+
+			_index = CollectionUtils.firstValue(indices).getIndex();
+			if (getIndex().equals(_alias)) {
+				throw new SearchEngineException("alias name must not point to index, was '"
+						+ _alias + "'");
+			}
+			log.info("index '" + _alias + "' verified successfully");
 		} catch (IndexMissingException e) {
 			// alias unknown, create new index
 			createIndex();
+		} catch (ElasticSearchException e) {
+			throw new SearchEngineException("failed to verify index '" + _alias + "'", e);
 		}
 	}
 
@@ -249,13 +305,13 @@ public class ElasticIndex {
 	}
 
 	public String getAlias() {
-		return _settings.getAliasName();
+		return _alias;
 	}
 
 	private String getIndex() {
 		return getIndex(true);
 	}
-	
+
 	private String getIndex(boolean create) {
 		if (_index == null && create) {
 			verifyIndex();
@@ -265,6 +321,16 @@ public class ElasticIndex {
 
 	public ElasticSettings getSettings() {
 		return _settings;
+	}
+
+	public void addAlias(String alias) {
+		String index = getIndex();
+		try {
+			indicesAdminClient().prepareAliases().addAlias(index, alias).execute().actionGet();
+		} catch (ElasticSearchException e) {
+			throw new SearchEngineException("failed to add alias '" + alias + "' to index '"
+					+ index + "'");
+		}
 	}
 
 }

@@ -58,6 +58,11 @@ public class ElasticNode implements CompassConfigurable {
 					.node();
 				settings.setRegistry(ELASTIC_NODE_KEY, _node);
 				// FIXME and who stops me?
+				
+				// wait for cluster to become ready if necessary
+				String nodeCount = _settings.getLocal() ? "1" : ">1";
+				log.info("waiting for " +nodeCount+ " nodes");
+				_node.client().admin().cluster().prepareHealth().setWaitForNodes(nodeCount).execute().actionGet();
 			}
 		}
 		
@@ -92,5 +97,15 @@ public class ElasticNode implements CompassConfigurable {
 			throw new IllegalStateException("ElasticNode not yet configured");
 		}
 		return _settings;
+	}
+
+	public void replaceWith(ElasticNode node) {
+		String alias = _index.getAlias();
+		
+		_index.deleteIndex();
+		
+		node._index.addAlias(alias);
+		
+		_index = new ElasticIndex(_settings, _node.client(), _searchEngineFactory.getMapping());
 	}
 }
