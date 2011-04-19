@@ -19,6 +19,7 @@ package org.compass.core.test;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Properties;
 
 import org.compass.core.Compass;
@@ -30,6 +31,7 @@ import org.compass.core.config.CompassEnvironment;
 import org.compass.core.config.CompassSettings;
 import org.compass.core.spi.InternalCompass;
 import org.compass.core.spi.InternalCompassSession;
+import org.elasticsearch.action.admin.indices.analyze.AnalyzeResponse.AnalyzeToken;
 
 import at.molindo.elastic.compass.ElasticEnvironment;
 import at.molindo.elastic.compass.ElasticSearchEngine;
@@ -143,5 +145,24 @@ public abstract class AbstractTestCase extends ExtendedTestCase {
 
 	protected void refresh(CompassSession session) {
 		((ElasticSearchEngine)((InternalCompassSession)session).getSearchEngine()).refresh();
+	}
+	
+	protected List<AnalyzeToken> analyze(CompassSession session, String analyzer, String text) {
+		return ((ElasticSearchEngine)((InternalCompassSession)session).getSearchEngine()).analyze(analyzer, text);
+	}
+	
+	protected void assertTokens(List<AnalyzeToken> tokens, String ... terms) {
+		for (String term : terms) {
+			assertToken(tokens, term);
+		}
+	}
+	
+	protected void assertToken(List<AnalyzeToken> tokens, String term) {
+		for (AnalyzeToken token : tokens) {
+			if (term.equals(token.getTerm())) {
+				return;
+			}
+		}
+		fail("token list does not contain term '" + term + "'");
 	}
 }
