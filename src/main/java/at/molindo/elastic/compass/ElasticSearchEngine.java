@@ -17,7 +17,9 @@
 package at.molindo.elastic.compass;
 
 import java.util.Arrays;
+import java.util.List;
 
+import org.compass.core.Property;
 import org.compass.core.Resource;
 import org.compass.core.config.RuntimeCompassSettings;
 import org.compass.core.engine.SearchEngine;
@@ -26,11 +28,13 @@ import org.compass.core.engine.SearchEngineHits;
 import org.compass.core.engine.SearchEngineInternalSearch;
 import org.compass.core.engine.SearchEngineQuery;
 import org.compass.core.engine.SearchEngineQueryBuilder;
+import org.compass.core.mapping.ResourceAnalyzerController;
 import org.compass.core.mapping.ResourceMapping;
 import org.compass.core.spi.InternalResource;
 import org.compass.core.spi.MultiResource;
 import org.compass.core.spi.ResourceKey;
 import org.compass.core.util.StringUtils;
+import org.elasticsearch.action.admin.indices.analyze.AnalyzeResponse.AnalyzeToken;
 
 import at.molindo.utils.collections.ArrayUtils;
 
@@ -116,6 +120,7 @@ public class ElasticSearchEngine implements SearchEngine {
 			MultiResource multiResource = (MultiResource) resource;
 			for (int i = 0; i < multiResource.size(); i++) {
 				InternalResource resource1 = (InternalResource) multiResource.resource(i);
+				validate(resourceMapping, resource1);
 				if (update) {
 					doUpdate(resource1);
 					if (log.isTraceEnabled()) {
@@ -130,6 +135,7 @@ public class ElasticSearchEngine implements SearchEngine {
 			}
 		} else {
 			InternalResource resource1 = (InternalResource) resource;
+			validate(resourceMapping, resource1);
 			if (update) {
 				doUpdate(resource1);
 				if (log.isTraceEnabled()) {
@@ -144,7 +150,24 @@ public class ElasticSearchEngine implements SearchEngine {
 		}
 	}
 
-    public void delete(Resource resource) throws SearchEngineException {
+    private void validate(ResourceMapping resourceMapping, InternalResource resource) {
+    	
+    	ResourceAnalyzerController rac = resourceMapping.getAnalyzerController();
+    	if (rac != null) {
+    		Property prop = resource.getProperty(rac.getPath().getPath());
+    		if (prop == null) {
+    			throw new SearchEngineException("analyzer property not set");
+    		}
+    		String value = prop.getStringValue();
+    		if (at.molindo.utils.data.StringUtils.empty(value)) {
+    			throw new SearchEngineException("analyzer property value empty");
+    		}
+    		// TODO check if name is valid
+    	}
+    	
+	}
+
+	public void delete(Resource resource) throws SearchEngineException {
         verifyNotReadOnly();
         if (resource instanceof MultiResource) {
             MultiResource multiResource = (MultiResource) resource;
@@ -192,6 +215,10 @@ public class ElasticSearchEngine implements SearchEngine {
 
 	public void refresh() {
 		_client.refresh();
+	}
+	
+	public List<AnalyzeToken> analyze(String analyzer, String text) {
+		return _client.analyze(analyzer, text);
 	}
 	
 	protected Resource[] doGet(ResourceKey key) {

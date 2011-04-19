@@ -32,6 +32,7 @@ import org.compass.core.mapping.CompassMapping;
 import org.compass.core.mapping.ExcludeFromAll;
 import org.compass.core.mapping.ResourceMapping;
 import org.compass.core.mapping.ResourcePropertyMapping;
+import org.compass.core.mapping.osem.ClassMapping;
 import org.elasticsearch.ElasticSearchException;
 import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse;
@@ -45,6 +46,7 @@ import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.indices.IndexMissingException;
 
 import at.molindo.utils.collections.CollectionUtils;
+import at.molindo.utils.data.StringUtils;
 
 /**
  * manages an index
@@ -110,7 +112,7 @@ public class ElasticIndex {
 		for (ResourceMapping mapping : _mapping.getRootMappings()) {
 
 			PutMappingResponse resp = indicesAdminClient().preparePutMapping(getIndex())
-					.setType(mapping.getAlias()).setSource(toMappingSource(mapping)).execute()
+					.setType(mapping.getAlias()).setSource(toMappingSource((ClassMapping)mapping)).execute()
 					.actionGet();
 
 			if (!resp.acknowledged()) {
@@ -161,6 +163,7 @@ public class ElasticIndex {
 				throw new SearchEngineException("alias name must not point to index, was '"
 						+ _alias + "'");
 			}
+			
 			log.info("index '" + _alias + "' verified successfully");
 		} catch (IndexMissingException e) {
 			// alias unknown, create new index
@@ -179,7 +182,7 @@ public class ElasticIndex {
 	}
 
 	// @formatter:off
-	private XContentBuilder toMappingSource(ResourceMapping mapping) {
+	private XContentBuilder toMappingSource(ClassMapping mapping) {
 		try {
 			XContentBuilder builder = jsonBuilder().startObject();
 
@@ -199,12 +202,19 @@ public class ElasticIndex {
 						.field("store", store(property.getStore()))
 						.field("include_in_all", includeInAll(property.getExcludeFromAll()))
 						.field("term_vector", termVector(property.getTermVector()))
-						.field("boost", property.getBoost())
-					.endObject();
+						.field("boost", property.getBoost());
+				
+				String analyzer = analyzer(mapping, property);
+				if (!StringUtils.empty(analyzer)) {
+					builder.field("analyzer", analyzer);
+				}
+				
+				builder.endObject();
 			}
 			builder.endObject();
 			// end properties
 
+			// all
 			AllMapping allMapping = mapping.getAllMapping();
 			
 			if (allMapping.isExcludeAlias()) {
@@ -216,7 +226,9 @@ public class ElasticIndex {
 					.field("enabled", allMapping.isSupported() != Boolean.FALSE)
 					.field("term_vector", termVector(allMapping.getTermVector()))
 				.endObject();
-
+			// end all
+			
+			// boost
 			BoostPropertyMapping boostMapping = mapping.getBoostPropertyMapping();
 			if (boostMapping != null) {
 				builder	
@@ -226,6 +238,15 @@ public class ElasticIndex {
 					.endObject();
 			} else {
 				// TODO what about mapping.getBoost()?
+			}
+			// end boost
+			
+			// analyzer
+			if (mapping.getAnalyzerController() !=  null) {
+				builder
+					.startObject("_analyzer")
+						.field("path", mapping.getAnalyzerController().getPath().getPath())
+					.endObject();
 			}
 			
 			builder
@@ -300,6 +321,16 @@ public class ElasticIndex {
 		}
 	}
 
+	private String analyzer(ClassMapping mapping, ResourcePropertyMapping property) {
+		if (!StringUtils.empty(property.getAnalyzer())) {
+			return property.getAnalyzer();
+		} else if (!StringUtils.empty(mapping.getAnalyzer())) {
+			return mapping.getAnalyzer();
+		} else {
+			return null;
+		}
+	}
+	
 	private String generateIndexName() {
 		return UUID.randomUUID().toString();
 	}

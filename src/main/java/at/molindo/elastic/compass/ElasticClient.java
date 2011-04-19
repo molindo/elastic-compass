@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -36,7 +37,7 @@ import org.compass.core.mapping.ResourceMapping;
 import org.compass.core.mapping.ResourcePropertyMapping;
 import org.compass.core.spi.ResourceKey;
 import org.elasticsearch.action.ActionListener;
-import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
+import org.elasticsearch.action.admin.indices.analyze.AnalyzeResponse.AnalyzeToken;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetField;
@@ -390,6 +391,12 @@ public class ElasticClient {
 	}
 
 	public void refresh() {
-		_client.admin().indices().refresh(new RefreshRequest(_index.getAlias())).actionGet();
+		_client.admin().indices().prepareRefresh(_index.getAlias()).execute().actionGet();
+	}
+	
+	public List<AnalyzeToken> analyze(String analyzer, String text) {
+		return _client.admin().indices()
+				.prepareAnalyze(_index.getAlias(), text).setAnalyzer(analyzer).execute()
+				.actionGet().getTokens();
 	}
 }
