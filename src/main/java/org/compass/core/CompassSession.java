@@ -34,4 +34,6 @@ public interface CompassSession extends CompassSearchSession, CompassIndexSessio
 	CompassQueryBuilder queryBuilder() throws CompassException;
 
 	CompassQueryFilterBuilder queryFilterBuilder() throws CompassException;
+	
+    CompassAnalyzerHelper analyzerHelper() throws CompassException;
 }

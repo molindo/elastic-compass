@@ -16,6 +16,7 @@
 
 package org.compass.core.impl;
 
+import org.compass.core.CompassAnalyzerHelper;
 import org.compass.core.CompassException;
 import org.compass.core.CompassHits;
 import org.compass.core.CompassQuery;
@@ -288,4 +289,9 @@ public class ExistingCompassSession implements InternalCompassSession {
 		return session.getMarshallingStrategy();
 	}
 
+	@Override
+	public CompassAnalyzerHelper analyzerHelper() throws CompassException {
+		return session.analyzerHelper();
+	}
+	
 }

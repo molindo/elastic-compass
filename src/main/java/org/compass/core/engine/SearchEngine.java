@@ -30,4 +30,7 @@ public interface SearchEngine {
 	void flush();
 
     SearchEngineInternalSearch internalSearch(String[] subIndexes, String[] aliases) throws SearchEngineException;
+    
+    SearchEngineAnalyzerHelper analyzerHelper();
+
 }

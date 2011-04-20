@@ -23,6 +23,7 @@ import org.compass.core.Property;
 import org.compass.core.Resource;
 import org.compass.core.config.RuntimeCompassSettings;
 import org.compass.core.engine.SearchEngine;
+import org.compass.core.engine.SearchEngineAnalyzerHelper;
 import org.compass.core.engine.SearchEngineException;
 import org.compass.core.engine.SearchEngineHits;
 import org.compass.core.engine.SearchEngineInternalSearch;
@@ -269,5 +270,8 @@ public class ElasticSearchEngine implements SearchEngine {
 		return new ElasticSearchEngineInternalSearch(_client, aliases);
 	}
 
-	
+    public SearchEngineAnalyzerHelper analyzerHelper() {
+        return new ElasticSearchEngineAnalyzerHelper(this);
+    }
+    
 }

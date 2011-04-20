@@ -76,4 +76,18 @@ public class ElasticEnvironment {
     	public static final String ALL_FIELD = "_all";
     	public static final String TYPE_FIELD = "_type";
     }
+    
+    public static abstract class Analyzer {
+
+        /**
+         * The prefix used for analyzer groups.
+         */
+        public static final String PREFIX = "compass.engine.analyzer";
+
+        /**
+         * The default anayzer group that must be set.
+         */
+        public static final String DEFAULT_GROUP = "default";
+        
+    }
 }

@@ -3,6 +3,7 @@ package org.compass.core.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.compass.core.CompassAnalyzerHelper;
 import org.compass.core.CompassException;
 import org.compass.core.CompassHits;
 import org.compass.core.CompassQuery;
@@ -14,6 +15,7 @@ import org.compass.core.cascade.CascadingManager;
 import org.compass.core.config.CompassSettings;
 import org.compass.core.config.RuntimeCompassSettings;
 import org.compass.core.engine.SearchEngine;
+import org.compass.core.engine.SearchEngineAnalyzerHelper;
 import org.compass.core.engine.SearchEngineQueryBuilder;
 import org.compass.core.events.FilterOperation;
 import org.compass.core.mapping.Cascade;
@@ -647,5 +649,11 @@ public class DefaultCompassSession implements InternalCompassSession {
 	public MarshallingStrategy getMarshallingStrategy() {
 		return marshallingStrategy;
 	}
+	
+    public CompassAnalyzerHelper analyzerHelper() throws CompassException {
+        checkClosed();
+        SearchEngineAnalyzerHelper analyzerHelper = searchEngine.analyzerHelper();
+        return new DefaultCompassAnalyzerHelper(analyzerHelper, this);
+    }
 
 }
