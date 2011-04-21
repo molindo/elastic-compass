@@ -106,12 +106,14 @@ public abstract class AbstractTestCase extends ExtendedTestCase {
         for (String mapping : getMappings()) {
             conf.addResource(getPackagePrefix() + mapping, AbstractTestCase.class.getClassLoader());
         }
+
+        boolean local = Boolean.parseBoolean(System.getProperty("elastic.test.local", "true"));
         conf.getSettings().setSetting(CompassEnvironment.Cache.FirstLevel.TYPE, NullFirstLevelCache.class.getName());
         conf.getSettings().setBooleanSetting(CompassEnvironment.DEBUG, true);
-        conf.getSettings().setBooleanSetting(ElasticEnvironment.LOCAL, true);
+        conf.getSettings().setBooleanSetting(ElasticEnvironment.LOCAL, local);
         conf.getSettings().setBooleanSetting(ElasticEnvironment.ASYNC_WRITE, false);
         conf.getSettings().setBooleanSetting(ElasticEnvironment.STORE_SOURCE, true);
-        conf.getSettings().setSetting(ElasticEnvironment.CLUSTER_NAME, getClass().getSimpleName());
+        conf.getSettings().setSetting(ElasticEnvironment.CLUSTER_NAME, !local ? "elasticsearch" : getClass().getSimpleName());
         
         addSettings(conf.getSettings());
         addExtraConf(conf);
