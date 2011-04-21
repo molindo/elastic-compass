@@ -50,6 +50,7 @@ import org.compass.core.converter.basic.atomic.AtomicLongConverter;
 //import org.compass.core.converter.dynamic.MVELDynamicConverter;
 //import org.compass.core.converter.dynamic.OgnlDynamicConverter;
 //import org.compass.core.converter.dynamic.VelocityDynamicConverter;
+import org.compass.core.converter.dynamic.GroovyDynamicConverter;
 import org.compass.core.converter.extended.DataTimeConverter;
 import org.compass.core.converter.extended.FileConverter;
 import org.compass.core.converter.extended.InputStreamConverter;
@@ -273,13 +274,13 @@ public class DefaultConverterLookup implements ConverterLookup {
 //        } catch (Throwable e) {
 //            // do nothing
 //        }
-//        try {
-//            addDefaultConverter(converterGroups, CompassEnvironment.Converter.DefaultTypeNames.Dynamic.GROOVY,
-//                    DynamicMetaDataMapping.class, new GroovyDynamicConverter());
-//            log.debug("Dynamic converter - GROOVY found in the class path, registering it");
-//        } catch (Throwable e) {
-//            // do nothing
-//        }
+        try {
+            addDefaultConverter(converterGroups, CompassEnvironment.Converter.DefaultTypeNames.Dynamic.GROOVY,
+                    DynamicMetaDataMapping.class, new GroovyDynamicConverter());
+            log.debug("Dynamic converter - GROOVY found in the class path, registering it");
+        } catch (Throwable e) {
+            // do nothing
+        }
 
         // add mapping converters
         addDefaultConverter(converterGroups, CompassEnvironment.Converter.DefaultTypeNames.Mapping.RAW_RESOURCE_MAPPING,
