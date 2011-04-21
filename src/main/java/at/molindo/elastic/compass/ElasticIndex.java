@@ -105,8 +105,9 @@ public class ElasticIndex {
 			for (Mapping m : IteratorUtils.iterable(rootMapping.mappingsIt())) {
 				if (m instanceof AbstractCollectionMapping) {
 					AbstractCollectionMapping col = (AbstractCollectionMapping) m;
-					map.put(col.getColSizePath().getPath(), col);
-					
+					if (col.getColSizePath() != null) {
+						map.put(col.getColSizePath().getPath(), col);
+					}
 					m = col.getElementMapping();
 					
 				}
