@@ -26,21 +26,19 @@ public class ElasticSettings {
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory
 			.getLogger(ElasticSettings.class);
 	
-	private String _aliasName;
+	private final String _aliasName;
 
-	private String _extendedAliasProperty;
+	private final String _extendedAliasProperty;
 
-	private String _defaultSearchPropery;
-	private Operator _defaultOperator;
+	private final String _defaultSearchPropery;
+	private final Operator _defaultOperator;
 
-	private boolean _local;
-
-	private boolean _asyncWrite;
+	private final boolean _local;
+	private final boolean _asyncWrite;
+	private final boolean _storeSource;
 	
-	public ElasticSettings() {
-
-	}
-
+	private final String _clusterName;
+	
 	public ElasticSettings(CompassSettings settings) {
 		_aliasName = settings.getSetting(CompassEnvironment.CONNECTION_SUB_CONTEXT, "index");
 		
@@ -72,9 +70,19 @@ public class ElasticSettings {
             log.debug("Using local node [" + _local + "]");
         }
         
+        _clusterName = settings.getSetting(ElasticEnvironment.CLUSTER_NAME);
+        if (log.isDebugEnabled()) {
+            log.debug("Using local data dir [" + _clusterName + "]");
+        }
+        
         _asyncWrite = settings.getSettingAsBoolean(ElasticEnvironment.ASYNC_WRITE, true);
         if (log.isDebugEnabled()) {
             log.debug("Using async write [" + _asyncWrite + "]");
+        }
+        
+        _storeSource = settings.getSettingAsBoolean(ElasticEnvironment.STORE_SOURCE, false);
+        if (log.isDebugEnabled()) {
+            log.debug("Using store source [" + _storeSource + "]");
         }
 	}
 
@@ -97,10 +105,17 @@ public class ElasticSettings {
 	public boolean getLocal() {
 		return _local;
 	}
-
+	
 	public boolean isAsyncWrite() {
 		return _asyncWrite;
 	}
-	
+
+	public boolean isStoreSource() {
+		return _storeSource;
+	}
+
+	public String getClusterName() {
+		return _clusterName;
+	}
 	
 }
