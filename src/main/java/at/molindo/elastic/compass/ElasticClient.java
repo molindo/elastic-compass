@@ -186,7 +186,7 @@ public class ElasticClient {
 					.prepareGet(_indexName, key.getAlias(), ids[0].getStringValue())
 					.setFields(fields).execute().actionGet();
 
-			if (response.getFields() != null) {
+			if (response.exists()) {
 				ElasticResource resource = new ElasticResource(response.getType(), _searchEngineFactory);
 				ResourceMapping mapping = _searchEngineFactory.getMapping()
 						.getRootMappingByAlias(key.getAlias());
