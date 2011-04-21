@@ -25,16 +25,16 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Set;
 
 import org.compass.core.Property;
-import org.compass.core.Property.Store;
 import org.compass.core.Resource;
 import org.compass.core.engine.SearchEngineException;
 import org.compass.core.engine.SearchEngineHits;
-import org.compass.core.engine.naming.StaticPropertyPath;
+import org.compass.core.mapping.Mapping;
 import org.compass.core.mapping.ResourceMapping;
 import org.compass.core.mapping.ResourcePropertyMapping;
+import org.compass.core.mapping.osem.AbstractCollectionMapping;
 import org.compass.core.spi.ResourceKey;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.indices.analyze.AnalyzeResponse.AnalyzeToken;
@@ -55,9 +55,9 @@ import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 
+import at.molindo.elastic.query.InQuery;
 import at.molindo.elastic.query.SortField;
 import at.molindo.utils.collections.ArrayUtils;
-import at.molindo.utils.collections.CollectionUtils;
 
 public class ElasticClient {
 
@@ -69,8 +69,6 @@ public class ElasticClient {
 	private final String _indexName;
 	private final Client _client;
 	private final Map<String, String[]> _typeFields;
-
-	private final ConcurrentHashMap<String, StaticPropertyPath> _pathCache = new ConcurrentHashMap<String, StaticPropertyPath>();
 
 	public ElasticClient(ElasticSearchEngineFactory searchEngineFactory, ElasticIndex index, Client client) {
 		if (searchEngineFactory == null) {
@@ -89,19 +87,12 @@ public class ElasticClient {
 		_client = client;
 
 		_typeFields = new HashMap<String, String[]>();
-		HashSet<String> fields = new HashSet<String>();
 
-		// stored fields
-		for (ResourceMapping mapping : _searchEngineFactory.getMapping().getRootMappings()) {
-
-			for (ResourcePropertyMapping property : mapping.getResourcePropertyMappings()) {
-				if (property.getStore() != Store.NO) {
-					fields.add(property.getPath().getPath());
-				}
-			}
-			_typeFields.put(mapping.getAlias(), fields.toArray(new String[fields.size()]));
-			fields.clear();
+		for (String type : _index.getTypes()) {
+			Set<String> fields = _index.getFieldMapping(type).keySet();
+			_typeFields.put(type, fields.toArray(new String[fields.size()]));
 		}
+
 	}
 
 	public void create(final ElasticResource resource) {
@@ -167,29 +158,48 @@ public class ElasticClient {
 		if (ids == null || ids.length == 0) {
 			return ElasticResource.NO_RESOURCES;
 		}
-
 		Resource[] resources = new Resource[ids.length];
-		String[] fields = _typeFields.get(key.getAlias());
-		if (fields == null) {
-			throw new SearchEngineException("unknown alias " + key.getAlias());
-		}
 
-		ResourceMapping mapping = _searchEngineFactory.getMapping()
-				.getRootMappingByAlias(key.getAlias());
+		if (ids.length > 1) {
+			Map<String, Integer> idStrings = new HashMap<String, Integer>();
+			for (int i = 0; i < ids.length; i++) {
+				idStrings.put(ids[i].getStringValue(), i);
+			}
 
-		for (int i = 0; i < ids.length; i++) {
+			InQuery inQuery = new InQuery("_id", idStrings.keySet()
+					.toArray(new String[idStrings.size()]));
+			ElasticSearchEngineQuery query = new ElasticSearchEngineQuery(_searchEngineFactory, inQuery)
+					.setAlias(key.getAlias());
+
+			SearchEngineHits hits = find(query);
+			for (int i = 0; i < hits.getLength(); i++) {
+				Resource r = hits.getResource(i);
+				resources[idStrings.get(r.getId())] = r;
+			}
+		} else {
+			String[] fields = _typeFields.get(key.getAlias());
+			if (fields == null) {
+				throw new SearchEngineException("unknown alias " + key.getAlias());
+			}
+
 			GetResponse response = _client
-					.prepareGet(_indexName, key.getAlias(), ids[i].getStringValue())
+					.prepareGet(_indexName, key.getAlias(), ids[0].getStringValue())
 					.setFields(fields).execute().actionGet();
 
 			if (response.getFields() != null) {
-				resources[i] = new ElasticResource(response.getType(), _searchEngineFactory);
+				ElasticResource resource = new ElasticResource(response.getType(), _searchEngineFactory);
+				ResourceMapping mapping = _searchEngineFactory.getMapping()
+						.getRootMappingByAlias(key.getAlias());
+
 				for (Map.Entry<String, GetField> e : response.getFields().entrySet()) {
-					resources[i].addProperty(toProperty(mapping, e.getKey(), e.getValue()
+					resource.addProperties(toProperties(mapping, e.getKey(), e.getValue()
 							.getValues()));
 				}
+
+				resources[0] = resource;
 			}
 		}
+
 		return resources;
 	}
 
@@ -250,16 +260,6 @@ public class ElasticClient {
 				bulk.execute().actionGet();
 			}
 		}
-	}
-
-	private StaticPropertyPath toPath(String path) {
-		StaticPropertyPath p = _pathCache.get(path);
-		if (p == null) {
-			p = new StaticPropertyPath(path);
-			// p.getPath() now intern()ed
-			p = CollectionUtils.putIfAbsent(_pathCache, p.getPath(), p);
-		}
-		return p;
 	}
 
 	protected XContentBuilder toXContentBuilder(ElasticResource resource) throws IOException {
@@ -351,29 +351,40 @@ public class ElasticClient {
 		ResourceMapping mapping = _searchEngineFactory.getMapping().getRootMappingByAlias(alias);
 		ElasticResource resource = new ElasticResource(hit.getType(), _searchEngineFactory);
 		for (Map.Entry<String, SearchHitField> e : hit.getFields().entrySet()) {
-			resource.addProperty(toProperty(mapping, e.getKey(), e.getValue().getValues()));
+			resource.addProperties(toProperties(mapping, e.getKey(), e.getValue().getValues()));
 		}
 
 		return resource;
 	}
 
-	private ElasticProperty toProperty(ResourceMapping mapping, String name, Collection<?> values) {
-		// we handle collections internally, i.e. the Compass-way, i.e. no
-		// collections should be in ES
-		return toProperty(mapping, name, (String) CollectionUtils.first(values));
-	}
-
-	private ElasticProperty toProperty(ResourceMapping mapping, String name, String value) {
-		ResourcePropertyMapping propertyMapping = mapping
-				.getResourcePropertyMappingByPath(toPath(name));
-		if (propertyMapping == null) {
+	private Property[] toProperties(ResourceMapping mapping, String name, Collection<?> values) {
+		Mapping m = _index.getFieldMapping(mapping.getAlias()).get(name);
+		if (m == null) {
 			throw new SearchEngineException("No resource property mapping is defined for alias ["
 					+ mapping.getAlias() + "] and resource property [" + name + "]");
 		}
-		ElasticProperty property = (ElasticProperty) _searchEngineFactory.getResourceFactory()
-				.createProperty(value, propertyMapping);
-		property.setBoost(propertyMapping.getBoost());
-		return property;
+
+		Property[] properties = new ElasticProperty[values.size()];
+		int i = 0;
+		for (Object value : values) {
+			Property property;
+			if (m instanceof ResourcePropertyMapping) {
+				ResourcePropertyMapping propertyMapping = (ResourcePropertyMapping) m;
+				property = _searchEngineFactory.getResourceFactory()
+						.createProperty((String) value, propertyMapping);
+				property.setBoost(propertyMapping.getBoost());
+			} else if (m instanceof AbstractCollectionMapping) {
+				// col size
+				property = _searchEngineFactory
+						.getResourceFactory()
+						.createProperty(name, (String) value, Property.Store.YES, Property.Index.NOT_ANALYZED);
+			} else {
+				throw new SearchEngineException("unexpected mapping type " + m);
+			}
+			properties[i++] = property;
+		}
+
+		return properties;
 	}
 
 	public String[] findPropertyValues(String propertyName) {
@@ -393,10 +404,9 @@ public class ElasticClient {
 	public void refresh() {
 		_client.admin().indices().prepareRefresh(_index.getAlias()).execute().actionGet();
 	}
-	
+
 	public List<AnalyzeToken> analyze(String analyzer, String text) {
-		return _client.admin().indices()
-				.prepareAnalyze(_index.getAlias(), text).setAnalyzer(analyzer).execute()
-				.actionGet().getTokens();
+		return _client.admin().indices().prepareAnalyze(_index.getAlias(), text)
+				.setAnalyzer(analyzer).execute().actionGet().getTokens();
 	}
 }

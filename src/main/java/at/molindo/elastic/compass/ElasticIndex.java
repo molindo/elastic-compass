@@ -19,6 +19,8 @@ package at.molindo.elastic.compass;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -30,12 +32,13 @@ import org.compass.core.mapping.AllMapping;
 import org.compass.core.mapping.BoostPropertyMapping;
 import org.compass.core.mapping.CompassMapping;
 import org.compass.core.mapping.ExcludeFromAll;
+import org.compass.core.mapping.Mapping;
 import org.compass.core.mapping.ResourceMapping;
 import org.compass.core.mapping.ResourcePropertyMapping;
+import org.compass.core.mapping.osem.AbstractCollectionMapping;
 import org.compass.core.mapping.osem.ClassMapping;
 import org.elasticsearch.ElasticSearchException;
 import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
-import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse;
 import org.elasticsearch.action.admin.indices.status.IndexStatus;
 import org.elasticsearch.action.admin.indices.status.IndicesStatusResponse;
 import org.elasticsearch.client.AdminClient;
@@ -46,6 +49,7 @@ import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.indices.IndexMissingException;
 
 import at.molindo.utils.collections.CollectionUtils;
+import at.molindo.utils.collections.IteratorUtils;
 import at.molindo.utils.data.StringUtils;
 
 /**
@@ -63,6 +67,8 @@ public class ElasticIndex {
 	private final ElasticSettings _settings;
 	private String _index;
 
+	private Map<String, Map<String, Mapping>> _aliasFields = new HashMap<String, Map<String,Mapping>>();
+	
 	public ElasticIndex(ElasticSettings settings, Client client, CompassMapping mapping) {
 		if (settings == null) {
 			throw new NullPointerException("settings");
@@ -79,6 +85,26 @@ public class ElasticIndex {
 			throw new NullPointerException("mapping");
 		}
 		_mapping = mapping;
+		
+		// root mappings to alias list
+		for (ResourceMapping rootMapping : mapping.getRootMappings()) {
+			HashMap<String, Mapping> map = new HashMap<String, Mapping>();
+			
+			for (ResourcePropertyMapping property : rootMapping.getResourcePropertyMappings()) {
+				String field = property.getPath().getPath();
+				log.trace("adding field " + field);
+				map.put(field, property);
+			}
+			
+			for (Mapping m : IteratorUtils.iterable(rootMapping.mappingsIt())) {
+				if (m instanceof AbstractCollectionMapping) {
+					AbstractCollectionMapping col = (AbstractCollectionMapping) m;
+					map.put(col.getColSizePath().getPath(), col);
+				}
+			}
+			
+			_aliasFields.put(rootMapping.getAlias(), Collections.unmodifiableMap(map));
+		}
 	}
 
 	private void createIndex() {
@@ -111,14 +137,14 @@ public class ElasticIndex {
 		// push mappings
 		for (ResourceMapping mapping : _mapping.getRootMappings()) {
 
-			PutMappingResponse resp = indicesAdminClient().preparePutMapping(getIndex())
+			indicesAdminClient().preparePutMapping(getIndex())
 					.setType(mapping.getAlias()).setSource(toMappingSource((ClassMapping)mapping)).execute()
 					.actionGet();
 
-			if (!resp.acknowledged()) {
-				throw new SearchEngineException("failed to put mapping for type "
-						+ mapping.getAlias());
-			}
+//			if (!resp.acknowledged()) {
+//				throw new SearchEngineException("failed to put mapping for type "
+//						+ mapping.getAlias());
+//			}
 		}
 	}
 
@@ -191,25 +217,43 @@ public class ElasticIndex {
 
 			// start properties
 			builder.startObject("properties");
-			for (ResourcePropertyMapping property : mapping.getResourcePropertyMappings()) {
+			for (Map.Entry<String, Mapping> e : getFieldMapping(mapping.getAlias()).entrySet()) {
+				String field = e.getKey();
+				Mapping m = e.getValue();
+				
 				// TODO should we really use string only?
 				ElasticType type = ElasticType.STRING;
+
+				if (m instanceof ResourcePropertyMapping) {
+					ResourcePropertyMapping property = (ResourcePropertyMapping) m;
+					
+					builder
+						.startObject(field)
+							.field("type", type.getName())
+							.field("index", index(property.getIndex()))
+							.field("store", store(property.getStore()))
+							.field("include_in_all", includeInAll(property.getExcludeFromAll()))
+							.field("term_vector", termVector(property.getTermVector()))
+							.field("boost", property.getBoost());
+					
+					String analyzer = analyzer(mapping, property);
+					if (!StringUtils.empty(analyzer)) {
+						builder.field("analyzer", analyzer);
+					}
+					
+					builder.endObject();
 				
-				builder
-					.startObject(property.getPath().getPath())
-						.field("type", type.getName())
-						.field("index", index(property.getIndex()))
-						.field("store", store(property.getStore()))
-						.field("include_in_all", includeInAll(property.getExcludeFromAll()))
-						.field("term_vector", termVector(property.getTermVector()))
-						.field("boost", property.getBoost());
-				
-				String analyzer = analyzer(mapping, property);
-				if (!StringUtils.empty(analyzer)) {
-					builder.field("analyzer", analyzer);
+				} else if (m instanceof AbstractCollectionMapping) {
+					// col size mapping
+					builder
+						.startObject(field)
+							.field("type", type.getName())
+							.field("index", index(Index.NO))
+							.field("store", store(Store.YES))
+							.field("include_in_all", includeInAll(ExcludeFromAll.YES))
+							.field("term_vector", termVector(TermVector.NO))
+							.endObject();
 				}
-				
-				builder.endObject();
 			}
 			builder.endObject();
 			// end properties
@@ -251,7 +295,7 @@ public class ElasticIndex {
 			
 			builder
 				.startObject("_source")
-					.field("enabled", false)
+					.field("enabled", _settings.isStoreSource())
 				.endObject();
 
 			builder.endObject();
@@ -364,4 +408,15 @@ public class ElasticIndex {
 		}
 	}
 
+	public Map<String, Mapping> getFieldMapping(String type) {
+		Map<String, Mapping> fieldMapping = _aliasFields.get(type);
+		if (fieldMapping == null) {
+			throw new SearchEngineException("alias does not exist " + type);
+		}
+		return fieldMapping;
+	}
+
+	public String[] getTypes() {
+		return _aliasFields.keySet().toArray(new String[_aliasFields.size()]);
+	}
 }
