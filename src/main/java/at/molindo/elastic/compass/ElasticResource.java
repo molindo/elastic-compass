@@ -171,6 +171,13 @@ public class ElasticResource implements AliasedObject, InternalResource, Map<Str
 		return addProperty(property);
 	}
 
+	public Resource addProperties(Property[] props) {
+		for (Property property : props) {
+			addProperty(property);
+		}
+		return this;
+	}
+	
 	public Resource addProperty(Property property) {
 		ElasticProperty lProperty = (ElasticProperty) property;
 		lProperty
