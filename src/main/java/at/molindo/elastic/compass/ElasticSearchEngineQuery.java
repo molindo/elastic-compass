@@ -110,48 +110,48 @@ public class ElasticSearchEngineQuery implements SearchEngineQuery, Cloneable {
 		this.defaultSearchProperty = defualtSearchProperty;
 	}
 
-	public SearchEngineQuery addSort(String propertyName) {
+	public ElasticSearchEngineQuery addSort(String propertyName) {
 		sortFields.add(new SortField(propertyName));
 		return this;
 	}
 
-	public SearchEngineQuery addSort(String propertyName, SortDirection direction) {
+	public ElasticSearchEngineQuery addSort(String propertyName, SortDirection direction) {
 		sortFields.add(new SortField(propertyName, getSortReverse(direction)));
 		return this;
 	}
 
-	public SearchEngineQuery addSort(String propertyName, SortPropertyType type) {
+	public ElasticSearchEngineQuery addSort(String propertyName, SortPropertyType type) {
 		sortFields.add(new SortField(propertyName, getSortType(type)));
 		return this;
 	}
 
-	public SearchEngineQuery addSort(String propertyName, SortPropertyType type, SortDirection direction) {
+	public ElasticSearchEngineQuery addSort(String propertyName, SortPropertyType type, SortDirection direction) {
 		sortFields.add(new SortField(propertyName, getSortType(type), getSortReverse(direction)));
 		return this;
 	}
 
-	public SearchEngineQuery addSort(SortImplicitType implicitType) {
+	public ElasticSearchEngineQuery addSort(SortImplicitType implicitType) {
 		sortFields.add(new SortField(null, getImplicitSortField(implicitType)));
 		return this;
 	}
 
-	public SearchEngineQuery addSort(SortImplicitType implicitType, SortDirection direction) {
+	public ElasticSearchEngineQuery addSort(SortImplicitType implicitType, SortDirection direction) {
 		sortFields
 				.add(new SortField(null, getImplicitSortField(implicitType), getSortReverse(direction)));
 		return this;
 	}
 
-	public SearchEngineQuery addSort(String propertyName, Locale locale, SortDirection direction) {
+	public ElasticSearchEngineQuery addSort(String propertyName, Locale locale, SortDirection direction) {
 		sortFields.add(new SortField(propertyName, locale, getSortReverse(direction)));
 		return this;
 	}
 
-	public SearchEngineQuery addSort(String propertyName, Locale locale) {
+	public ElasticSearchEngineQuery addSort(String propertyName, Locale locale) {
 		sortFields.add(new SortField(propertyName, locale));
 		return this;
 	}
 
-	public SearchEngineQuery addSort(SortField sortField) {
+	public ElasticSearchEngineQuery addSort(SortField sortField) {
 		sortFields.add(sortField);
 		return this;
 	}
@@ -159,7 +159,7 @@ public class ElasticSearchEngineQuery implements SearchEngineQuery, Cloneable {
 	public List<SortField> getSorts() {
 		return sortFields;
 	}
-	
+
 	private SortType getImplicitSortField(SortImplicitType implicitType) {
 		switch (implicitType) {
 		case DOC:
@@ -197,14 +197,18 @@ public class ElasticSearchEngineQuery implements SearchEngineQuery, Cloneable {
 		throw new NotImplementedException();
 	}
 
-	public SearchEngineQuery setBoost(float boost) {
+	public ElasticSearchEngineQuery setBoost(float boost) {
 		if (query instanceof BoostQuery) {
 			((BoostQuery<?>) query).setBoost(boost);
 		}
 		return this;
 	}
 
-	public SearchEngineQuery setAliases(String[] aliases) {
+	public ElasticSearchEngineQuery setAlias(String alias) {
+		return setAliases(new String[] { alias });
+	}
+
+	public ElasticSearchEngineQuery setAliases(String[] aliases) {
 		if (aliases == null) {
 			query = origQuery;
 			return this;
@@ -231,7 +235,7 @@ public class ElasticSearchEngineQuery implements SearchEngineQuery, Cloneable {
 		return this.aliases;
 	}
 
-	public SearchEngineQuery rewrite() {
+	public ElasticSearchEngineQuery rewrite() {
 		this.rewrite = true;
 		return this;
 	}
@@ -276,7 +280,7 @@ public class ElasticSearchEngineQuery implements SearchEngineQuery, Cloneable {
 	}
 
 	@Override
-	public SearchEngineQuery setFilter(SearchEngineQueryFilter filter) {
+	public ElasticSearchEngineQuery setFilter(SearchEngineQueryFilter filter) {
 		throw new NotImplementedException();
 	}
 
