@@ -32,11 +32,23 @@ public class ElasticEnvironment {
 	public static final String LOCAL = "compass.engine.local";
 
 	/**
+	 * Name of cluster
+	 * Defaults to compass
+	 */
+	public static final String CLUSTER_NAME = "compass.engine.name";
+	
+	/**
 	 * perform writes asynchronously
 	 * Defaults to true
 	 */
 	public static final String ASYNC_WRITE = "compass.engine.async";
 
+	/**
+	 * store source in index
+	 * Defaults to false
+	 */
+	public static final String STORE_SOURCE = "compass.engine.source";
+	
 	/**
 	 * A set of configuration settings for index.
 	 */
