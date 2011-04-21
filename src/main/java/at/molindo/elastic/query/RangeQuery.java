@@ -29,12 +29,12 @@ public class RangeQuery extends Query {
 	}
 
 	public RangeQuery setFrom(Term from) {
-		_builder.from(from.getValue());
+		_builder.from(from == null ? null : from.getValue());
 		return this;
 	}
 
 	public RangeQuery setTo(Term to) {
-		_builder.to(to.getValue());
+		_builder.to(to == null ? null : to.getValue());
 		return this;
 	}
 
