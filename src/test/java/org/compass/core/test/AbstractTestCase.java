@@ -135,7 +135,9 @@ public abstract class AbstractTestCase extends ExtendedTestCase {
     }
 
     protected CompassSession openSession() {
-        return compass.openSession();
+    	CompassSession session = compass.openSession();
+    	refresh(session);
+    	return session;
     }
 
     public InternalCompass getCompass() {
