@@ -31,7 +31,7 @@ public class Deep1PrefixTests extends AbstractAnnotationsTestCase {
         conf.addClass(Order.class).addClass(Customer.class).addClass(Address.class);
     }
 
-    @Ignore("groovy converter not yet supported")
+    @Ignore("dotted paths not supported")
     public void testDeepLevelComponentPrefix() {
         CompassSession session = openSession();
 
