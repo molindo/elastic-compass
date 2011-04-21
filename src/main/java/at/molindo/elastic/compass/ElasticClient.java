@@ -35,6 +35,7 @@ import org.compass.core.mapping.Mapping;
 import org.compass.core.mapping.ResourceMapping;
 import org.compass.core.mapping.ResourcePropertyMapping;
 import org.compass.core.mapping.osem.AbstractCollectionMapping;
+import org.compass.core.mapping.osem.ClassMapping;
 import org.compass.core.spi.ResourceKey;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.indices.analyze.AnalyzeResponse.AnalyzeToken;
@@ -373,13 +374,11 @@ public class ElasticClient {
 				property = _searchEngineFactory.getResourceFactory()
 						.createProperty((String) value, propertyMapping);
 				property.setBoost(propertyMapping.getBoost());
-			} else if (m instanceof AbstractCollectionMapping) {
-				// col size
+			} else {
+				// col size / class
 				property = _searchEngineFactory
 						.getResourceFactory()
 						.createProperty(name, (String) value, Property.Store.YES, Property.Index.NOT_ANALYZED);
-			} else {
-				throw new SearchEngineException("unexpected mapping type " + m);
 			}
 			properties[i++] = property;
 		}

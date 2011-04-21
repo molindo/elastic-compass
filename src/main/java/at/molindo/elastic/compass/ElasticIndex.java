@@ -37,6 +37,8 @@ import org.compass.core.mapping.ResourceMapping;
 import org.compass.core.mapping.ResourcePropertyMapping;
 import org.compass.core.mapping.osem.AbstractCollectionMapping;
 import org.compass.core.mapping.osem.ClassMapping;
+import org.compass.core.mapping.osem.ClassPropertyMapping;
+import org.compass.core.mapping.osem.ComponentMapping;
 import org.elasticsearch.ElasticSearchException;
 import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
 import org.elasticsearch.action.admin.indices.status.IndexStatus;
@@ -90,6 +92,10 @@ public class ElasticIndex {
 		for (ResourceMapping rootMapping : mapping.getRootMappings()) {
 			HashMap<String, Mapping> map = new HashMap<String, Mapping>();
 			
+			if (rootMapping.getUIDPath() != null) {
+				map.put(rootMapping.getUIDPath(), rootMapping);
+			}
+			
 			for (ResourcePropertyMapping property : rootMapping.getResourcePropertyMappings()) {
 				String field = property.getPath().getPath();
 				log.trace("adding field " + field);
@@ -100,6 +106,17 @@ public class ElasticIndex {
 				if (m instanceof AbstractCollectionMapping) {
 					AbstractCollectionMapping col = (AbstractCollectionMapping) m;
 					map.put(col.getColSizePath().getPath(), col);
+					
+					m = col.getElementMapping();
+					
+				}
+				
+				if (m instanceof ComponentMapping) {
+					ComponentMapping comp = (ComponentMapping) m;
+					ClassMapping[] refCls = comp.getRefClassMappings();
+					if (refCls[0].isPoly()) {
+						map.put(refCls[0].getClassPath().getPath(), comp);
+					}
 				}
 			}
 			
@@ -243,8 +260,8 @@ public class ElasticIndex {
 					
 					builder.endObject();
 				
-				} else if (m instanceof AbstractCollectionMapping) {
-					// col size mapping
+				} else {
+					// col size / class
 					builder
 						.startObject(field)
 							.field("type", type.getName())
@@ -252,7 +269,7 @@ public class ElasticIndex {
 							.field("store", store(Store.YES))
 							.field("include_in_all", includeInAll(ExcludeFromAll.YES))
 							.field("term_vector", termVector(TermVector.NO))
-							.endObject();
+						.endObject();
 				}
 			}
 			builder.endObject();
