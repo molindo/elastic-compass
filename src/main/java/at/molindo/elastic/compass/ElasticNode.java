@@ -22,6 +22,8 @@ import org.compass.core.CompassException;
 import org.compass.core.config.CompassConfigurable;
 import org.compass.core.config.CompassSettings;
 import org.compass.core.engine.SearchEngineException;
+import org.elasticsearch.common.settings.ImmutableSettings;
+import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.Node;
 
 public class ElasticNode implements CompassConfigurable {
@@ -30,7 +32,7 @@ public class ElasticNode implements CompassConfigurable {
 			.getLogger(ElasticNode.class);
 
 	private static final String ELASTIC_NODE_KEY = ElasticNode.class.getName();
-	
+
 	private Node _node;
 	private ElasticSearchEngineFactory _searchEngineFactory;
 
@@ -48,24 +50,30 @@ public class ElasticNode implements CompassConfigurable {
 	@Override
 	public void configure(CompassSettings settings) throws CompassException {
 		_settings = new ElasticSettings(settings);
-		
+
 		synchronized (ELASTIC_NODE_KEY) {
 			_node = (Node) settings.getRegistry(ELASTIC_NODE_KEY);
 			if (_node == null) {
-				_node = nodeBuilder()
-					.client(!_settings.getLocal())
-					.local(_settings.getLocal())
-					.node();
+				// @formatter:off
+				Settings elasticSettings = ImmutableSettings.settingsBuilder()
+						.put("cluster.name", _settings.getClusterName())
+						.build();
+				// @formatter:on
+
+				_node = nodeBuilder().client(!_settings.getLocal()).local(_settings.getLocal())
+						.settings(elasticSettings).node();
+				
 				settings.setRegistry(ELASTIC_NODE_KEY, _node);
 				// FIXME and who stops me?
-				
+
 				// wait for cluster to become ready if necessary
 				String nodeCount = _settings.getLocal() ? "1" : ">1";
-				log.info("waiting for " +nodeCount+ " nodes");
-				_node.client().admin().cluster().prepareHealth().setWaitForNodes(nodeCount).execute().actionGet();
+				log.info("waiting for " + nodeCount + " nodes");
+				_node.client().admin().cluster().prepareHealth().setWaitForNodes(nodeCount)
+						.execute().actionGet();
 			}
 		}
-		
+
 		_index = new ElasticIndex(_settings, _node.client(), _searchEngineFactory.getMapping());
 	}
 
@@ -80,7 +88,7 @@ public class ElasticNode implements CompassConfigurable {
 	public void start() {
 		// noop
 	}
-	
+
 	public void stop() {
 		// noop
 	}
@@ -101,11 +109,11 @@ public class ElasticNode implements CompassConfigurable {
 
 	public void replaceWith(ElasticNode node) {
 		String alias = _index.getAlias();
-		
+
 		_index.deleteIndex();
-		
+
 		node._index.addAlias(alias);
-		
+
 		_index = new ElasticIndex(_settings, _node.client(), _searchEngineFactory.getMapping());
 	}
 }
