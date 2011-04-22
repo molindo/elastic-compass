@@ -113,7 +113,7 @@ public abstract class AbstractTestCase extends ExtendedTestCase {
         conf.getSettings().setBooleanSetting(ElasticEnvironment.LOCAL, local);
         conf.getSettings().setBooleanSetting(ElasticEnvironment.ASYNC_WRITE, false);
         conf.getSettings().setBooleanSetting(ElasticEnvironment.STORE_SOURCE, true);
-        conf.getSettings().setSetting(ElasticEnvironment.CLUSTER_NAME, !local ? "elasticsearch" : getClass().getSimpleName());
+        conf.getSettings().setSetting(ElasticEnvironment.CLUSTER_NAME, !local ? "elasticsearch" : getClass().getName());
         
         addSettings(conf.getSettings());
         addExtraConf(conf);
