@@ -36,9 +36,11 @@ import org.compass.core.mapping.Mapping;
 import org.compass.core.mapping.ResourceMapping;
 import org.compass.core.mapping.ResourcePropertyMapping;
 import org.compass.core.mapping.osem.AbstractCollectionMapping;
+import org.compass.core.mapping.osem.AbstractRefAliasMapping;
 import org.compass.core.mapping.osem.ClassMapping;
 import org.compass.core.mapping.osem.ClassPropertyMapping;
 import org.compass.core.mapping.osem.ComponentMapping;
+import org.compass.core.mapping.osem.ReferenceMapping;
 import org.compass.core.mapping.support.AbstractResourceMapping;
 import org.elasticsearch.ElasticSearchException;
 import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
@@ -70,8 +72,8 @@ public class ElasticIndex {
 	private final ElasticSettings _settings;
 	private String _index;
 
-	private Map<String, Map<String, Mapping>> _aliasFields = new HashMap<String, Map<String,Mapping>>();
-	
+	private Map<String, Map<String, Mapping>> _aliasFields = new HashMap<String, Map<String, Mapping>>();
+
 	public ElasticIndex(ElasticSettings settings, Client client, CompassMapping mapping) {
 		if (settings == null) {
 			throw new NullPointerException("settings");
@@ -88,21 +90,28 @@ public class ElasticIndex {
 			throw new NullPointerException("mapping");
 		}
 		_mapping = mapping;
-		
+
 		// root mappings to alias list
 		for (ResourceMapping rootMapping : mapping.getRootMappings()) {
 			HashMap<String, Mapping> map = new HashMap<String, Mapping>();
-			
+
 			if (rootMapping.getUIDPath() != null) {
 				map.put(rootMapping.getUIDPath(), rootMapping);
 			}
-			
+
+			if (rootMapping instanceof ClassMapping) {
+				ClassMapping clsMapping = (ClassMapping) rootMapping;
+				if (clsMapping.isPoly() && clsMapping.getPolyClass() == null) {
+					map.put(clsMapping.getClassPath().getPath(), clsMapping);
+				}
+			}
+
 			for (ResourcePropertyMapping property : rootMapping.getResourcePropertyMappings()) {
 				String field = property.getPath().getPath();
 				log.trace("adding field " + field);
 				map.put(field, property);
 			}
-			
+
 			for (Mapping m : IteratorUtils.iterable(rootMapping.mappingsIt())) {
 				if (m instanceof AbstractCollectionMapping) {
 					AbstractCollectionMapping col = (AbstractCollectionMapping) m;
@@ -110,18 +119,18 @@ public class ElasticIndex {
 						map.put(col.getColSizePath().getPath(), col);
 					}
 					m = col.getElementMapping();
-					
+
 				}
-				
-				if (m instanceof ComponentMapping) {
-					ComponentMapping comp = (ComponentMapping) m;
+
+				if (m instanceof AbstractRefAliasMapping) {
+					AbstractRefAliasMapping comp = (AbstractRefAliasMapping) m;
 					ClassMapping[] refCls = comp.getRefClassMappings();
 					if (refCls[0].isPoly()) {
 						map.put(refCls[0].getClassPath().getPath(), comp);
 					}
 				}
 			}
-			
+
 			_aliasFields.put(rootMapping.getAlias(), Collections.unmodifiableMap(map));
 		}
 	}
@@ -156,14 +165,14 @@ public class ElasticIndex {
 		// push mappings
 		for (ResourceMapping mapping : _mapping.getRootMappings()) {
 
-			indicesAdminClient().preparePutMapping(getIndex())
-					.setType(mapping.getAlias()).setSource(toMappingSource((AbstractResourceMapping)mapping)).execute()
+			indicesAdminClient().preparePutMapping(getIndex()).setType(mapping.getAlias())
+					.setSource(toMappingSource((AbstractResourceMapping) mapping)).execute()
 					.actionGet();
 
-//			if (!resp.acknowledged()) {
-//				throw new SearchEngineException("failed to put mapping for type "
-//						+ mapping.getAlias());
-//			}
+			// if (!resp.acknowledged()) {
+			// throw new SearchEngineException("failed to put mapping for type "
+			// + mapping.getAlias());
+			// }
 		}
 	}
 
@@ -182,7 +191,8 @@ public class ElasticIndex {
 					log.info("deleting index '" + index + "' without aliases");
 					indicesAdminClient().prepareDelete(index).execute().actionGet();
 				} else {
-					log.info("keeping index '" + index + "' with aliases " + indexState.getAliases());
+					log.info("keeping index '" + index + "' with aliases "
+							+ indexState.getAliases());
 				}
 			}
 		}
@@ -208,7 +218,7 @@ public class ElasticIndex {
 				throw new SearchEngineException("alias name must not point to index, was '"
 						+ _alias + "'");
 			}
-			
+
 			log.info("index '" + _alias + "' verified successfully");
 		} catch (IndexMissingException e) {
 			// alias unknown, create new index
@@ -393,7 +403,7 @@ public class ElasticIndex {
 			return null;
 		}
 	}
-	
+
 	private String generateIndexName() {
 		return UUID.randomUUID().toString();
 	}
