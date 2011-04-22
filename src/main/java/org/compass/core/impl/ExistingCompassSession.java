@@ -293,5 +293,16 @@ public class ExistingCompassSession implements InternalCompassSession {
 	public CompassAnalyzerHelper analyzerHelper() throws CompassException {
 		return session.analyzerHelper();
 	}
+
+	@Override
+	public Resource getResourceByIdResource(Resource idResource) throws CompassException {
+		return session.getResourceByIdResource(idResource);
+	}
+
+	@Override
+	public Resource getResourceByIdResourceNoCache(Resource idResource) throws CompassException {
+		return session.getResourceByIdResourceNoCache(idResource);
+	}
+	
 	
 }

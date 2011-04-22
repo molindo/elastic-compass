@@ -39,5 +39,9 @@ public interface InternalCompassSession extends CompassSession {
 	Object getByResource(Resource resource) throws CompassException;
 
 	void addDelegateClose(InternalSessionDelegateClose delegateClose);
+	
+    Resource getResourceByIdResource(Resource idResource) throws CompassException;
+
+    Resource getResourceByIdResourceNoCache(Resource idResource) throws CompassException;
 
 }
