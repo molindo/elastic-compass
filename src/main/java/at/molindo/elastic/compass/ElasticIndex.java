@@ -39,6 +39,7 @@ import org.compass.core.mapping.osem.AbstractCollectionMapping;
 import org.compass.core.mapping.osem.ClassMapping;
 import org.compass.core.mapping.osem.ClassPropertyMapping;
 import org.compass.core.mapping.osem.ComponentMapping;
+import org.compass.core.mapping.support.AbstractResourceMapping;
 import org.elasticsearch.ElasticSearchException;
 import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
 import org.elasticsearch.action.admin.indices.status.IndexStatus;
@@ -156,7 +157,7 @@ public class ElasticIndex {
 		for (ResourceMapping mapping : _mapping.getRootMappings()) {
 
 			indicesAdminClient().preparePutMapping(getIndex())
-					.setType(mapping.getAlias()).setSource(toMappingSource((ClassMapping)mapping)).execute()
+					.setType(mapping.getAlias()).setSource(toMappingSource((AbstractResourceMapping)mapping)).execute()
 					.actionGet();
 
 //			if (!resp.acknowledged()) {
@@ -226,7 +227,7 @@ public class ElasticIndex {
 	}
 
 	// @formatter:off
-	private XContentBuilder toMappingSource(ClassMapping mapping) {
+	private XContentBuilder toMappingSource(AbstractResourceMapping mapping) {
 		try {
 			XContentBuilder builder = jsonBuilder().startObject();
 
@@ -383,7 +384,7 @@ public class ElasticIndex {
 		}
 	}
 
-	private String analyzer(ClassMapping mapping, ResourcePropertyMapping property) {
+	private String analyzer(AbstractResourceMapping mapping, ResourcePropertyMapping property) {
 		if (!StringUtils.empty(property.getAnalyzer())) {
 			return property.getAnalyzer();
 		} else if (!StringUtils.empty(mapping.getAnalyzer())) {
