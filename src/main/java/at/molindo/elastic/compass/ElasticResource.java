@@ -416,4 +416,9 @@ public class ElasticResource implements AliasedObject, InternalResource, Map<Str
 				+ boost + "]";
 	}
 
+	public String getDocId() {
+		// TODO don't use Compass id as ES id, since compass may have multiples. 
+		return getId();
+	}
+
 }
