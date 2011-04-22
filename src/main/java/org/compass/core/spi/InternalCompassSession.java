@@ -6,6 +6,7 @@ import org.compass.core.Resource;
 import org.compass.core.cache.first.FirstLevelCache;
 import org.compass.core.engine.SearchEngine;
 import org.compass.core.mapping.CompassMapping;
+import org.compass.core.marshall.MarshallingContext;
 import org.compass.core.marshall.MarshallingStrategy;
 import org.compass.core.metadata.CompassMetaData;
 
@@ -44,4 +45,5 @@ public interface InternalCompassSession extends CompassSession {
 
     Resource getResourceByIdResourceNoCache(Resource idResource) throws CompassException;
 
+    Object get(String alias, Object id, MarshallingContext context) throws CompassException;
 }
