@@ -29,13 +29,12 @@ import java.util.Set;
 
 import org.compass.core.Property;
 import org.compass.core.Resource;
+import org.compass.core.Property.TermVector;
 import org.compass.core.engine.SearchEngineException;
 import org.compass.core.engine.SearchEngineHits;
 import org.compass.core.mapping.Mapping;
 import org.compass.core.mapping.ResourceMapping;
 import org.compass.core.mapping.ResourcePropertyMapping;
-import org.compass.core.mapping.osem.AbstractCollectionMapping;
-import org.compass.core.mapping.osem.ClassMapping;
 import org.compass.core.spi.ResourceKey;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.indices.analyze.AnalyzeResponse.AnalyzeToken;
@@ -44,20 +43,27 @@ import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetField;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.client.action.delete.DeleteRequestBuilder;
 import org.elasticsearch.client.action.index.IndexRequestBuilder;
 import org.elasticsearch.client.action.search.SearchRequestBuilder;
 import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.index.query.xcontent.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHitField;
+import org.elasticsearch.search.facet.Facet;
+import org.elasticsearch.search.facet.FacetBuilders;
+import org.elasticsearch.search.facet.terms.TermsFacet;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 
 import at.molindo.elastic.query.InQuery;
 import at.molindo.elastic.query.SortField;
+import at.molindo.elastic.term.TermFreqVector;
+import at.molindo.elastic.term.TermPositionVector;
 import at.molindo.utils.collections.ArrayUtils;
 
 public class ElasticClient {
@@ -407,5 +413,53 @@ public class ElasticClient {
 	public List<AnalyzeToken> analyze(String analyzer, String text) {
 		return _client.admin().indices().prepareAnalyze(_index.getAlias(), text)
 				.setAnalyzer(analyzer).execute().actionGet().getTokens();
+	}
+
+	public TermFreqVector getTermFreqVector(String alias, String docId, String field) {
+		Property.TermVector tf = null;
+		if (ElasticEnvironment.Mapping.ALL_FIELD.equals(field)) {
+			tf = _searchEngineFactory.getMapping().getRootMappingByAlias(alias).getAllMapping()
+					.getTermVector();
+		} else {
+			Mapping mapping = _index.getFieldMapping(alias).get(field);
+			if (mapping instanceof ResourcePropertyMapping) {
+				return TermFreqVector.NULL;
+			}
+			ResourcePropertyMapping resource = (ResourcePropertyMapping) mapping;
+			tf = resource.getTermVector();
+		}
+
+		if (tf == null || tf == TermVector.NO) {
+			return TermFreqVector.NULL;
+		}
+
+		// @formatter:off
+		SearchResponse resp = _client.prepareSearch(_indexName)
+				.addField(field)
+				.setQuery(QueryBuilders.fieldQuery("_id", docId))
+				.addFacet(FacetBuilders.termsFacet(field).field(field))
+				.execute().actionGet();
+		// @formatter:on
+
+		if (resp.getHits().getTotalHits() == 0) {
+			return TermFreqVector.NULL;
+		}
+
+		TermsFacet facet = (TermsFacet) resp.getFacets().getFacets().get(field);
+		if (facet == null) {
+			return TermFreqVector.NULL;
+		}
+
+		switch (tf) {
+		case YES:
+			return new TermFreqVector(facet);
+		case WITH_OFFSETS:
+			return new TermPositionVector(facet, false, true);
+		case WITH_POSITIONS:
+			return new TermPositionVector(facet, true, false);
+		case WITH_POSITIONS_OFFSETS:
+			return new TermPositionVector(facet, true, true);
+		default: throw new SearchEngineException("unexpected TermVector value " + tf);
+		}
 	}
 }

@@ -16,11 +16,14 @@
 
 package at.molindo.elastic.compass;
 
+import java.io.IOException;
+
 import org.compass.core.Compass;
 import org.compass.core.CompassHits;
 import org.compass.core.CompassQuery;
 import org.compass.core.CompassQueryFilter;
 import org.compass.core.CompassSession;
+import org.compass.core.Resource;
 import org.compass.core.engine.SearchEngineException;
 import org.compass.core.engine.SearchEngineQuery;
 import org.compass.core.engine.SearchEngineQueryFilter;
@@ -30,9 +33,11 @@ import org.compass.core.impl.DefaultCompassQueryFilter;
 import org.compass.core.spi.InternalCompass;
 import org.compass.core.spi.InternalCompassQuery;
 import org.compass.core.spi.InternalCompassSession;
+import org.compass.core.spi.InternalResource;
 
 import at.molindo.elastic.filter.Filter;
 import at.molindo.elastic.query.Query;
+import at.molindo.elastic.term.TermFreqVector;
 
 /**
  * Allows to create Compass related objects based on external (internally no supported by Compass)
@@ -168,4 +173,9 @@ public abstract class ElasticHelper {
     public static String[] findPropertyValues(CompassSession session, String propertyName) throws SearchEngineException {
        	return getElasticInternalSearch(session).getClient().findPropertyValues(propertyName);
     }
+
+	public static TermFreqVector getTermFreqVector(CompassSession session, Resource resource, String field) {
+        resource = ((InternalCompassSession) session).getResourceByIdResourceNoCache(resource);
+        return getElasticInternalSearch(session).getClient().getTermFreqVector(resource.getAlias(), ((ElasticResource)resource).getDocId(), field);
+	}
 }
