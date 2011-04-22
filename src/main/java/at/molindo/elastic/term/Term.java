@@ -46,7 +46,7 @@ public abstract class Term {
 		return _name + ": " + _value;
 	}
 
-	protected abstract XContentQueryBuilder buildQuery();
+	public abstract XContentQueryBuilder buildQuery();
 
 	private static class StringTerm extends Term {
 
@@ -55,7 +55,7 @@ public abstract class Term {
 		}
 
 		@Override
-		protected XContentQueryBuilder buildQuery() {
+		public XContentQueryBuilder buildQuery() {
 			return QueryBuilders.termQuery(getName(), getValue());
 		}
 
