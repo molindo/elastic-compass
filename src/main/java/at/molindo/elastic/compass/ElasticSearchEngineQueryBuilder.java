@@ -27,6 +27,7 @@ import org.compass.core.engine.SearchEngineQueryBuilder;
 import at.molindo.elastic.compass.query.ElasticSearchEngineBooleanQueryBuilder;
 import at.molindo.elastic.compass.query.ElasticSearchEngineQueryStringBuilder;
 import at.molindo.elastic.query.ConstantScoreQuery;
+import at.molindo.elastic.query.MatchAllQuery;
 import at.molindo.elastic.query.Query;
 import at.molindo.elastic.query.RangeQuery;
 import at.molindo.elastic.query.Term;
@@ -77,7 +78,7 @@ public class ElasticSearchEngineQueryBuilder implements SearchEngineQueryBuilder
 
 	@Override
 	public SearchEngineQuery matchAll() {
-		throw new NotImplementedException();
+		return new ElasticSearchEngineQuery(_searchEngineFactory, new MatchAllQuery());
 	}
 
 	public SearchEngineQuery between(String resourcePropertyName, String low, String high, boolean inclusive, boolean constantScore) {
