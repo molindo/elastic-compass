@@ -599,7 +599,9 @@ public class CompassEnvironment {
         /**
          * The name of the property where extended aliases are stored in the resource.
          * Defaults to {@link #DEFAULT_EXTENDED_ALIAS_NAME} which is <code>extendedAlias</code>.
+         * @deprecated not yet supported
          */
+        @Deprecated
         public static final String EXTENDED_ALIAS_NAME = "compass.property.extendedAlias";
 
         /**
