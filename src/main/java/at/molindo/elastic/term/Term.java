@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package at.molindo.elastic.query;
+package at.molindo.elastic.term;
 
 import org.elasticsearch.index.query.xcontent.QueryBuilders;
 import org.elasticsearch.index.query.xcontent.XContentQueryBuilder;

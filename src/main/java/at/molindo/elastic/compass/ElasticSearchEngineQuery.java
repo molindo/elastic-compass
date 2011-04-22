@@ -35,8 +35,8 @@ import at.molindo.elastic.query.ElasticSpanQuery;
 import at.molindo.elastic.query.Query;
 import at.molindo.elastic.query.SortField;
 import at.molindo.elastic.query.SortField.SortType;
-import at.molindo.elastic.query.Term;
 import at.molindo.elastic.query.TermQuery;
+import at.molindo.elastic.term.Term;
 
 /**
  * @author kimchy

@@ -18,6 +18,8 @@ package at.molindo.elastic.query;
 
 import org.elasticsearch.index.query.xcontent.XContentQueryBuilder;
 
+import at.molindo.elastic.term.Term;
+
 public class TermQuery extends Query {
 
 	private XContentQueryBuilder _builder;

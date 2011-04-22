@@ -30,8 +30,8 @@ import at.molindo.elastic.query.ConstantScoreQuery;
 import at.molindo.elastic.query.MatchAllQuery;
 import at.molindo.elastic.query.Query;
 import at.molindo.elastic.query.RangeQuery;
-import at.molindo.elastic.query.Term;
 import at.molindo.elastic.query.TermQuery;
+import at.molindo.elastic.term.Term;
 
 public class ElasticSearchEngineQueryBuilder implements SearchEngineQueryBuilder {
 

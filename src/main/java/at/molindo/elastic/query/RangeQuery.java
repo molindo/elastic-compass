@@ -20,6 +20,8 @@ import org.elasticsearch.index.query.xcontent.QueryBuilders;
 import org.elasticsearch.index.query.xcontent.RangeQueryBuilder;
 import org.elasticsearch.index.query.xcontent.XContentQueryBuilder;
 
+import at.molindo.elastic.term.Term;
+
 public class RangeQuery extends Query {
 
 	private RangeQueryBuilder _builder;
