@@ -16,6 +16,8 @@
 
 package org.compass.core.config;
 
+import at.molindo.elastic.compass.ElasticEnvironment;
+
 /**
  * Compass environment settings constants class. Additional environemnt setting
  * can be found at: {@link org.compass.core.lucene.LuceneEnvironment}.
@@ -515,12 +517,12 @@ public class CompassEnvironment {
         public static final String NAME = "compass.property.all";
 
         /**
-         * The default name for the "all" property. Defaults to <code>zzz-all</code>.
+         * The default name for the "all" property. Defaults to <code>_all</code>.
          * 
-         * @deprecated not supported by ES
+         * @deprecated use {@link ElasticEnvironment.Mapping#ALL_FIELD} instead
          */
         @Deprecated
-        public static final String DEFAULT_NAME = "zzz-all";
+        public static final String DEFAULT_NAME = ElasticEnvironment.Mapping.ALL_FIELD;
 
         /**
          * The term vector the will be used with the all property. Can be one out
