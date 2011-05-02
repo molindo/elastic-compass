@@ -19,6 +19,8 @@ package org.compass.core.test;
 import java.lang.reflect.Method;
 import java.util.Vector;
 
+import org.junit.Ignore;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 
@@ -33,6 +35,9 @@ import junit.framework.TestCase;
  */
 public abstract class ExtendedTestCase extends TestCase {
 
+	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory
+			.getLogger(ExtendedTestCase.class);
+	
     private static int testCount = 0;
 
     private static int totalTestCount = -1;
@@ -48,6 +53,16 @@ public abstract class ExtendedTestCase extends TestCase {
     }
 
     public void runBare() throws Throwable {
+    	if (getClass().getMethod(getName(), (Class[])null).isAnnotationPresent(Ignore.class)) {
+			/*
+			 * method level @Ignore for JUnit3 style tests
+			 * 
+			 * as ignoring isn't supported by JUnit3 API, we simply log and pretend to succeed
+			 */
+    		log.warn("ignoring test: " + getName());
+    		return;
+    	}
+    	
         Throwable exception = null;
         if (totalTestCount == -1) {
             totalTestCount = countTotalTests();
