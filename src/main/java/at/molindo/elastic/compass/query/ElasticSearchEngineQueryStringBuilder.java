@@ -21,9 +21,9 @@ import org.compass.core.engine.SearchEngineQueryBuilder;
 import org.compass.core.engine.SearchEngineQueryBuilder.SearchEngineQueryStringBuilder;
 import org.elasticsearch.index.query.xcontent.QueryStringQueryBuilder.Operator;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import at.molindo.elastic.compass.ElasticSearchEngineFactory;
 import at.molindo.elastic.compass.ElasticSearchEngineQuery;
+import at.molindo.elastic.compass.NotImplementedException;
 import at.molindo.elastic.query.StringQuery;
 import at.molindo.utils.data.StringUtils;
 
