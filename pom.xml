@@ -68,7 +68,7 @@
 		<dependency>
 			<groupId>org.elasticsearch</groupId>
 			<artifactId>elasticsearch</artifactId>
-			<version>0.15.2</version>
+			<version>${elasticsearch.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-collections</groupId>
@@ -132,4 +132,7 @@
 		</dependency>
 	</dependencies>
 
+	<properties>
+		<elasticsearch.version>0.16.0</elasticsearch.version>
+	</properties>
 </project>

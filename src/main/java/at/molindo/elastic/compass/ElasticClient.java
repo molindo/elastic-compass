@@ -28,8 +28,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.compass.core.Property;
-import org.compass.core.Resource;
 import org.compass.core.Property.TermVector;
+import org.compass.core.Resource;
 import org.compass.core.engine.SearchEngineException;
 import org.compass.core.engine.SearchEngineHits;
 import org.compass.core.mapping.Mapping;
@@ -53,14 +53,13 @@ import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.index.query.xcontent.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHitField;
-import org.elasticsearch.search.facet.Facet;
 import org.elasticsearch.search.facet.FacetBuilders;
 import org.elasticsearch.search.facet.terms.TermsFacet;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 
-import at.molindo.elastic.query.InQuery;
+import at.molindo.elastic.query.IdsQuery;
 import at.molindo.elastic.query.SortField;
 import at.molindo.elastic.term.TermFreqVector;
 import at.molindo.elastic.term.TermPositionVector;
@@ -173,9 +172,9 @@ public class ElasticClient {
 				idStrings.put(ids[i].getStringValue(), i);
 			}
 
-			InQuery inQuery = new InQuery("_id", idStrings.keySet()
+			IdsQuery idsQuery = new IdsQuery(key.getAlias()).addIds(idStrings.keySet()
 					.toArray(new String[idStrings.size()]));
-			ElasticSearchEngineQuery query = new ElasticSearchEngineQuery(_searchEngineFactory, inQuery)
+			ElasticSearchEngineQuery query = new ElasticSearchEngineQuery(_searchEngineFactory, idsQuery)
 					.setAlias(key.getAlias());
 
 			SearchEngineHits hits = find(query);
@@ -436,7 +435,7 @@ public class ElasticClient {
 		// @formatter:off
 		SearchResponse resp = _client.prepareSearch(_indexName)
 				.addField(field)
-				.setQuery(QueryBuilders.fieldQuery("_id", docId))
+				.setQuery(QueryBuilders.idsQuery(alias).addIds(docId))
 				.addFacet(FacetBuilders.termsFacet(field).field(field))
 				.execute().actionGet();
 		// @formatter:on
