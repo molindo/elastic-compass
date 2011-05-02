@@ -15,38 +15,48 @@
 	<version>1.0-SNAPSHOT</version>
 
 	<build>
-	<plugins>
-		<plugin>
-			<groupId>com.mycila.maven-license-plugin</groupId>
-			<artifactId>maven-license-plugin</artifactId>
-			<configuration>
-				<header>LICENSE</header>
-				<excludes>
-					<exclude>LICENSE</exclude>
-					<exclude>README</exclude>
-					<exclude>src/*/java/at/molindo/thirdparty/**</exclude>
-					<exclude>src/*/java/org/compass/**</exclude>
-					<exclude>**/.gitignore</exclude>
-					<exclude>**/*.dtd</exclude>
-					<exclude>**/*.properties</exclude>
-					<exclude>src/test/**/*-expected.*</exclude>
-					<exclude>data/**</exclude>
-				</excludes>
-				<strictCheck>true</strictCheck>
-				<aggregate>true</aggregate>
-				<properties>
-					<year>2011</year>
-				</properties>
-			</configuration>
-			<executions>
-				<execution>
-					<goals>
-						<goal>check</goal>
-					</goals>
-				</execution>
-			</executions>
-		</plugin>
-	</plugins>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<includes>
+						<include>**/*Tests.class</include>
+						<include>**/*Test.class</include>
+					</includes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.mycila.maven-license-plugin</groupId>
+				<artifactId>maven-license-plugin</artifactId>
+				<configuration>
+					<header>LICENSE</header>
+					<excludes>
+						<exclude>LICENSE</exclude>
+						<exclude>README</exclude>
+						<exclude>src/*/java/at/molindo/thirdparty/**</exclude>
+						<exclude>src/*/java/org/compass/**</exclude>
+						<exclude>**/.gitignore</exclude>
+						<exclude>**/*.dtd</exclude>
+						<exclude>**/*.properties</exclude>
+						<exclude>src/test/**/*-expected.*</exclude>
+						<exclude>data/**</exclude>
+					</excludes>
+					<strictCheck>true</strictCheck>
+					<aggregate>true</aggregate>
+					<properties>
+						<year>2011</year>
+					</properties>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
 	</build>
 
 	<dependencies>
@@ -96,19 +106,19 @@
 			<version>1.0</version>
 		</dependency>
 		<dependency>
-		    <groupId>pull-parser</groupId>
-		    <artifactId>pull-parser</artifactId>
-		    <version>2.1.10</version>
+			<groupId>pull-parser</groupId>
+			<artifactId>pull-parser</artifactId>
+			<version>2.1.10</version>
 		</dependency>
 		<dependency>
-		    <groupId>xpp3</groupId>
-		    <artifactId>xpp3</artifactId>
-		    <version>1.1.4c</version>
+			<groupId>xpp3</groupId>
+			<artifactId>xpp3</artifactId>
+			<version>1.1.4c</version>
 		</dependency>
 		<dependency>
-		    <groupId>jaxen</groupId>
-		    <artifactId>jaxen</artifactId>
-		    <version>1.1.1</version>
+			<groupId>jaxen</groupId>
+			<artifactId>jaxen</artifactId>
+			<version>1.1.1</version>
 		</dependency>
 
 		<!-- optional for spring -->
@@ -141,10 +151,10 @@
 
 		<!-- optional for dynamic converters -->
 		<dependency>
-		    <groupId>org.codehaus.groovy</groupId>
-		    <artifactId>groovy-all</artifactId>
-		    <version>1.7.10</version>
-		    <optional>true</optional>
+			<groupId>org.codehaus.groovy</groupId>
+			<artifactId>groovy-all</artifactId>
+			<version>1.7.10</version>
+			<optional>true</optional>
 		</dependency>
 
 		<dependency>
