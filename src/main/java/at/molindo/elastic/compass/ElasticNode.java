@@ -23,7 +23,6 @@ import org.compass.core.config.CompassConfigurable;
 import org.compass.core.config.CompassSettings;
 import org.compass.core.engine.SearchEngineException;
 import org.elasticsearch.common.settings.ImmutableSettings;
-import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.Node;
 
 public class ElasticNode implements CompassConfigurable {
@@ -54,14 +53,17 @@ public class ElasticNode implements CompassConfigurable {
 		synchronized (ELASTIC_NODE_KEY) {
 			_node = (Node) settings.getRegistry(ELASTIC_NODE_KEY);
 			if (_node == null) {
-				// @formatter:off
-				Settings elasticSettings = ImmutableSettings.settingsBuilder()
-						.put("cluster.name", _settings.getClusterName())
-						.build();
-				// @formatter:on
-
-				_node = nodeBuilder().client(!_settings.getLocal()).local(_settings.getLocal())
-						.settings(elasticSettings).node();
+				boolean local = _settings.getLocal();
+				
+				ImmutableSettings.Builder settingsBuilder = ImmutableSettings.settingsBuilder()
+						.put("cluster.name", _settings.getClusterName());
+				
+				if (local) {
+					settingsBuilder.put("index.store.type", "ram");
+				}
+				
+				_node = nodeBuilder().local(local).client(!local).data(local)
+						.settings(settingsBuilder.build()).node();
 				
 				settings.setRegistry(ELASTIC_NODE_KEY, _node);
 				// FIXME and who stops me?
