@@ -80,7 +80,7 @@ public abstract class ExtendedTestCase extends TestCase {
             }
         }
         if (exception != null) {
-        	if (getClass().getMethod(getName(), (Class[])null).isAnnotationPresent(Ignore.class)) {
+        	if (isIgnoredTest()) {
     			/*
     			 * method level @Ignore for JUnit3 style tests
     			 * 
@@ -90,8 +90,18 @@ public abstract class ExtendedTestCase extends TestCase {
         	} else {
         		throw exception;
         	}
+        } else if (isFailOnSucceededIgnoredTest() && isIgnoredTest()) {
+        	fail("test shouldn't be ignored: " + getName());
         }
     }
+
+	protected boolean isFailOnSucceededIgnoredTest() {
+		return true;
+	}
+
+	protected boolean isIgnoredTest() throws NoSuchMethodException {
+		return getClass().getMethod(getName()).isAnnotationPresent(Ignore.class);
+	}
 
     protected static void disableAfterTestCase() {
         disableAfterTestCase = true;
