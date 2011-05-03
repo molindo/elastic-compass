@@ -53,16 +53,6 @@ public abstract class ExtendedTestCase extends TestCase {
     }
 
     public void runBare() throws Throwable {
-    	if (getClass().getMethod(getName(), (Class[])null).isAnnotationPresent(Ignore.class)) {
-			/*
-			 * method level @Ignore for JUnit3 style tests
-			 * 
-			 * as ignoring isn't supported by JUnit3 API, we simply log and pretend to succeed
-			 */
-    		log.warn("ignoring test: " + getName());
-    		return;
-    	}
-    	
         Throwable exception = null;
         if (totalTestCount == -1) {
             totalTestCount = countTotalTests();
@@ -89,7 +79,18 @@ public abstract class ExtendedTestCase extends TestCase {
                 disableAfterTestCase = false;
             }
         }
-        if (exception != null) throw exception;
+        if (exception != null) {
+        	if (getClass().getMethod(getName(), (Class[])null).isAnnotationPresent(Ignore.class)) {
+    			/*
+    			 * method level @Ignore for JUnit3 style tests
+    			 * 
+    			 * as ignoring isn't supported by JUnit3 API, we simply log and pretend to succeed
+    			 */
+        		log.warn("ignoring failed test: " + getName(), exception);
+        	} else {
+        		throw exception;
+        	}
+        }
     }
 
     protected static void disableAfterTestCase() {
