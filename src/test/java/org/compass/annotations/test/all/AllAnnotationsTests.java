@@ -46,7 +46,7 @@ public class AllAnnotationsTests extends AbstractAnnotationsTestCase {
         session.close();
     }
 
-    @Ignore("excluding _type from _all not supported")
+    //@Ignore("excluding _type from _all not supported")
     public void testExcludeAliasTrue() {
         CompassSession session = openSession();
 
