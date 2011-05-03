@@ -197,10 +197,14 @@ public class ElasticIndex {
 	public synchronized void deleteIndex() {
 		String index = getIndex(false);
 		if (index != null) {
-			log.info("deleting alias '" + _alias + "' of index '" + index + "'");
-			IndicesAdminClient client = indicesAdminClient();
-			client.prepareAliases().removeAlias(index, _alias).execute().actionGet();
-
+			try {
+				log.info("deleting alias '" + _alias + "' of index '" + index + "'");
+				IndicesAdminClient client = indicesAdminClient();
+				client.prepareAliases().removeAlias(index, _alias).execute().actionGet();
+			} catch (IndexMissingException e) {
+				log.trace("alias " + _alias + " didn't exist, ignore");
+			}
+			
 			ClusterStateResponse state = adminClient().cluster().prepareState().execute()
 					.actionGet();
 			IndexMetaData indexState = state.getState().getMetaData().getIndices().get(index);
@@ -213,6 +217,7 @@ public class ElasticIndex {
 							+ indexState.getAliases());
 				}
 			}
+
 		}
 	}
 

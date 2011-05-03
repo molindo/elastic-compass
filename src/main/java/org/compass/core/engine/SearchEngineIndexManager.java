@@ -33,6 +33,8 @@ public interface SearchEngineIndexManager {
 
 	void replaceIndex(SearchEngineIndexManager searchEngineIndexManager, DefaultReplaceIndexCallback defaultReplaceIndexCallback);
 
+	void createIndex();
+	
 	void deleteIndex();
 	
     public static interface IndexOperationPlan {

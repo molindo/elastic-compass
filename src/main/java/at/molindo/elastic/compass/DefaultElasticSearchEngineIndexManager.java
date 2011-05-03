@@ -79,6 +79,12 @@ public class DefaultElasticSearchEngineIndexManager implements ElasticSearchEngi
         _searchEngineFactory.openElasticClient().verifyIndex();
 	}
 	
+	@Override
+	public void createIndex() {
+		deleteIndex();
+		verifyIndex();
+	}
+
 	public void deleteIndex() {
         if (log.isDebugEnabled()) {
             log.debug("Deleting index");
