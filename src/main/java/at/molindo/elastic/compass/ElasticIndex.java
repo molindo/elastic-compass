@@ -115,6 +115,9 @@ public class ElasticIndex {
 
 		if (mapping instanceof ClassMapping) {
 			ClassMapping clsMapping = (ClassMapping) mapping;
+			if (clsMapping.getClazz().isEnum() && clsMapping.getEnumNamePath() != null) {
+				map.put(clsMapping.getEnumNamePath().getPath(), clsMapping);
+			}
 			if (clsMapping.isPoly() && clsMapping.getClassPath() != null) {
 				map.put(clsMapping.getClassPath().getPath(), clsMapping);
 			}
