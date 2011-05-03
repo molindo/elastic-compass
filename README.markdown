@@ -32,6 +32,7 @@ Unsupported features
 - _analyzer property not working as expected
 - poly alias query not yet supported
 - extended aliases not stored in all property
+- class level boosting
 
 Migration Guide
 ---------------
