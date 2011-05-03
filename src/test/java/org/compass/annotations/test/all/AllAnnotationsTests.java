@@ -62,6 +62,7 @@ public class AllAnnotationsTests extends AbstractAnnotationsTestCase {
         session.close();
     }
 
+    @Ignore("alias not included in all property")
     public void testExcludeAliasFalse() {
         CompassSession session = openSession();
 
