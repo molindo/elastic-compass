@@ -39,6 +39,7 @@ public class ElasticSettings {
 	
 	private final String _clusterName;
 	
+	@SuppressWarnings("deprecation")
 	public ElasticSettings(CompassSettings settings) {
 		_aliasName = settings.getSetting(CompassEnvironment.CONNECTION_SUB_CONTEXT, "index");
 		

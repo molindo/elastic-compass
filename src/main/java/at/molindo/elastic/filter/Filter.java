@@ -17,7 +17,6 @@
 package at.molindo.elastic.filter;
 
 import org.elasticsearch.index.query.xcontent.XContentFilterBuilder;
-import org.elasticsearch.index.query.xcontent.XContentQueryBuilder;
 
 //TODO change to interface?
 public abstract class Filter {
