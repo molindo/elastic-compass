@@ -212,8 +212,8 @@ public class ElasticIndex {
 
 			IndexStatus indexStatus = CollectionUtils.firstValue(indices);
 			if (indexStatus == null) {
-				throw new SearchEngineException("alias name points to index without attached status '"
-						+ _alias + "'");
+				// alias without index
+				throw new IndexMissingException(null);
 			}
 			
 			_index = indexStatus.getIndex();
