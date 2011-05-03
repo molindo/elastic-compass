@@ -38,9 +38,6 @@ import org.compass.core.mapping.ResourcePropertyMapping;
 import org.compass.core.mapping.osem.AbstractCollectionMapping;
 import org.compass.core.mapping.osem.AbstractRefAliasMapping;
 import org.compass.core.mapping.osem.ClassMapping;
-import org.compass.core.mapping.osem.ClassPropertyMapping;
-import org.compass.core.mapping.osem.ComponentMapping;
-import org.compass.core.mapping.osem.ReferenceMapping;
 import org.compass.core.mapping.support.AbstractResourceMapping;
 import org.elasticsearch.ElasticSearchException;
 import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
@@ -213,7 +210,13 @@ public class ElasticIndex {
 						+ _alias + "'");
 			}
 
-			_index = CollectionUtils.firstValue(indices).getIndex();
+			IndexStatus indexStatus = CollectionUtils.firstValue(indices);
+			if (indexStatus == null) {
+				throw new SearchEngineException("alias name points to index without attached status '"
+						+ _alias + "'");
+			}
+			
+			_index = indexStatus.getIndex();
 			if (getIndex().equals(_alias)) {
 				throw new SearchEngineException("alias name must not point to index, was '"
 						+ _alias + "'");
