@@ -1,0 +1,29 @@
+<!DOCTYPE compass-core-mapping PUBLIC 
+    "-//Compass/Compass Core Mapping DTD 2.2//EN"
+    "http://www.compass-project.org/dtd/compass-core-mapping-2.2.dtd">
+
+<compass-core-mapping package="org.compass.core.test.component.cyclic2">
+
+    <class name="ParentCycle" alias="parent">
+
+        <id name="id" accessor="field" />
+
+        <property name="value" accessor="field">
+            <meta-data>value</meta-data>
+        </property>
+
+        <component name="children" ref-alias="child" accessor="field" />
+        
+    </class>
+
+    <class name="ChildCycle" alias="child" root="false">
+
+        <property name="value" accessor="field">
+            <meta-data>value</meta-data>
+        </property>
+
+        <component name="children" ref-alias="child" max-depth="3" accessor="field"/>
+
+    </class>
+
+</compass-core-mapping>
