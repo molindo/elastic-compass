@@ -22,6 +22,7 @@ import org.compass.core.CompassException;
 import org.compass.core.config.CompassConfigurable;
 import org.compass.core.config.CompassSettings;
 import org.compass.core.engine.SearchEngineException;
+import org.elasticsearch.common.collect.IdentityHashSet;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.node.Node;
 
@@ -32,7 +33,7 @@ public class ElasticNode implements CompassConfigurable {
 
 	private static final String ELASTIC_NODE_KEY = ElasticNode.class.getName();
 
-	private Node _node;
+	private NodeHolder _nodeHolder;
 	private ElasticSearchEngineFactory _searchEngineFactory;
 
 	private ElasticSettings _settings;
@@ -51,8 +52,8 @@ public class ElasticNode implements CompassConfigurable {
 		_settings = new ElasticSettings(settings);
 
 		synchronized (ELASTIC_NODE_KEY) {
-			_node = (Node) settings.getRegistry(ELASTIC_NODE_KEY);
-			if (_node == null) {
+			_nodeHolder = (NodeHolder) settings.getRegistry(ELASTIC_NODE_KEY);
+			if (_nodeHolder == null) {
 				boolean local = _settings.getLocal();
 				
 				ImmutableSettings.Builder settingsBuilder = ImmutableSettings.settingsBuilder()
@@ -62,29 +63,29 @@ public class ElasticNode implements CompassConfigurable {
 					settingsBuilder.put("index.store.type", "ram");
 				}
 				
-				_node = nodeBuilder().local(local).client(!local).data(local)
+				Node node = nodeBuilder().local(local).client(!local).data(local)
 						.settings(settingsBuilder.build()).node();
 				
-				settings.setRegistry(ELASTIC_NODE_KEY, _node);
-				// FIXME and who stops me?
+				_nodeHolder = new NodeHolder(node, this);
+				
+				settings.setRegistry(ELASTIC_NODE_KEY, _nodeHolder);
 
 				// wait for cluster to become ready if necessary
 				String nodeCount = _settings.getLocal() ? "1" : ">1";
 				log.info("waiting for " + nodeCount + " nodes");
-				_node.client().admin().cluster().prepareHealth().setWaitForNodes(nodeCount)
+				node.client().admin().cluster().prepareHealth().setWaitForNodes(nodeCount)
 						.execute().actionGet();
+			} else {
+				_nodeHolder.add(this);
 			}
 		}
 
-		_index = new ElasticIndex(_settings, _node.client(), _searchEngineFactory.getMapping());
+		_index = new ElasticIndex(_settings, getNode().client(), _searchEngineFactory.getMapping());
 	}
 
 	public ElasticClient client() {
-		if (_node == null) {
-			throw new SearchEngineException("ElasticNode not started");
-		}
 		log.debug("creating new ElasticClient for ElasticNode");
-		return new ElasticClient(_searchEngineFactory, _index, _node.client());
+		return new ElasticClient(_searchEngineFactory, _index, getNode().client());
 	}
 
 	public void start() {
@@ -96,9 +97,8 @@ public class ElasticNode implements CompassConfigurable {
 	}
 
 	public void close() {
-		if (_node != null) {
-			_node.stop();
-			_node = null;
+		if (_nodeHolder != null) {
+			_nodeHolder.remove(this);
 		}
 	}
 
@@ -116,6 +116,49 @@ public class ElasticNode implements CompassConfigurable {
 
 		node._index.addAlias(alias);
 
-		_index = new ElasticIndex(_settings, _node.client(), _searchEngineFactory.getMapping());
+		_index = new ElasticIndex(_settings, getNode().client(), _searchEngineFactory.getMapping());
+	}
+
+	private Node getNode() {
+		if (_nodeHolder == null) {
+			throw new SearchEngineException("ElasticNode not started");
+		}
+		return _nodeHolder.getNode();
+	}
+	
+	private static final class NodeHolder {
+		private final Node _node;
+		final IdentityHashSet<ElasticNode> _elasticNodes = new IdentityHashSet<ElasticNode>();
+		
+		public NodeHolder(Node node, ElasticNode elasticNode) {
+			if (node == null) {
+				throw new NullPointerException("node");
+			}
+			if (elasticNode == null) {
+				throw new NullPointerException("elasticNode");
+			}
+			_node = node;
+			_elasticNodes.add(elasticNode);
+		}
+		
+		public Node getNode() {
+			return _node;
+		}
+
+		public boolean add(ElasticNode elasticNode) {
+			if (_elasticNodes.size() == 0) {
+				throw new IllegalStateException("node already closed");
+			}
+			return _elasticNodes.add(elasticNode);
+		}
+		
+		public boolean remove(ElasticNode elasticNode) {
+			boolean removed = _elasticNodes.remove(elasticNode);
+			if (_elasticNodes.size() == 0) {
+				_node.close();
+			}
+			return removed;
+		}
+		
 	}
 }

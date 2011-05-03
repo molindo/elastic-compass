@@ -101,6 +101,7 @@ public class ElasticSearchEngineFactory implements InternalSearchEngineFactory {
 
 	@Override
 	public void close() {
+		_node.close();
 	}
 
 	@Override
