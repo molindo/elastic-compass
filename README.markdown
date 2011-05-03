@@ -38,3 +38,8 @@ Migration Guide
 
 TODO
 
+Links
+-----
+
+- [Continuous Integration](https://oss.molindo.at/project.html?projectId=project11)
+- [Download](https://oss.sonatype.org/index.html#nexus-search;quick~elastic-compass)
