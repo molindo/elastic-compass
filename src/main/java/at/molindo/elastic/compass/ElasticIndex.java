@@ -92,45 +92,58 @@ public class ElasticIndex {
 		for (ResourceMapping rootMapping : mapping.getRootMappings()) {
 			HashMap<String, Mapping> map = new HashMap<String, Mapping>();
 
-			if (rootMapping.getUIDPath() != null) {
-				map.put(rootMapping.getUIDPath(), rootMapping);
+			addFields(rootMapping, map);
+
+			if (log.isDebugEnabled()) {
+				log.debug("alias '"+rootMapping.getAlias()+"' with fields " + map.keySet());
 			}
-
-			if (rootMapping instanceof ClassMapping) {
-				ClassMapping clsMapping = (ClassMapping) rootMapping;
-				if (clsMapping.isPoly() && clsMapping.getPolyClass() == null) {
-					map.put(clsMapping.getClassPath().getPath(), clsMapping);
-				}
-			}
-
-			for (ResourcePropertyMapping property : rootMapping.getResourcePropertyMappings()) {
-				String field = property.getPath().getPath();
-				log.trace("adding field " + field);
-				map.put(field, property);
-			}
-
-			for (Mapping m : IteratorUtils.iterable(rootMapping.mappingsIt())) {
-				if (m instanceof AbstractCollectionMapping) {
-					AbstractCollectionMapping col = (AbstractCollectionMapping) m;
-		            if (col.getCollectionType() == AbstractCollectionMapping.CollectionType.UNKNOWN) {
-		            	map.put(col.getCollectionTypePath().getPath(), col);
-		            }
-					if (col.getColSizePath() != null) {
-						map.put(col.getColSizePath().getPath(), col);
-					}
-					m = col.getElementMapping();
-				}
-
-				if (m instanceof AbstractRefAliasMapping) {
-					AbstractRefAliasMapping comp = (AbstractRefAliasMapping) m;
-					ClassMapping[] refCls = comp.getRefClassMappings();
-					if (refCls[0].isPoly()) {
-						map.put(refCls[0].getClassPath().getPath(), comp);
-					}
-				}
-			}
-
+			
 			_aliasFields.put(rootMapping.getAlias(), Collections.unmodifiableMap(map));
+		}
+	}
+
+	protected void addFields(ResourceMapping mapping, HashMap<String, Mapping> map) {
+		if (mapping.getUIDPath() != null) {
+			map.put(mapping.getUIDPath(), mapping);
+		}
+
+		if (mapping instanceof ClassMapping) {
+			ClassMapping clsMapping = (ClassMapping) mapping;
+			if (clsMapping.isPoly() && clsMapping.getPolyClass() == null) {
+				map.put(clsMapping.getClassPath().getPath(), clsMapping);
+			}
+		}
+
+		if (mapping.getResourcePropertyMappings() != null) {
+			for (ResourcePropertyMapping property : mapping.getResourcePropertyMappings()) {
+				if (property.getStore() != Store.NO) {
+					String field = property.getPath().getPath();
+					map.put(field, property);
+				}
+			}
+		}
+		
+		for (Mapping m : IteratorUtils.iterable(mapping.mappingsIt())) {
+			if (m instanceof AbstractCollectionMapping) {
+				AbstractCollectionMapping col = (AbstractCollectionMapping) m;
+		        if (col.getCollectionType() == AbstractCollectionMapping.CollectionType.UNKNOWN) {
+		        	map.put(col.getCollectionTypePath().getPath(), col);
+		        }
+				if (col.getColSizePath() != null) {
+					map.put(col.getColSizePath().getPath(), col);
+				}
+				m = col.getElementMapping();
+			}
+
+			if (m instanceof AbstractRefAliasMapping) {
+				AbstractRefAliasMapping comp = (AbstractRefAliasMapping) m;
+				for (ClassMapping refCls : comp.getRefClassMappings()) {
+					if (refCls.isPoly()) {
+						map.put(refCls.getClassPath().getPath(), comp);
+					}
+					addFields(refCls, map);
+				}
+			}
 		}
 	}
 
