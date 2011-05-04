@@ -452,7 +452,7 @@ public class DefaultCompassSession implements InternalCompassSession {
 
 	public void delete(String alias, Object obj) throws CompassException {
 		checkClosed();
-		delete(alias, obj, new DirtyOperationContext());
+		delete(alias, obj, new DirtyOperationContext(marshallingStrategy));
 	}
 
 	public void delete(String alias, Object obj, DirtyOperationContext context) throws CompassException {
@@ -503,7 +503,7 @@ public class DefaultCompassSession implements InternalCompassSession {
 
 	public void delete(Class<?> clazz, Object obj) throws CompassException {
 		checkClosed();
-		delete(clazz, obj, new DirtyOperationContext());
+		delete(clazz, obj, new DirtyOperationContext(marshallingStrategy));
 	}
 
 	public void delete(Class<?> clazz, Object obj, DirtyOperationContext context) throws CompassException {
@@ -552,7 +552,7 @@ public class DefaultCompassSession implements InternalCompassSession {
 
 	public void delete(Object obj) throws CompassException {
 		checkClosed();
-		delete(obj, new DirtyOperationContext());
+		delete(obj, new DirtyOperationContext(marshallingStrategy));
 	}
 
 	public void delete(Object obj, DirtyOperationContext context) throws CompassException {

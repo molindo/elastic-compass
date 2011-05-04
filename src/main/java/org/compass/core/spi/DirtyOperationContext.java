@@ -16,30 +16,64 @@
 
 package org.compass.core.spi;
 
-import org.compass.core.util.IdentityHashSet;
+import java.util.HashSet;
+
+import org.compass.core.marshall.MarshallingStrategy;
+import org.elasticsearch.common.collect.IdentityHashSet;
 
 /**
  * Context object for dirty (create/save/delete) operations.
- *
+ * 
  * @author kimchy
  */
 public class DirtyOperationContext {
 
-    private IdentityHashSet<Object> operatedObjects = new IdentityHashSet<Object>();
+	private final IdentityHashSet<Object> operatedObjects = new IdentityHashSet<Object>();
+	private final HashSet<ResourceKey> operatedKeys = new HashSet<ResourceKey>();
 
-    /**
-     * Adds the object as one that a dirty operation has been performed on. Note, the
-     * identity of the object is used.
-     */
-    public void addOperatedObjects(Object obj) {
-        operatedObjects.add(obj);
-    }
+	private final MarshallingStrategy marshallingStrategy;
 
-    /**
-     * Returns <code>true</code> if a dirty operation has been perfomed on the object (based
-     * on the object identity). <code>false</code> otherwise.
-     */
-    public boolean alreadyPerformedOperation(Object obj) {
-        return operatedObjects.contains(obj);
-    }
+	public DirtyOperationContext() {
+		this(null);
+	}
+	
+	/**
+	 * @param marshallingStrategy optional, allows tracking of objects by identity and resource key 
+	 */
+	public DirtyOperationContext(MarshallingStrategy marshallingStrategy) {
+		this.marshallingStrategy = marshallingStrategy;
+	}
+
+	/**
+	 * Adds the object as one that a dirty operation has been performed on.
+	 * Note, the identity of the object is used.
+	 */
+	public void addOperatedObjects(Object obj) {
+		if (!operatedObjects.contains(obj)) {
+			operatedObjects.add(obj);
+
+			ResourceKey key = toKey(obj);
+			if (key != null) {
+				operatedKeys.add(key);
+			}
+		}
+	}
+
+	/**
+	 * Returns <code>true</code> if a dirty operation has been perfomed on the
+	 * object (based on the object identity). <code>false</code> otherwise.
+	 */
+	public boolean alreadyPerformedOperation(Object obj) {
+		if (operatedObjects.contains(obj)) {
+			return true;
+		} else {
+			ResourceKey key = toKey(obj);
+			return key == null ? false : operatedKeys.contains(key);
+		}
+	}
+
+	private ResourceKey toKey(Object obj) {
+		InternalResource resource = marshallingStrategy == null ? null : (InternalResource) marshallingStrategy.marshallIds(obj);
+		return resource == null ? null : resource.getResourceKey();
+	}
 }
