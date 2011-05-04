@@ -41,6 +41,7 @@
 						<exclude>**/*.properties</exclude>
 						<exclude>src/test/**/*-expected.*</exclude>
 						<exclude>data/**</exclude>
+						<exclude>**/*.markdown</exclude>
 					</excludes>
 					<strictCheck>true</strictCheck>
 					<aggregate>true</aggregate>
