@@ -281,8 +281,7 @@ public class ElasticClient {
 
 	public SearchEngineHits find(ElasticSearchEngineQuery query) throws SearchEngineException {
 
-		SearchRequestBuilder search = _client.prepareSearch(_indexName).setQuery(query.getQuery()
-				.getBuilder());
+		SearchRequestBuilder search = _client.prepareSearch(_indexName).setQuery(query.getBuilder());
 		
 		String[] aliases = toAliases(query);
 
@@ -340,8 +339,7 @@ public class ElasticClient {
 	}
 
 	public long count(ElasticSearchEngineQuery query) {
-		CountRequestBuilder search = _client.prepareCount(_indexName).setQuery(query.getQuery()
-				.getBuilder());
+		CountRequestBuilder search = _client.prepareCount(_indexName).setQuery(query.getBuilder());
 
 		search.setTypes(toAliases(query));
 

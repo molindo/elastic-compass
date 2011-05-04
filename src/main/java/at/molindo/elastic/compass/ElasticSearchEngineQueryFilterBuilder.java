@@ -20,41 +20,65 @@ import org.compass.core.engine.SearchEngineQuery;
 import org.compass.core.engine.SearchEngineQueryFilter;
 import org.compass.core.engine.SearchEngineQueryFilterBuilder;
 
+import at.molindo.elastic.compass.query.ElasticSearchEngineBooleanQueryFilterBuilder;
+import at.molindo.elastic.filter.Filter;
+import at.molindo.elastic.filter.QueryFilter;
+import at.molindo.elastic.filter.RangeFilter;
+import at.molindo.elastic.term.Term;
+
 public class ElasticSearchEngineQueryFilterBuilder implements SearchEngineQueryFilterBuilder {
+
+	public SearchEngineQueryFilter between(String resourcePropertyName, String low, String high, boolean include) {
+		return between(resourcePropertyName, low, high, include, include);
+	}
 
 	@Override
 	public SearchEngineQueryFilter between(String resourcePropertyName, String low, String high, boolean includeLow, boolean includeHigh) {
-		throw new NotImplementedException();
+		Filter filter;
+
+		Term lowTerm = null;
+		if (low != null) {
+			lowTerm = Term.string(resourcePropertyName, low);
+		}
+		Term highTerm = null;
+		if (high != null) {
+			highTerm = Term.string(resourcePropertyName, high);
+		}
+		filter = new RangeFilter(resourcePropertyName).setFrom(lowTerm).setTo(highTerm)
+				.setIncludeLower(includeLow).setIncludeUpper(includeHigh);
+
+		return new ElasticSearchEngineQueryFilter(filter);
 	}
 
 	@Override
 	public SearchEngineQueryFilter lt(String resourcePropertyName, String value) {
-		throw new NotImplementedException();
+		return between(resourcePropertyName, null, value, false);
 	}
 
 	@Override
 	public SearchEngineQueryFilter le(String resourcePropertyName, String value) {
-		throw new NotImplementedException();
+		return between(resourcePropertyName, null, value, true);
 	}
 
 	@Override
 	public SearchEngineQueryFilter gt(String resourcePropertyName, String value) {
-		throw new NotImplementedException();
+		return between(resourcePropertyName, value, null, false);
 	}
 
 	@Override
 	public SearchEngineQueryFilter ge(String resourcePropertyName, String value) {
-		throw new NotImplementedException();
+		return between(resourcePropertyName, value, null, true);
 	}
 
 	@Override
 	public SearchEngineQueryFilter query(SearchEngineQuery query) {
-		throw new NotImplementedException();
+		return new ElasticSearchEngineQueryFilter(new QueryFilter((((ElasticSearchEngineQuery) query)
+				.getQuery())));
 	}
 
 	@Override
 	public SearchEngineBooleanQueryFilterBuilder bool() {
-		throw new NotImplementedException();
+		return new ElasticSearchEngineBooleanQueryFilterBuilder();
 	}
 
 }

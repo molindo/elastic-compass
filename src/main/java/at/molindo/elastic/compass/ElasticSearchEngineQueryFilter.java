@@ -22,8 +22,17 @@ import at.molindo.elastic.filter.Filter;
 
 public class ElasticSearchEngineQueryFilter implements SearchEngineQueryFilter {
 
+	private final Filter _filter;
+
 	public ElasticSearchEngineQueryFilter(Filter filter) {
-		// TODO Auto-generated constructor stub
+		if (filter == null) {
+			throw new NullPointerException("filter");
+		}
+		_filter = filter;
+	}
+
+	public Filter getFilter() {
+		return _filter;
 	}
 
 }

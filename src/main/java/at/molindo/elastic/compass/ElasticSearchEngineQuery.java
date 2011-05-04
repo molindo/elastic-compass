@@ -27,7 +27,10 @@ import org.compass.core.engine.SearchEngine;
 import org.compass.core.engine.SearchEngineHits;
 import org.compass.core.engine.SearchEngineQuery;
 import org.compass.core.engine.SearchEngineQueryFilter;
+import org.elasticsearch.index.query.xcontent.QueryBuilders;
+import org.elasticsearch.index.query.xcontent.XContentQueryBuilder;
 
+import at.molindo.elastic.filter.Filter;
 import at.molindo.elastic.query.BooleanClause;
 import at.molindo.elastic.query.BooleanQuery;
 import at.molindo.elastic.query.BoostQuery;
@@ -104,6 +107,8 @@ public class ElasticSearchEngineQuery implements SearchEngineQuery, Cloneable {
 	private boolean rewrite;
 
 	private boolean suggested;
+
+	private ElasticSearchEngineQueryFilter filter;
 
 	public ElasticSearchEngineQuery(ElasticSearchEngineFactory searchEngineFactory, Query query) {
 		this(searchEngineFactory, new QueryHolder(query));
@@ -267,7 +272,15 @@ public class ElasticSearchEngineQuery implements SearchEngineQuery, Cloneable {
 	public Query getQuery() {
 		return this.query;
 	}
-
+	
+	public XContentQueryBuilder getBuilder() {
+		if (filter == null) {
+			return query.getBuilder();
+		} else {
+			return QueryBuilders.filteredQuery(query.getBuilder(), filter.getFilter().getBuilder());
+		}
+	}
+	
 	public String toString() {
 		if (query == null) {
 			return "<null>";
@@ -291,9 +304,20 @@ public class ElasticSearchEngineQuery implements SearchEngineQuery, Cloneable {
 		this.suggested = suggested;
 	}
 
-	@Override
-	public ElasticSearchEngineQuery setFilter(SearchEngineQueryFilter filter) {
-		throw new NotImplementedException();
-	}
+    public SearchEngineQuery setFilter(SearchEngineQueryFilter filter) {
+        this.filter = (ElasticSearchEngineQueryFilter) filter;
+        return this;
+    }
+
+    public ElasticSearchEngineQueryFilter getFilter() {
+        return this.filter;
+    }
+
+    public Filter getElasticFilter() {
+        if (filter == null) {
+            return null;
+        }
+        return filter.getFilter();
+    }
 
 }
