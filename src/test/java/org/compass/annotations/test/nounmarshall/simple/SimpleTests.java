@@ -40,8 +40,6 @@ public class SimpleTests extends AbstractAnnotationsTestCase {
         a.value = "value";
         a.value2 = "value2";
         session.save(a);
-
-        refresh(session);
         
         Resource resource = session.loadResource(A.class, 1);
         assertNotNull(resource);

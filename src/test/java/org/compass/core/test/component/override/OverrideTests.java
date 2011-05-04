@@ -46,8 +46,6 @@ public class OverrideTests extends AbstractTestCase {
         a.b = new B();
         a.b.value = "test";
         session.save(a);
-
-        refresh(session);
         
         a = (A) session.load(A.class, "1");
         assertEquals(a.b.value, "test");

@@ -64,8 +64,6 @@ public class ParentChildCycleComponentTests extends AbstractTestCase {
         childCycle21.children.add(childCycle31);
 
         session.save(parentCycle);
-
-        refresh(session);
         
         parentCycle = session.load(ParentCycle.class, 1);
         assertEquals("parentValue", parentCycle.value);

@@ -48,8 +48,6 @@ public class ClassMappingConverterTests extends AbstractTestCase {
         a.value = "test";
 
         session.save("a", a);
-
-        refresh(session);
         
         Resource resource = session.loadResource("a", "1");
         assertNotNull(resource.getProperty("specialprop"));

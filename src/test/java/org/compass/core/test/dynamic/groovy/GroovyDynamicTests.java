@@ -26,8 +26,6 @@ public class GroovyDynamicTests extends AbstractTestCase {
         a.setValue2("value2");
         session.save("a1", a);
 
-        refresh(session);
-        
         Resource resource = session.loadResource("a1", new Long(1));
         assertEquals("valuevalue2", resource.getValue("test"));
 
@@ -44,8 +42,6 @@ public class GroovyDynamicTests extends AbstractTestCase {
         a.setDate(cal.getTime());
         session.save("a2", a);
 
-        refresh(session);
-        
         Resource resource = session.loadResource("a2", new Long(1));
         assertEquals("1977", resource.getValue("test"));
 
@@ -60,8 +56,6 @@ public class GroovyDynamicTests extends AbstractTestCase {
         a.setDate(null);
         session.save("a2", a);
 
-        refresh(session);
-        
         Resource resource = session.loadResource("a2", new Long(1));
         assertEquals("moo", resource.getValue("test"));
 
@@ -72,7 +66,7 @@ public class GroovyDynamicTests extends AbstractTestCase {
         Compass compass2 = buildCompass();
 
 
-        CompassSession session = compass2.openSession();
+        CompassSession session = openSession(compass2);
 
         A a = new A();
         a.setId(new Long(1));
@@ -80,8 +74,6 @@ public class GroovyDynamicTests extends AbstractTestCase {
         a.setValue2("value2");
         session.save("a1", a);
 
-        refresh(session);
-        
         Resource resource = session.loadResource("a1", new Long(1));
         Property[] properties = resource.getProperties("test");
         assertEquals(1, properties.length);

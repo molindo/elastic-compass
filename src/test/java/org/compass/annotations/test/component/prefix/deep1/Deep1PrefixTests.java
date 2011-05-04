@@ -57,8 +57,6 @@ public class Deep1PrefixTests extends AbstractAnnotationsTestCase {
         order.secondCustomer.workAddress.id = 7;
         order.secondCustomer.workAddress.location = "secondWork";
         session.save(order);
-
-        refresh(session);
         
         Resource resource = session.loadResource(Order.class, 1);
         assertEquals("name1", resource.getValue("first_name"));

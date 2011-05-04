@@ -41,8 +41,6 @@ public class IdComponentTests extends AbstractAnnotationsTestCase {
 
         session.save(a);
 
-        refresh(session);
-        
         a = new A();
         a.b = new B(1, 2);
         a = session.load(A.class, a);

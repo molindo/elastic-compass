@@ -44,8 +44,6 @@ public class CollectionCascadeTests extends AbstractTestCase {
         A a = new A(1, "avalue", list);
         // this should cause cascading for b as well
         session.create("a", a);
-
-        refresh(session);
         
         a = (A) session.load("a", "1");
         session.load("b", "1");
@@ -54,8 +52,6 @@ public class CollectionCascadeTests extends AbstractTestCase {
         ((B) a.b.get(0)).value = "bupdated1";
         ((B) a.b.get(1)).value = "bupdated2";
         session.save("a", a);
-
-        refresh(session);
         
         b1 = (B) session.load("b", "1");
         assertEquals("bupdated1", b1.value);
@@ -63,8 +59,6 @@ public class CollectionCascadeTests extends AbstractTestCase {
         assertEquals("bupdated2", b2.value);
 
         session.delete("a", a);
-
-        refresh(session);
         
         assertNull(session.get("a", "1"));
         assertNull(session.get("b", "1"));

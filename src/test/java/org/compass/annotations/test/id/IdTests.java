@@ -54,8 +54,6 @@ public class IdTests extends AbstractAnnotationsTestCase {
         a.setValue("value");
         session.save(a);
 
-        refresh(session);
-        
         a = session.load(A.class, 1);
         assertEquals("value", a.getValue());
 
@@ -72,8 +70,6 @@ public class IdTests extends AbstractAnnotationsTestCase {
         b.id = new Converted("value1", "value2");
 
         session.save(b);
-
-        refresh(session);
         
         session.load(B.class, b.id);
 

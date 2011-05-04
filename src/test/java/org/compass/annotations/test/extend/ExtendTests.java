@@ -47,8 +47,6 @@ public class ExtendTests extends AbstractAnnotationsTestCase {
         a.setValue2("value2");
         session.save(a);
 
-        refresh(session);
-        
         a = (A) session.load(A.class, 1);
         assertEquals("value", a.getValue());
         assertEquals("value2", a.getValue2());
@@ -71,8 +69,6 @@ public class ExtendTests extends AbstractAnnotationsTestCase {
         a.setValue("value");
         a.setValue2("value2");
         session.save(a);
-
-        refresh(session);
         
         CompassHits hits = session.queryBuilder().alias("A").hits();
         assertEquals(1, hits.length());
@@ -95,8 +91,6 @@ public class ExtendTests extends AbstractAnnotationsTestCase {
         a.setValue2("value2");
         session.save(a);
         
-        refresh(session);
-        
         CompassHits hits = session.queryBuilder().matchAll().setAliases(new String[] {"A"}).hits();
         assertEquals(1, hits.length());
 
@@ -111,8 +105,6 @@ public class ExtendTests extends AbstractAnnotationsTestCase {
         a.setValue("value");
         a.setValue2("value2");
         session.save(a);
-
-        refresh(session);
         
         CompassHits hits = session.queryBuilder().matchAll().setTypes(new Class[] {A.class}).hits();
         assertEquals(1, hits.length());

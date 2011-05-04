@@ -41,8 +41,6 @@ public class CollectionAnnotationDynamicPropertyTests extends AbstractTestCase {
         a.dyna.add(new Dyna("tag2", "value2"));
 
         session.save(a);
-
-        refresh(session);
         
         assertEquals(1, session.find("tag1:value1").length());
         assertEquals(1, session.find("tag2:value2").length());

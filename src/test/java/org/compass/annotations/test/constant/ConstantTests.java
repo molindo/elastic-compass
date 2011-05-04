@@ -37,8 +37,6 @@ public class ConstantTests extends AbstractAnnotationsTestCase {
         a.id = 1;
 
         session.save(a);
-
-        refresh(session);
         
         a = (A) session.load(A.class, 1);
 

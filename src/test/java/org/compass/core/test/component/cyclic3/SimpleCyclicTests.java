@@ -50,8 +50,6 @@ public class SimpleCyclicTests extends AbstractTestCase {
         cyclic2.cyclic1 = cyclic1;
 
         session.save("cyclic1", cyclic1);
-
-        refresh(session);
         
         cyclic1 = (Cyclic1) session.load("cyclic1", new Long(1));
         assertNotNull(cyclic1.cyclic2);
@@ -72,8 +70,6 @@ public class SimpleCyclicTests extends AbstractTestCase {
         cyclic1.value = "cyclic1";
 
         session.save("cyclic1", cyclic1);
-
-        refresh(session);
         
         cyclic1 = (Cyclic1) session.load("cyclic1", id);
         assertNull(cyclic1.cyclic2);
@@ -98,8 +94,6 @@ public class SimpleCyclicTests extends AbstractTestCase {
 
         session.save("cyclic1c", cyclic1);
         session.save("cyclic2c", cyclic2);
-
-        refresh(session);
         
         cyclic1 = (Cyclic1) session.load("cyclic1c", id);
         assertNotNull(cyclic1.cyclic2);

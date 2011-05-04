@@ -40,8 +40,6 @@ public class EnumSetTests extends AbstractTestCase {
         a.set.add(Type.TEST3);
 
         session.save(a);
-
-        refresh(session);
         
         a = session.load(A.class, 1);
         assertEquals(2, a.set.size());

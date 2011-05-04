@@ -48,8 +48,6 @@ public class SimplePrefixNoUnmarshallTests extends AbstractAnnotationsTestCase {
         a.b.id = 2;
         a.b.value = "value1";
         session.save(a);
-
-        refresh(session);
         
         Resource resource = session.loadResource(A.class, 1);
         assertEquals("value1", resource.getValue("test_value"));

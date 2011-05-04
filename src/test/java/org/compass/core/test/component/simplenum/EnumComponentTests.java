@@ -36,8 +36,6 @@ public class EnumComponentTests extends AbstractTestCase {
 		a.b = B.TEST1;
 		session.save(a);
 
-		refresh(session);
-
 		a = session.load(A.class, 1);
 		assertEquals(1, a.b.getValue());
 

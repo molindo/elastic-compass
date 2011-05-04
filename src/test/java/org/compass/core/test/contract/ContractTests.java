@@ -44,8 +44,6 @@ public class ContractTests extends AbstractTestCase {
         a.setValueA("valueA");
 
         session.save("a", a);
-
-        refresh(session);
         
         Resource r = session.loadResource("a", id);
         assertNotNull(r.getValue("mvalue1"));
@@ -68,8 +66,6 @@ public class ContractTests extends AbstractTestCase {
 
         session.save("a", a);
 
-        refresh(session);
-        
         CompassHits hits = session.find("contract2.value2:value2");
         assertEquals(1, hits.length());
 
@@ -87,8 +83,6 @@ public class ContractTests extends AbstractTestCase {
         a.setValueA("valueA");
 
         session.save("a1", a);
-
-        refresh(session);
         
         Resource r = session.loadResource("a1", id);
         assertNull(r.getValue("mvalue1"));
@@ -110,8 +104,6 @@ public class ContractTests extends AbstractTestCase {
 
         session.save("a2", a);
 
-        refresh(session);
-        
         Resource r = session.loadResource("a2", id);
         assertNotNull(r.getValue("mvalue1"));
         assertNotNull(r.getValue("mvalue2"));

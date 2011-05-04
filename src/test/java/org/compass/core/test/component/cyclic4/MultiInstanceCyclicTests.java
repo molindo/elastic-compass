@@ -44,8 +44,6 @@ public class MultiInstanceCyclicTests extends AbstractTestCase {
 
         session.save("father", father);
         session.save("child", child);
-
-        refresh(session);
         
         father = (Father) session.load("father", new Long(1));
         assertSame(father.child1, father.child2);
@@ -74,8 +72,6 @@ public class MultiInstanceCyclicTests extends AbstractTestCase {
         session.save("father", father);
         session.save("child", child1);
         session.save("child", child2);
-
-        refresh(session);
         
         father = (Father) session.load("father", new Long(1));
         assertSame(father.child1, father.child2);
@@ -109,8 +105,6 @@ public class MultiInstanceCyclicTests extends AbstractTestCase {
         session.save("father", father);
         session.save("child", child1);
         session.save("child", child2);
-
-        refresh(session);
         
         father = (Father) session.load("father", new Long(1));
         assertEquals(3, father.children.size());

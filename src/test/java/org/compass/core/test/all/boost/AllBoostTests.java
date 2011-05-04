@@ -56,8 +56,6 @@ public class AllBoostTests extends AbstractTestCase {
         session.save("a1", a);
         // need to flush to maintain order
         session.flush();
-
-        refresh(session);
         
         CompassHits hits = session.queryBuilder().queryString("test1").toQuery().setAliases("anoboost").hits();
         assertEquals(1, ((A) hits.data(0)).id);
@@ -93,8 +91,6 @@ public class AllBoostTests extends AbstractTestCase {
         session.save("a1", a);
         // need to flush to maintain order
         session.flush();
-
-        refresh(session);
         
         CompassHits hits = session.queryBuilder().queryString("test1").toQuery().setAliases("anoboost").hits();
         assertEquals(1, ((A) hits.data(0)).id);
@@ -132,8 +128,6 @@ public class AllBoostTests extends AbstractTestCase {
         session.save("b1", b);
         // need to flush to maintain order
         session.flush();
-
-        refresh(session);
         
         CompassHits hits = session.queryBuilder().queryString("test1").toQuery().setAliases("bnoboost").hits();
         assertEquals(1, ((B) hits.data(0)).id);

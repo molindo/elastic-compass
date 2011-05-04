@@ -41,8 +41,6 @@ public class Deep2PrefixNoUnmarshallTests extends AbstractAnnotationsTestCase {
 
         session.save(customer);
 
-        refresh(session);
-        
         Resource resource = session.loadResource(Customer.class, 1);
         assertEquals(4, resource.getProperties("order_itemName").length);
         assertEquals(0, resource.getProperties("order_order_itemName").length);

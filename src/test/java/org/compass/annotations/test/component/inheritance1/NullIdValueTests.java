@@ -39,8 +39,6 @@ public class NullIdValueTests extends AbstractAnnotationsTestCase {
 
         session.save(a);
         
-        refresh(session);
-        
         session.load(A.class, 1);
 
         session.close();

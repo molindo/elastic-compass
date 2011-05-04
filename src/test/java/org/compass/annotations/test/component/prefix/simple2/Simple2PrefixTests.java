@@ -46,8 +46,6 @@ public class Simple2PrefixTests extends AbstractAnnotationsTestCase {
 
         session.save(org);
 
-        refresh(session);
-        
         assertEquals(1, session.find("main-visit-street:mainContactVisitAddress").length());
         assertEquals(1, session.find("main-mail-street:mainContactMailAddress").length());
         assertEquals(1, session.find("extra-visit-street:extrac1visitAddress").length());

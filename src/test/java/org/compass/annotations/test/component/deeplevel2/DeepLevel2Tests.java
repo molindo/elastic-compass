@@ -36,8 +36,6 @@ public class DeepLevel2Tests extends AbstractAnnotationsTestCase {
         session.save(a);
         session.save(b);
 
-        refresh(session);
-        
         CompassQueryBuilder queryBuilder = session.queryBuilder();
         CompassHits hitsA = queryBuilder.term("A.b.c.property", "cverdi").hits();
         CompassHits hitsAB = queryBuilder.term("A.c.property", "cverdi").hits();

@@ -38,24 +38,18 @@ public class SimpleCascadeTests extends AbstractTestCase {
         A a = new A(1, "avalue", b);
         // this should cause cascading for b as well
         session.create("aAll", a);
-
-        refresh(session);
         
         a = (A) session.load("aAll", "1");
         session.load("b", "1");
 
         a.b.value = "bupdated";
         session.save("aAll", a);
-
-        refresh(session);
                 
         b = (B) session.load("b", "1");
         assertEquals("bupdated", b.value);
 
         session.delete("aAll", a);
 
-        refresh(session);
-        
         assertNull(session.get("aAll", "1"));
         assertNull(session.get("b", "1"));
 
@@ -69,8 +63,6 @@ public class SimpleCascadeTests extends AbstractTestCase {
         A a = new A(1, "avalue", b);
         // this should cause cascading for b as well
         session.create("aCreate", a);
-
-        refresh(session);
         
         a = (A) session.load("aCreate", "1");
         session.load("b", "1");
@@ -78,16 +70,12 @@ public class SimpleCascadeTests extends AbstractTestCase {
         a.b.value = "bupdated";
         // this will not cause b to get cascaded
         session.save("aCreate", a);
-
-        refresh(session);
         
         b = (B) session.load("b", "1");
         assertEquals("bvalue", b.value);
 
         session.delete("aCreate", a);
 
-        refresh(session);
-        
         assertNull(session.get("aAll", "1"));
         assertNotNull(session.get("b", "1"));
 
@@ -102,21 +90,15 @@ public class SimpleCascadeTests extends AbstractTestCase {
         // this should not cause cascading for b as well
         session.create("aSave", a);
 
-        refresh(session);
-        
         assertNull(session.get("b", "1"));
         session.create("b", b);
 
-        refresh(session);
-        
         a = (A) session.load("aSave", "1");
         session.load("b", "1");
 
         a.b.value = "bupdated";
         // this will cause b to get cascaded
         session.save("aSave", a);
-
-        refresh(session);
         
         b = (B) session.load("b", "1");
         assertEquals("bupdated", b.value);
@@ -135,13 +117,9 @@ public class SimpleCascadeTests extends AbstractTestCase {
         A a = new A(1, "avalue", b);
         // this should not cause cascading for b as well
         session.create("aDelete", a);
-
-        refresh(session);
         
         assertNull(session.get("b", "1"));
         session.create("b", b);
-
-        refresh(session);
         
         a = (A) session.load("aDelete", "1");
         session.load("b", "1");
@@ -150,15 +128,11 @@ public class SimpleCascadeTests extends AbstractTestCase {
         // this will not cause b to get cascaded
         session.save("aDelete", a);
 
-        refresh(session);
-        
         b = (B) session.load("b", "1");
         assertEquals("bvalue", b.value);
 
         session.delete("aDelete", a);
 
-        refresh(session);
-        
         assertNull(session.get("aAll", "1"));
         assertNull(session.get("b", "1"));
 

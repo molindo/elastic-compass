@@ -21,8 +21,6 @@ public class AnnotationAccessorTests extends AbstractAnnotationsTestCase {
         a.Name = "test";
         session.save(a);
 
-        refresh(session);
-        
         assertNotNull(session.load(A.class, 1));
 
         session.close();

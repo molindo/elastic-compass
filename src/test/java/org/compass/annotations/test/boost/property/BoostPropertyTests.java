@@ -40,8 +40,6 @@ public class BoostPropertyTests extends AbstractAnnotationsTestCase {
         A a2 = new A(2, 1, "test");
         session.save(a2);
 
-        refresh(session);
-        
         CompassHits hits= session.find("test");
         assertEquals(2, hits.length());
         assertEquals(1, ((A) hits.data(0)).id);
@@ -64,8 +62,6 @@ public class BoostPropertyTests extends AbstractAnnotationsTestCase {
         A a2 = new A(2, 2, "test");
         session.save(a2);
 
-        refresh(session);
-        
         CompassHits hits= session.find("test");
         assertEquals(2, hits.length());
         assertEquals(2, ((A) hits.data(0)).id);

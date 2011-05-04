@@ -59,8 +59,6 @@ public class DeepHierarchy2Tests extends AbstractTestCase {
         a.setBs(newBs);
 
         session.save(a);
-
-        refresh(session);
         
         a = (A) session.load(A.class, "1");
         for (Iterator<B> it = a.getBs().iterator(); it.hasNext();) {

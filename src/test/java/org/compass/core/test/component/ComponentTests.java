@@ -105,8 +105,6 @@ public class ComponentTests extends AbstractTestCase {
         second.setValue("test2");
         root.setSecondComponent(second);
         session.save("sr", root);
-
-        refresh(session);
         
         root = (SimpleRoot) session.load("sr", id);
         assertEquals("test", root.getValue());
@@ -147,8 +145,6 @@ public class ComponentTests extends AbstractTestCase {
         root.setSecondComponent(second);
         session.save("id-sr", root);
 
-        refresh(session);
-        
         root = (SimpleRootId) session.load("id-sr", id);
         assertEquals("test", root.getValue());
         assertNotNull(root.getFirstComponent());
@@ -178,8 +174,6 @@ public class ComponentTests extends AbstractTestCase {
         second.setValue("test1");
         first.setSecond(second);
         session.save(first);
-
-        refresh(session);
         
         first = (CFirst) session.load(CFirst.class, id);
         assertEquals("test", first.getValue());
@@ -206,8 +200,6 @@ public class ComponentTests extends AbstractTestCase {
         second.setThird(third);
         first.setSecond(second);
         session.save(first);
-
-        refresh(session);
         
         first = (CFirst) session.load(CFirst.class, id);
         assertEquals("test", first.getValue());

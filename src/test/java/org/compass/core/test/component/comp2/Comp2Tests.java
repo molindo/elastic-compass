@@ -48,8 +48,6 @@ public class Comp2Tests extends AbstractTestCase {
         user.description = "test user";
         user.identity = person;
         session.save(user);
-
-        refresh(session);
         
         person = (Person) session.load(SpecialPerson.class, new Integer(1));
         assertEquals("test person", person.description);
@@ -93,8 +91,6 @@ public class Comp2Tests extends AbstractTestCase {
         user.identity = person;
         session.save(user);
 
-        refresh(session);
-        
         person = (Person) session.load(Person.class, new Integer(1));
         assertEquals("test person", person.description);
         assertEquals(1, person.names.size());

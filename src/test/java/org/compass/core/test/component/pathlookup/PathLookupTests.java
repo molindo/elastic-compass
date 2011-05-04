@@ -39,8 +39,6 @@ public class PathLookupTests extends AbstractTestCase {
 
         a = new A(2, new B("test"));
         session.save("a1", a);
-
-        refresh(session);
         
         CompassHits hits = session.queryBuilder().term("a.b.value", "test").hits();
         assertEquals(1, hits.length());

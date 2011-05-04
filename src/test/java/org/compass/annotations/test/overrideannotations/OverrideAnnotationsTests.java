@@ -38,8 +38,6 @@ public class OverrideAnnotationsTests extends AbstractAnnotationsTestCase {
         a.setValue("value");
         session.save(a);
 
-        refresh(session);
-        
         a = (A) session.load(A.class, 1);
         assertEquals("value", a.getValue());
 

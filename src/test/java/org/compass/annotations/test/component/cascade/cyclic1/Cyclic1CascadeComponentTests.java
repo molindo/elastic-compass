@@ -48,8 +48,6 @@ public class Cyclic1CascadeComponentTests extends AbstractAnnotationsTestCase {
 
         session.create(a);
         
-        refresh(session);
-
         assertNotNull(session.get(A.class, 1));
         assertEquals(a.bs.size(), 2);
         assertNotNull(session.get(B.class, 2));
@@ -57,8 +55,6 @@ public class Cyclic1CascadeComponentTests extends AbstractAnnotationsTestCase {
 
         session.save(a);
         
-        refresh(session);
-
         assertNotNull(session.get(A.class, 1));
         assertEquals(a.bs.size(), 2);
         assertNotNull(session.get(B.class, 2));
@@ -66,8 +62,6 @@ public class Cyclic1CascadeComponentTests extends AbstractAnnotationsTestCase {
 
         session.delete(a);
         
-        refresh(session);
-
         assertNull(session.get(A.class, 1));
         assertNull(session.get(B.class, 2));
         assertNull(session.get(B.class, 3));
@@ -92,8 +86,6 @@ public class Cyclic1CascadeComponentTests extends AbstractAnnotationsTestCase {
 
         session.create(a);
 
-        refresh(session);
-        
         assertNotNull(session.get(A.class, 1));
         assertEquals(a.bs.size(), 2);
         assertNotNull(session.get(B.class, 1));
@@ -101,8 +93,6 @@ public class Cyclic1CascadeComponentTests extends AbstractAnnotationsTestCase {
 
         session.delete(A.class, 1);
 
-        refresh(session);
-        
         assertNull(session.get(A.class, 1));
         assertNull(session.get(B.class, 1));
         assertNull(session.get(B.class, 2));

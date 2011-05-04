@@ -54,8 +54,6 @@ public class SelfCyclicTests extends AbstractTestCase {
         selfCycle4.setSelfCycle(selfCycle5);
 
         session.save(selfCycle1);
-
-        refresh(session);
         
         selfCycle1 = (SelfCycle) session.load(SelfCycle.class, new Long(1));
         assertEquals("value1", selfCycle1.getValue());
@@ -84,8 +82,6 @@ public class SelfCyclicTests extends AbstractTestCase {
 
         session.save(selfCycle1);
         session.save(selfCycle2);
-        
-        refresh(session);
         
         selfCycle1 = session.load(SelfCycle.class, new Long(1));
         assertEquals(System.identityHashCode(selfCycle1),

@@ -58,8 +58,6 @@ public class SameChildTests extends AbstractTestCase {
         assertIdsMatchNames("All original children", children);
         assertIdsMatchNames("Original p children", p.children);
         session.save(p);
-
-        refresh(session);
         
         p = session.load(Parent.class, 1);
         assertIdsMatchNames("All fetched children", p.children);

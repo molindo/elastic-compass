@@ -23,8 +23,6 @@ public class SimpleClassConverterTests extends AbstractAnnotationsTestCase {
         a.zipcode2 = new ZipCode("best");
         session.save(a);
 
-        refresh(session);
-        
         assertEquals(0, session.find("test").length());
         assertEquals(1, session.find("zipcode:test").length());
         assertEquals(1, session.find("best").length());

@@ -43,8 +43,6 @@ public class SimpleCascadeTests extends AbstractAnnotationsTestCase {
         a.b = b;
 
         session.save(a);
-
-        refresh(session);
         
         assertEquals(1, session.find("valuea").length());
         assertEquals(1, session.find("valueb").length());

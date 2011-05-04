@@ -69,8 +69,6 @@ public class InheritanceTests extends AbstractAnnotationsTestCase {
         b.setValue2("value2");
         session.save(b);
 
-        refresh(session);
-        
         b = session.load(B.class, 1);
         assertEquals("value1", b.getValue1());
         assertEquals("value2", b.getValue2());
@@ -101,8 +99,6 @@ public class InheritanceTests extends AbstractAnnotationsTestCase {
         c.a = b;
         session.save(c);
         
-        refresh(session);
-        
         c = session.load(C.class, 1);
         assertTrue(c.a instanceof B);
         assertEquals("value1", c.a.getValue1());
@@ -129,8 +125,6 @@ public class InheritanceTests extends AbstractAnnotationsTestCase {
         b.setValue2("value2");
         session.save(b);
 
-        refresh(session);
-        
         CompassHits hits = session.queryBuilder().alias("b").hits();
         assertEquals(1, hits.length());
         hits = session.queryBuilder().polyAlias("a1").hits();
@@ -153,8 +147,6 @@ public class InheritanceTests extends AbstractAnnotationsTestCase {
         b.setValue2("value2");
         session.save(b);
 
-        refresh(session);
-        
         assertEquals(1, session.find("abasevalue").length());
         assertEquals(1, session.find("b").length());
         assertEquals(1, session.find("a1").length());

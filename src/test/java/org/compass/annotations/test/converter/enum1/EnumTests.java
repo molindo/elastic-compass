@@ -39,8 +39,6 @@ public class EnumTests extends AbstractAnnotationsTestCase {
         a.value2 = AType.TEST2;
         a.value3 = B.Type.Call;
         session.save(a);
-
-        refresh(session);
         
         a = (A) session.load(A.class, 1);
         assertEquals(AType.TEST1, a.value1);

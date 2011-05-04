@@ -60,8 +60,6 @@ public class ReferenceTests extends AbstractAnnotationsTestCase {
         session.save(b1);
         session.save(b2);
         session.save(a);
-
-        refresh(session);
         
         a = (A) session.load(A.class, 1);
         assertEquals("avalue", a.value);

@@ -64,8 +64,6 @@ public class Deep1PrefixNoUnmarshallTests extends AbstractAnnotationsTestCase {
         order.secondCustomer.workAddress.location = "secondWork";
         session.save(order);
 
-        refresh(session);
-        
         Resource resource = session.loadResource(Order.class, 1);
         assertEquals("name1", resource.getValue("first_name"));
         assertEquals("name2", resource.getValue("second_name"));

@@ -38,8 +38,6 @@ public class NullValueTests extends AbstractTestCase {
         a.b2.c2 = new C("b2c2value");
 
         session.save("a", a);
-
-        refresh(session);
         
         a = (A) session.load("a", new Integer(1));
         assertEquals(a.b1.value, "b1value");

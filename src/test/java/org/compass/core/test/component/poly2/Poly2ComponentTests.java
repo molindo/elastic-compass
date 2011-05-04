@@ -74,8 +74,6 @@ public class Poly2ComponentTests extends AbstractTestCase {
 
         session.create(pipeAddress);
         session.create(serviceAddress);
-
-        refresh(session);
         
         pipeAddress = session.load(Address.class, "1");
         assertEquals(2, pipeAddress.getAssignment().size());

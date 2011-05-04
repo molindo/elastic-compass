@@ -56,8 +56,6 @@ public class BoostNoUnmarshallPropertyTests extends AbstractTestCase {
         a.value2 = "test";
         session.save(a);
         session.flush();
-
-        refresh(session);
         
         CompassHits hits = session.find("test");
         assertEquals(2, hits.length());
@@ -83,8 +81,6 @@ public class BoostNoUnmarshallPropertyTests extends AbstractTestCase {
         a.value2 = "test";
         session.save(a);
         session.flush();
-
-        refresh(session);
         
         CompassHits hits = session.find("test");
         assertEquals(2, hits.length());

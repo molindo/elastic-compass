@@ -37,8 +37,6 @@ public class ArrayTests extends AbstractTestCase {
         sa.setValue("test");
         sa.setStrings(new String[] { "test1", "test2" });
         session.save(sa);
-
-        refresh(session);
         
         sa = (SimpleArray) session.load(SimpleArray.class, id);
         assertEquals("test", sa.getValue());
@@ -47,8 +45,6 @@ public class ArrayTests extends AbstractTestCase {
         assertEquals("test2", sa.getStrings()[1]);
 
         session.delete(sa);
-
-        refresh(session);
         
         sa = (SimpleArray) session.get(SimpleArray.class, id);
         assertNull(sa);
@@ -69,8 +65,6 @@ public class ArrayTests extends AbstractTestCase {
 
         session.save(a);
 
-        refresh(session);
-        
         a = (A) session.load(A.class, id);
         assertEquals("test", a.getValue());
         assertEquals(2, a.getArrB().length);
@@ -78,8 +72,6 @@ public class ArrayTests extends AbstractTestCase {
         assertEquals("test2", a.getArrB()[1].getValue());
 
         session.delete(a);
-        
-        refresh(session);
     }
 
     public void testABWithNull() {
@@ -96,8 +88,6 @@ public class ArrayTests extends AbstractTestCase {
         a.setArrB(new B[] { b1, b2 });
 
         session.save(a);
-
-        refresh(session);
         
         a = (A) session.load(A.class, id);
         assertEquals("test", a.getValue());
@@ -122,8 +112,6 @@ public class ArrayTests extends AbstractTestCase {
         a.setArrB(new B[] { b1, b2 });
 
         session.save(a);
-
-        refresh(session);
         
         a = (A) session.load(A.class, id);
         assertEquals("test", a.getValue());
@@ -134,8 +122,6 @@ public class ArrayTests extends AbstractTestCase {
         assertEquals("test2", a.getArrB()[1].getValue2());
 
         session.delete(a);
-
-        refresh(session);
     }
     
     public void testXY() {
@@ -157,8 +143,6 @@ public class ArrayTests extends AbstractTestCase {
         session.save(y2);
         x.setCy(new Y[] { y1, y2 });
         session.save(x);
-
-        refresh(session);
         
         x = (X) session.load(X.class, xId);
         assertEquals("xValue", x.getValue());

@@ -53,8 +53,6 @@ public class Many2ManyTests extends AbstractTestCase {
         session.save(many11);
         session.save(many12);
         session.save(many21);
-
-        refresh(session);
         
         many21 = (ManyToMany2) session.load("many2", new Long(1));
         assertEquals("many21", many21.value);

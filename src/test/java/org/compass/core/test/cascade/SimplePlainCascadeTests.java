@@ -43,8 +43,6 @@ public class SimplePlainCascadeTests extends AbstractTestCase {
 
         // saving A, which is root false and only has the cascade mapping
         session.save(a);
-
-        refresh(session);
         
         assertEquals(1, session.find("bvalue").length());
         assertEquals(0, session.find("avalue").length());

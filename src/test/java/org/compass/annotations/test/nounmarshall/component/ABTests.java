@@ -46,8 +46,6 @@ public class ABTests extends AbstractAnnotationsTestCase {
         a.b = b;
         session.save(a);
 
-        refresh(session);
-        
         Resource resource = session.loadResource(A.class, 1);
         assertNotNull(resource);
         assertEquals(5, resource.getProperties().length);
@@ -74,8 +72,6 @@ public class ABTests extends AbstractAnnotationsTestCase {
         b.value2 = "bvalue2";
         a.b = b;
         session.save(a);
-
-        refresh(session);
         
         Resource resource = session.loadResource(A.class, 1);
         assertNotNull(resource);
@@ -108,8 +104,6 @@ public class ABTests extends AbstractAnnotationsTestCase {
         b.value = "bvalue22";
         a.bs.add(b);
         session.save(a);
-
-        refresh(session);
         
         Resource resource = session.loadResource(A.class, 1);
         assertNotNull(resource);
@@ -137,8 +131,6 @@ public class ABTests extends AbstractAnnotationsTestCase {
         b.value = "bvalue22";
         a.bs.add(b);
         session.save(a);
-
-        refresh(session);
         
         Resource resource = session.loadResource(A.class, 1);
         assertNotNull(resource);

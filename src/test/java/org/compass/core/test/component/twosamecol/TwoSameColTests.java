@@ -43,8 +43,6 @@ public class TwoSameColTests extends AbstractTestCase {
         a.b2.add(new B("testb21"));
         a.b2.add(new B("testb22"));
         session.save("a", a);
-
-        refresh(session);
         
         CompassHits hits = session.queryBuilder().term("a.b1.value", "testb11").hits();
         assertEquals(1, hits.length());

@@ -41,8 +41,6 @@ public class NumberFormatGlobalConverterTests extends AbstractAnnotationsTestCas
         a.id = 1;
         a.property = 300l;
         session.save(a);
-
-        refresh(session);
         
         CompassQueryBuilder queryBuilder = session.queryBuilder();
         CompassQuery query = queryBuilder.ge("property", 300L);

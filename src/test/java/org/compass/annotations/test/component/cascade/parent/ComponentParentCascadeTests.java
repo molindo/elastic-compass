@@ -56,8 +56,6 @@ public class ComponentParentCascadeTests extends AbstractAnnotationsTestCase {
         session.save(b1);
         session.save(b2);
 
-        refresh(session);
-        
         CompassHits hits = session.find("b1");
         assertEquals(1, hits.length());
 
@@ -70,8 +68,6 @@ public class ComponentParentCascadeTests extends AbstractAnnotationsTestCase {
         B b1 = new B();
         b1.value = "b1";
         session.save(b1);
-
-        refresh(session);
 
         session.close();
     }

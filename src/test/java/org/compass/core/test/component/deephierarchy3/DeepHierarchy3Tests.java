@@ -40,8 +40,6 @@ public class DeepHierarchy3Tests extends AbstractTestCase {
         a.bList.add(new B(Arrays.asList(new C[]{new C("value1")})));
         a.bList.add(new B(Arrays.asList(new C[]{new C("value2")})));
         session.save(a);
-
-        refresh(session);
         
         a = (A) session.load(A.class, "1");
         assertEquals(2, a.bList.size());

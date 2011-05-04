@@ -48,8 +48,6 @@ public class BoostPropertyTests extends AbstractTestCase {
         a.value2 = "test";
         session.save(a);
         session.flush();
-
-        refresh(session);
         
         CompassHits hits = session.find("test");
         assertEquals(2, hits.length());
@@ -75,8 +73,6 @@ public class BoostPropertyTests extends AbstractTestCase {
         a.value2 = "test";
         session.save(a);
         session.flush();
-
-        refresh(session);
         
         CompassHits hits = session.find("test");
         assertEquals(2, hits.length());

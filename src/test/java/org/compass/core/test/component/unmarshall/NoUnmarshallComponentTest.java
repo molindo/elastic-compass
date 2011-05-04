@@ -38,8 +38,6 @@ public class NoUnmarshallComponentTest extends AbstractTestCase {
         slave.setMaster(master);
         slave.setName("slave1");
         session.save(slave);
-
-        refresh(session);
         
         Slave slave1 = session.load(Slave.class, 1);
         assertNotNull(slave1);

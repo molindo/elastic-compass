@@ -26,8 +26,6 @@ public class PolyOperationsTests extends AbstractAnnotationsTestCase {
         b.id = 2;
         session.save(b);
 
-        refresh(session);
-        
         a = session.get(A.class, 1);
         assertNotNull(a);
 
@@ -64,8 +62,6 @@ public class PolyOperationsTests extends AbstractAnnotationsTestCase {
         a = new A();
         a.id = 3;
         session.save(a);
-
-        refresh(session);
         
         a = session.get(A.class, 1);
         assertNotNull(a);
@@ -105,8 +101,6 @@ public class PolyOperationsTests extends AbstractAnnotationsTestCase {
         a.id = 3;
         a.value = "value3";
         session.save(a);
-
-        refresh(session);
         
         // search exact ones
         assertEquals(1, session.find("A.value:value1").length());

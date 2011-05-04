@@ -42,8 +42,6 @@ public class AtomicConverterTests extends AbstractAnnotationsTestCase {
         a.value2 = new AtomicInteger(3);
         a.value3 = new AtomicLong(5);
         session.save(a);
-
-        refresh(session);
         
         a = session.load(A.class, 1);
         assertEquals(true, a.value1.get());

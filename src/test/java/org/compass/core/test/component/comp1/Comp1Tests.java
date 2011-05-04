@@ -49,8 +49,6 @@ public class Comp1Tests extends AbstractTestCase {
         user.description = "test user";
         user.identity = person;
         session.save(user);
-
-        refresh(session);
         
         person = (Person) session.load(SpecialPerson.class, new Integer(1));
         assertEquals("test person", person.description);
@@ -88,8 +86,6 @@ public class Comp1Tests extends AbstractTestCase {
         user.description = "test user";
         user.identity = person;
         session.save(user);
-
-        refresh(session);
         
         person = (Person) session.load(Person.class, new Integer(1));
         assertEquals("test person", person.description);

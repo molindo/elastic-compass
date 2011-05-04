@@ -43,8 +43,6 @@ public class BothStoredCascadeTests extends AbstractTestCase {
 
         // saving A, which will cause B to be saved as well
         session.save(a);
-
-        refresh(session);
         
         assertEquals(1, session.find("bvalue").length());
         assertEquals(1, session.find("avalue").length());

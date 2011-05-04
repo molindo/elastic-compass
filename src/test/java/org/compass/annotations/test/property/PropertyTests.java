@@ -45,8 +45,6 @@ public class PropertyTests extends AbstractAnnotationsTestCase {
 
         session.save(a);
 
-        refresh(session);
-        
         a = session.load(A.class, 1);
         assertEquals(values, a.values);
 
@@ -81,8 +79,6 @@ public class PropertyTests extends AbstractAnnotationsTestCase {
         b.convertedValues = convertedValues;
         session.save(b);
 
-        refresh(session);
-        
         b = session.load(B.class, 1);
         assertEquals("value1", b.converted1.value1);
         assertEquals("value2", b.converted1.value2);

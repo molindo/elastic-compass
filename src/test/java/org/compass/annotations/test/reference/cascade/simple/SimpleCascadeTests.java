@@ -40,22 +40,16 @@ public class SimpleCascadeTests extends AbstractAnnotationsTestCase {
         // this should cause cascading for b as well
         session.create("A", a);
 
-        refresh(session);
-        
         a = (A) session.load("A", "1");
         session.load("B", "1");
 
         a.b.value = "bupdated";
         session.save("A", a);
         
-        refresh(session);
-        
         b = (B) session.load("B", "1");
         assertEquals("bupdated", b.value);
 
         session.delete("A", a);
-        
-        refresh(session);
         
         assertNull(session.get("A", "1"));
         assertNull(session.get("B", "1"));

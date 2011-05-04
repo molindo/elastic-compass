@@ -46,8 +46,6 @@ public class InferComponentRefAliasTests extends AbstractTestCase {
         second.setValue("test2");
         root.setSecondComponent(second);
         session.save("sr-infer", root);
-
-        refresh(session);
         
         root = (SimpleRoot) session.load("sr-infer", id);
         assertEquals("test", root.getValue());

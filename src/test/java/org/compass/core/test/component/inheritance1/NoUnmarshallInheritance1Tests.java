@@ -39,8 +39,6 @@ public class NoUnmarshallInheritance1Tests extends AbstractTestCase {
         father.getChildren().add(daughter);
 
         session.save(father);
-
-        refresh(session);
         
         Resource resource = session.loadResource("father", father.getId());
         assertEquals(8, resource.getProperties().length);

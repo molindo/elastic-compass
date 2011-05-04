@@ -34,14 +34,10 @@ public class NonRootCascadeTests extends AbstractTestCase {
         A a = new A(1, "avalue");
         B b = new B(1, "bvalue", a);
         session.create("b", b);
-
-        refresh(session);
         
         assertNotNull(session.get("a", "1"));
 
         session.delete("b", b);
-
-        refresh(session);
         
         assertNull(session.get("a", "1"));
 

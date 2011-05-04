@@ -108,8 +108,6 @@ public class AccessorTests extends AbstractTestCase {
         c.setValue("value");
         session.save("d", c);
 
-        refresh(session);
-        
         session.load("d", id);
 
         session.close();

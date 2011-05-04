@@ -41,8 +41,6 @@ public class NumberFormatPropertyConverterTests extends AbstractAnnotationsTestC
         a.property = 300l;
         session.save(a);
 
-        refresh(session);
-        
         CompassQueryBuilder queryBuilder = session.queryBuilder().convertOnlyWithDotPath(true);
         CompassQuery query = queryBuilder.ge("property", 300L);
         assertEquals("property:[300 TO *]", query.toString());

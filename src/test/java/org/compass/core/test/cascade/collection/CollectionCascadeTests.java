@@ -48,8 +48,6 @@ public class CollectionCascadeTests extends AbstractTestCase {
 		// saving A, which will cause B to be saved as well
 		session.save(a);
 
-		refresh(session);
-
 		assertEquals(1, session.find("bvalue1").length());
 		assertEquals(1, session.find("bvalue2").length());
 		assertEquals(1, session.find("avalue").length());

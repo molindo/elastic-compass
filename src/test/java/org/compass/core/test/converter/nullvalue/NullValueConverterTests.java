@@ -42,8 +42,6 @@ public class NullValueConverterTests extends AbstractTestCase {
         a.value = null;
         session.save("a", a);
 
-        refresh(session);
-        
         a = (A) session.load("a", "1");
         assertEquals(1, a.id);
         assertNull(a.value);

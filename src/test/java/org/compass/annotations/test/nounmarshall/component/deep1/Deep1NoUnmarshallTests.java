@@ -64,8 +64,6 @@ public class Deep1NoUnmarshallTests extends AbstractAnnotationsTestCase {
         order.secondCustomer.workAddress.location = "secondWork";
         session.save(order);
 
-        refresh(session);
-        
         Resource resource = session.loadResource(Order.class, 1);
         assertEquals(2, resource.getValues("name").length);
 

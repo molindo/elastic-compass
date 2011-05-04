@@ -40,8 +40,6 @@ public class ComponentInheritance1Tests extends AbstractTestCase {
         father.getChildren().add(daughter);
 
         session.save(father);
-
-        refresh(session);
         
         father = (FatherImpl) session.load("father", father.getId());
         assertEquals("Sir Ivan", father.getName());

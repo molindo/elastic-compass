@@ -54,8 +54,6 @@ public class BoostTests extends AbstractTestCase {
         // flush to maintain order
         session.flush();
         
-        refresh(session);
-        
         for (int i = 0; i < 10; i++) {
             CompassHits hits = session.find("value1:match OR value2:match");
             assertEquals(2, hits.length());
@@ -97,8 +95,6 @@ public class BoostTests extends AbstractTestCase {
 
         // flush to maintain order
         session.flush();
-
-        refresh(session);
         
         for (int i = 0; i < 10; i++) {
             CompassHits hits = session.find("value1:match OR value2:match");
@@ -141,8 +137,6 @@ public class BoostTests extends AbstractTestCase {
 
         // flush to maintain order
         session.flush();
-
-        refresh(session);
         
         for (int i = 0; i < 10; i++) {
             CompassHits hits = session.find("value1:match");
@@ -172,8 +166,6 @@ public class BoostTests extends AbstractTestCase {
         parent.child = new Child();
         parent.child.value = "nomatch";
         session.save("parent12", parent);
-
-        refresh(session);
         
         // flush to maintain order
         session.flush();

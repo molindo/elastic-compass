@@ -55,8 +55,6 @@ public class AllTests extends AbstractTestCase {
         a.setValue1("test1");
         a.setValue2("test2");
         session.save("a1", a);
-
-        refresh(session);
         
         CompassHits result = session.find("test1");
         assertEquals(1, result.getLength());
@@ -92,8 +90,6 @@ public class AllTests extends AbstractTestCase {
         a.setValue1("test1");
         a.setValue2("test2");
         session.save("a10", a);
-
-        refresh(session);
         
         CompassHits result = session.find("test1");
         assertEquals(1, result.getLength());
@@ -129,8 +125,6 @@ public class AllTests extends AbstractTestCase {
         a.setValue1("test1");
         a.setValue2("test2");
         session.save("a2", a);
-
-        refresh(session);
         
         CompassHits result = session.find("zzz-everything:test1");
         assertEquals(1, result.getLength());
@@ -160,8 +154,6 @@ public class AllTests extends AbstractTestCase {
         a.setValue1("test1");
         a.setValue2("test2");
         session.save("a3", a);
-
-        refresh(session);
         
         CompassHits result = session.find("test2");
         assertEquals(0, result.getLength());
@@ -180,8 +172,6 @@ public class AllTests extends AbstractTestCase {
         a.setValue1("test1111");
         a.setValue2("test2222");
         session.save("a4", a);
-
-        refresh(session);
         
         CompassHits result = session.find("test1111");
         assertEquals(0, result.getLength());
@@ -208,8 +198,6 @@ public class AllTests extends AbstractTestCase {
         a.setValue2("test2");
         session.save("a5", a);
 
-        refresh(session);
-        
         Resource r = session.loadResource("a5", id);
         TermFreqVector termInfoVector = ElasticHelper.getTermFreqVector(session, r, ElasticEnvironment.Mapping.ALL_FIELD);
         assertNotNull(termInfoVector);
@@ -240,8 +228,6 @@ public class AllTests extends AbstractTestCase {
         a.setValue2("test2");
         session.save("a6", a);
 
-        refresh(session);
-        
         Resource r = session.loadResource("a6", id);
         TermFreqVector termInfoVector = ElasticHelper.getTermFreqVector(session, r, ElasticEnvironment.Mapping.ALL_FIELD);
         assertNotNull(termInfoVector);
@@ -263,8 +249,6 @@ public class AllTests extends AbstractTestCase {
         a.setValue1("test1");
         a.setValue2("test2");
         session.save("a7", a);
-
-        refresh(session);
         
         Resource r = session.loadResource("a7", id);
         TermFreqVector termInfoVector = ElasticHelper.getTermFreqVector(session, r, ElasticEnvironment.Mapping.ALL_FIELD);
@@ -287,8 +271,6 @@ public class AllTests extends AbstractTestCase {
         a.setValue1("test1");
         a.setValue2("test2");
         session.save("a8", a);
-
-        refresh(session);
         
         Resource r = session.loadResource("a8", id);
         TermFreqVector termInfoVector = ElasticHelper.getTermFreqVector(session, r, ElasticEnvironment.Mapping.ALL_FIELD);
@@ -311,8 +293,6 @@ public class AllTests extends AbstractTestCase {
         a.setValue1("test1");
         a.setValue2("test2");
         session.save("a9", a);
-
-        refresh(session);
         
         CompassHits hits = session.find("a9");
         assertEquals(0, hits.length());

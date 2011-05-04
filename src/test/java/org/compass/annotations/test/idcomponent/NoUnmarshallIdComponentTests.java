@@ -46,8 +46,6 @@ public class NoUnmarshallIdComponentTests extends AbstractAnnotationsTestCase {
         a.value = "value1";
 
         session.save(a);
-
-        refresh(session);
         
         a = new A();
         a.b = new B(1, 2);

@@ -38,8 +38,6 @@ public class XmlAndAnnotationsTests extends AbstractAnnotationsTestCase {
         a.setValue("value");
         a.setValueXml("valueXml");
         session.save(a);
-
-        refresh(session);
         
         a = (A) session.load(A.class, 1);
         assertEquals("value", a.getValue());

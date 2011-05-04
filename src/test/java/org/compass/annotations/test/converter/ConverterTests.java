@@ -42,8 +42,6 @@ public class ConverterTests extends AbstractAnnotationsTestCase {
 
         session.save(a);
 
-        refresh(session);
-        
         a = session.load(A.class, a.id);
         assertEquals("id1", a.id.value1);
         assertEquals("id2", a.id.value2);
@@ -70,8 +68,6 @@ public class ConverterTests extends AbstractAnnotationsTestCase {
         b.id = 2;
         b.value = 1594;
         session.save(b);
-
-        refresh(session);
         
         CompassHits hits = session.queryBuilder().between("B.value", 1000.0, 2000.0, true).hits();
         assertEquals(2, hits.length());

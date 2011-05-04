@@ -46,16 +46,12 @@ public class CollectionTests extends AbstractTestCase {
         o.setId(id);
         o.setValue("test");
         session.save("simple-type-col", o);
-
-        refresh(session);
         
         o = (SimpleTypeCollection) session.load("simple-type-col", id);
         assertEquals("test", o.getValue());
         assertNull(o.getStrings());
 
         session.delete("simple-type-col", o);
-        
-        refresh(session);
         
         o = (SimpleTypeCollection) session.get("simple-type-col", id);
         assertNull(o);
@@ -75,8 +71,6 @@ public class CollectionTests extends AbstractTestCase {
         o.setStrings(stringCol);
 
         session.save("simple-type-col", o);
-
-        refresh(session);
         
         o = (SimpleTypeCollection) session.load("simple-type-col", id);
         assertEquals("test", o.getValue());
@@ -114,8 +108,6 @@ public class CollectionTests extends AbstractTestCase {
         }
 
         session.delete("simple-type-col", o);
-
-        refresh(session);
         
         o = (SimpleTypeCollection) session.get("simple-type-col", id);
         assertNull(o);
@@ -134,8 +126,6 @@ public class CollectionTests extends AbstractTestCase {
         o.setStrings(stringCol);
 
         session.save("no-metadata-stored", o);
-
-        refresh(session);
         
         o = (SimpleTypeCollection) session.load("no-metadata-stored", id);
         assertEquals("test", o.getValue());
@@ -159,8 +149,6 @@ public class CollectionTests extends AbstractTestCase {
         o.setStrings(stringCol);
 
         session.save(o);
-
-        refresh(session);
         
         o = (ExplicitTypeCollection) session.load(ExplicitTypeCollection.class, id);
         assertEquals("test", o.getValue());
@@ -192,8 +180,6 @@ public class CollectionTests extends AbstractTestCase {
 
         session.delete(o);
         
-        refresh(session);
-        
         o = (ExplicitTypeCollection) session.get(ExplicitTypeCollection.class, id);
         assertNull(o);
 
@@ -215,8 +201,6 @@ public class CollectionTests extends AbstractTestCase {
         bs.add(b2);
         a.setCb(bs);
         session.save("a", a);
-
-        refresh(session);
         
         a = (A) session.load("a", id);
         assertEquals("test", a.getValue());
@@ -253,8 +237,6 @@ public class CollectionTests extends AbstractTestCase {
         bs.add(b2);
         a.setCb(bs);
         session.save("a", a);
-
-        refresh(session);
         
         a = (A) session.load("a", id);
         assertEquals("test", a.getValue());
@@ -263,8 +245,6 @@ public class CollectionTests extends AbstractTestCase {
         assertEquals(0, list.size());
 
         session.delete("a", a);
-
-        refresh(session);
         
         a = (A) session.get("a", id);
         assertNull(a);
@@ -288,8 +268,6 @@ public class CollectionTests extends AbstractTestCase {
         bs.add(b2);
         a.setCb(bs);
         session.save("a", a);
-
-        refresh(session);
         
         a = (A) session.load("a", id);
         assertEquals("test", a.getValue());
@@ -306,8 +284,6 @@ public class CollectionTests extends AbstractTestCase {
         assertEquals("value2", b2.getValue2());
 
         session.delete("a", a);
-
-        refresh(session);
         
         a = (A) session.get("a", id);
         assertNull(a);
@@ -335,8 +311,6 @@ public class CollectionTests extends AbstractTestCase {
         list.add(y2);
         x.setCy(list);
         session.save(x);
-
-        refresh(session);
         
         x = (X) session.load(X.class, xId);
         assertEquals("xValue", x.getValue());
@@ -387,8 +361,6 @@ public class CollectionTests extends AbstractTestCase {
         a22.getCb().add(a35);
 
         session.save("a1", a1);
-
-        refresh(session);
         
         a1 = (A) session.load("a1", new Long(1));
         assertEquals("a1", a1.getValue());

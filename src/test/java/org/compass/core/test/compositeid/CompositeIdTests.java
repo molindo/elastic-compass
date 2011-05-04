@@ -47,8 +47,6 @@ public class CompositeIdTests extends AbstractTestCase {
         a.value = "data";
         session.save(a);
 
-        refresh(session);
-        
         a = (A) session.load(A.class, a.id);
         assertEquals(a.value, "data");
         assertEquals(a.id.value1, "1");

@@ -45,8 +45,6 @@ public class CollectionCascadeTests extends AbstractAnnotationsTestCase {
         // this should cause cascading for b as well
         session.create("A", a);
 
-        refresh(session);
-        
         // just make sure everything was stored
         session.load("A", "1");
         session.load("B", "1");
@@ -54,8 +52,6 @@ public class CollectionCascadeTests extends AbstractAnnotationsTestCase {
 
         // make sure everything got deleted
         session.delete("A", 1);
-        
-        refresh(session);
         
         assertNull(session.get("A", 1));
         assertNull(session.get("B", 1));
@@ -78,8 +74,6 @@ public class CollectionCascadeTests extends AbstractAnnotationsTestCase {
         // this should cause cascading for b as well
         session.create("A", a);
 
-        refresh(session);
-        
         // just make sure everything was stored
         a = session.load(A.class, "1");
         assertEquals(2, a.b.size());
@@ -87,8 +81,6 @@ public class CollectionCascadeTests extends AbstractAnnotationsTestCase {
         session.load(B.class, "2");
 
         session.delete("B", 1);
-        
-        refresh(session);
         
         assertNull(session.get(B.class, 1));
         assertNull(session.get(A.class, 1));

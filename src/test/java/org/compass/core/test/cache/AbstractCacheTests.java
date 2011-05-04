@@ -63,7 +63,7 @@ public abstract class AbstractCacheTests extends AbstractTestCase {
         Compass compass2 = buildCompass();
         // this should be visible to the new compass instance
         // since no caching has been done on this instance yet...
-        session = refresh(compass2.openSession());
+        session = openSession(compass2);
 
         a = (A) session.load("a1", id);
         assertEquals("value1", a.getValue());
@@ -84,7 +84,7 @@ public abstract class AbstractCacheTests extends AbstractTestCase {
         Thread.sleep(1000);
 
         // now check that the cache was invalidated for BOTH a1 and a2
-        session = refresh(compass2.openSession());
+        session = openSession(compass2);
 
         CompassHits hits = session.find("newvalue1 OR newvalue2");
         assertEquals(2, hits.length());

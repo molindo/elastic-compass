@@ -44,8 +44,6 @@ public class DeepHierarchyTests extends AbstractTestCase {
 
         session.save("a", a);
 
-        refresh(session);
-        
         // compass will not store nulls within collections
         a = (A) session.load("a", new Integer(1));
         assertEquals(1, a.bs.size());
@@ -76,8 +74,6 @@ public class DeepHierarchyTests extends AbstractTestCase {
         b2.cs.add(c2);
 
         session.save("a", a);
-
-        refresh(session);
         
         a = (A) session.load("a", new Integer(1));
         assertEquals(2, a.bs.size());
@@ -121,8 +117,6 @@ public class DeepHierarchyTests extends AbstractTestCase {
         b2.cs.add(c2);
 
         session.save("a", a);
-
-        refresh(session);
         
         a = (A) session.load("a", new Integer(1));
         assertEquals(2, a.bs.size());

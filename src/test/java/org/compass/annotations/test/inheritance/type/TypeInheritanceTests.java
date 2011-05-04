@@ -36,8 +36,6 @@ public class TypeInheritanceTests extends AbstractAnnotationsTestCase {
         b.setId("test");
         session.save(b);
 
-        refresh(session);
-        
         b = session.load(B.class, "test");
         assertNotNull(b);
 

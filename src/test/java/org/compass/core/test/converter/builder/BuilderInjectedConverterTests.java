@@ -59,8 +59,6 @@ public class BuilderInjectedConverterTests extends AbstractTestCase {
         a.id = 1;
         a.value = "value";
         session.save(a);
-
-        refresh(session);
         
         assertEquals(1, session.find("xvalue").length());
         assertEquals(0, session.find("value").length());

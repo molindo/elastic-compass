@@ -38,8 +38,6 @@ public class FormatAnnotationDynamicPropertyTests extends AbstractTestCase {
 
         session.save(a);
 
-        refresh(session);
-        
         assertEquals(1, session.find("002:0004").length());
 
         session.close();

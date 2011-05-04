@@ -46,8 +46,6 @@ public class Ineritance3Tests extends AbstractTestCase {
         father.child.names = new String[] {"value1", "value2"};
         session.save(father);
 
-        refresh(session);
-        
         Resource resource = session.loadResource(Father.class, "1");
         assertEquals(7, resource.getProperties().length);
         assertEquals("father", resource.getValue("alias"));

@@ -39,8 +39,6 @@ public class SimpleTests extends AbstractAnnotationsTestCase {
         a.setId(1);
         a.setValue("value");
         session.save(a);
-
-        refresh(session);
         
         a = (A) session.load(A.class, 1);
         assertEquals("value", a.getValue());
@@ -59,8 +57,6 @@ public class SimpleTests extends AbstractAnnotationsTestCase {
         b.setValue("value");
         b.setValue1("value1");
         session.save(b);
-
-        refresh(session);
         
         b = (B) session.load(B.class, 1);
         assertEquals("value", b.getValue());
@@ -81,8 +77,6 @@ public class SimpleTests extends AbstractAnnotationsTestCase {
         cImpl.setId(1);
         cImpl.setValue("value");
         session.save(cImpl);
-
-        refresh(session);
         
         CInterface cInteface = (CInterface) session.load(CImpl.class, 1);
         assertEquals("value", cInteface.getValue());

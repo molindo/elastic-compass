@@ -38,8 +38,6 @@ public class AllAnnotationsTests extends AbstractAnnotationsTestCase {
         a.value = "test";
         session.save(a);
 
-        refresh(session);
-        
         assertEquals(1, session.find("value:test").length());
         assertEquals(0, session.find("test").length());
 
@@ -55,8 +53,6 @@ public class AllAnnotationsTests extends AbstractAnnotationsTestCase {
         a.value = "test";
         session.save(a);
 
-        refresh(session);
-        
         assertEquals(0, session.find("a2").length());
 
         session.close();
@@ -71,8 +67,6 @@ public class AllAnnotationsTests extends AbstractAnnotationsTestCase {
         a.value = "test";
         session.save(a);
 
-        refresh(session);
-        
         assertEquals(1, session.find("a3").length());
 
         session.close();
@@ -87,8 +81,6 @@ public class AllAnnotationsTests extends AbstractAnnotationsTestCase {
         a.value2 = "best";
         session.save(a);
 
-        refresh(session);
-        
         assertEquals(1, session.find("test").length());
         assertEquals(0, session.find("best").length());
 

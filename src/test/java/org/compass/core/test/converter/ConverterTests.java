@@ -62,8 +62,6 @@ public class ConverterTests extends AbstractTestCase {
 
         session.save("a", o);
 
-        refresh(session);
-        
         o = (A) session.load("a", id);
         tsv = o.getValue();
         assertEquals("test1", tsv.getValue1());
@@ -89,8 +87,6 @@ public class ConverterTests extends AbstractTestCase {
 
         session.save("a1", o);
 
-        refresh(session);
-        
         o = (A) session.load("a1", id);
         tsv = o.getValue();
         assertEquals("test1", tsv.getValue1());
@@ -108,8 +104,6 @@ public class ConverterTests extends AbstractTestCase {
         o.setId(id);
         o.setIntVal(1);
         session.save("a3", o);
-
-        refresh(session);
         
         o = (A) session.load("a3", 1);
         assertEquals(1, o.getIntVal());

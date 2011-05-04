@@ -24,8 +24,6 @@ public class AnnotationMappingIndexTests extends AbstractAnnotationsTestCase {
         a.no = "test me";
         session.save(a);
 
-        refresh(session);
-        
         Resource r = session.loadResource(A.class, 1);
         assertTrue(r.getProperty("untokenized").isIndexed());
         assertFalse(r.getProperty("untokenized").isTokenized());

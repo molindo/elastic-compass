@@ -44,8 +44,6 @@ public class AnalyzerTests extends AbstractAnnotationsTestCase {
 		a.analyzer = "simple";
 		session.save(a);
 
-		refresh(session);
-
 		assertTokens(analyze(session, a.analyzer, a.value), "the", "fox");
 
 		CompassHits hits = session.find("value:the");

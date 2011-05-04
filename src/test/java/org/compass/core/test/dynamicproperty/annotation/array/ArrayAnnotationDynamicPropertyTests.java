@@ -38,8 +38,6 @@ public class ArrayAnnotationDynamicPropertyTests extends AbstractTestCase {
 
         session.save(a);
 
-        refresh(session);
-        
         assertEquals(1, session.find("tag1:value1").length());
         assertEquals(1, session.find("tag2:value2").length());
         assertEquals(0, session.find("tag3:value3").length());

@@ -40,8 +40,6 @@ public class FormatTests extends AbstractAnnotationsTestCase {
         a.value = 2;
         session.save(a);
 
-        refresh(session);
-        
         Resource resource = session.loadResource(A.class, 1);
         assertEquals("002", resource.getValue("value"));
 

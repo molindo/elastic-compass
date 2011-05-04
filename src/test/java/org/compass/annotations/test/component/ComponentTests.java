@@ -59,8 +59,6 @@ public class ComponentTests extends AbstractAnnotationsTestCase {
 
         session.save(a);
 
-        refresh(session);
-        
         a = (A) session.load(A.class, 1);
         assertEquals("avalue", a.value);
         assertNotNull(a.b);
@@ -119,8 +117,6 @@ public class ComponentTests extends AbstractAnnotationsTestCase {
         CompassSession session = openSession();
         session.save(u);
 
-        refresh(session);
-        
         CompassQueryBuilder builder = session.queryBuilder();
         CompassQueryBuilder.CompassBooleanQueryBuilder booleanQuery = builder.bool();
         booleanQuery.addShould(builder.term("userName", "ploppy"));

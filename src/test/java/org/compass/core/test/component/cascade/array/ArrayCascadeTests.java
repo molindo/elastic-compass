@@ -39,8 +39,6 @@ public class ArrayCascadeTests extends AbstractTestCase {
         A a = new A(1, "avalue", new B[]{b1, b2});
         // this should cause cascading for b as well
         session.create("a", a);
-
-        refresh(session);
         
         a = (A) session.load("a", "1");
         session.load("b", "1");
@@ -50,8 +48,6 @@ public class ArrayCascadeTests extends AbstractTestCase {
         a.b[1].value = "bupdated2";
         session.save("a", a);
 
-        refresh(session);
-
         b1 = (B) session.load("b", "1");
         assertEquals("bupdated1", b1.value);
         b2 = (B) session.load("b", "2");
@@ -59,8 +55,6 @@ public class ArrayCascadeTests extends AbstractTestCase {
 
         session.delete("a", a);
 
-        refresh(session);
-        
         assertNull(session.get("a", "1"));
         assertNull(session.get("b", "1"));
         assertNull(session.get("b", "2"));

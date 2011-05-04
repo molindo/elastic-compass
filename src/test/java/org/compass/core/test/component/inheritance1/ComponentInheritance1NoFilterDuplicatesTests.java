@@ -37,8 +37,6 @@ public class ComponentInheritance1NoFilterDuplicatesTests extends AbstractTestCa
         father.getChildren().add(daughter);
 
         session.save(father);
-
-        refresh(session);
         
         father = (FatherImpl) session.load("father", father.getId());
         assertEquals("Sir Ivan", father.getName());
