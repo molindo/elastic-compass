@@ -137,9 +137,7 @@ public abstract class AbstractTestCase extends ExtendedTestCase {
     }
 
     protected CompassSession openSession() {
-    	CompassSession session = compass.openSession();
-    	refresh(session);
-    	return session;
+    	return refresh(compass.openSession());
     }
 
     public InternalCompass getCompass() {
@@ -150,8 +148,9 @@ public abstract class AbstractTestCase extends ExtendedTestCase {
         return getCompass().getResourceFactory();
     }
 
-	protected void refresh(CompassSession session) {
+	protected CompassSession refresh(CompassSession session) {
 		((ElasticSearchEngine)((InternalCompassSession)session).getSearchEngine()).refresh();
+		return session;
 	}
 	
 	protected List<AnalyzeToken> analyze(CompassSession session, String analyzer, String text) {
