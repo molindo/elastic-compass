@@ -49,7 +49,7 @@ public class PolyOperationsTests extends AbstractAnnotationsTestCase {
         session.close();
     }
 
-    @Ignore("polymorphism not yet supported")
+    //@Ignore("polymorphism not yet supported")
     public void testDeletePolyOperations() {
         CompassSession session = openSession();
 

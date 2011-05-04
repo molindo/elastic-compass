@@ -137,7 +137,7 @@ public abstract class AbstractTestCase extends ExtendedTestCase {
     }
 
     protected CompassSession openSession() {
-    	return refresh(compass.openSession());
+    	return new AutoRefressingCompassSession(compass.openSession());
     }
 
     public InternalCompass getCompass() {
@@ -149,7 +149,11 @@ public abstract class AbstractTestCase extends ExtendedTestCase {
     }
 
 	protected CompassSession refresh(CompassSession session) {
-		((ElasticSearchEngine)((InternalCompassSession)session).getSearchEngine()).refresh();
+		if (session instanceof AutoRefressingCompassSession) {
+			//((AutoRefressingCompassSession)session).refresh();
+		} else {
+			((ElasticSearchEngine)((InternalCompassSession)session).getSearchEngine()).refresh();
+		}
 		return session;
 	}
 	
