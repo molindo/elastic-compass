@@ -31,7 +31,7 @@ import org.compass.core.engine.SearchEngineQueryFilter;
 import at.molindo.elastic.query.BooleanClause;
 import at.molindo.elastic.query.BooleanQuery;
 import at.molindo.elastic.query.BoostQuery;
-import at.molindo.elastic.query.ElasticSpanQuery;
+import at.molindo.elastic.query.SpanQuery;
 import at.molindo.elastic.query.Query;
 import at.molindo.elastic.query.SortField;
 import at.molindo.elastic.query.SortField.SortType;
@@ -45,8 +45,20 @@ public class ElasticSearchEngineQuery implements SearchEngineQuery, Cloneable {
 
 	public static class ElasticSearchEngineSpanQuery extends ElasticSearchEngineQuery implements SearchEngineSpanQuery {
 
-		public ElasticSearchEngineSpanQuery(ElasticSearchEngineFactory searchEngineFactory, ElasticSpanQuery query) {
+		public ElasticSearchEngineSpanQuery(ElasticSearchEngineFactory searchEngineFactory, SpanQuery query) {
 			super(searchEngineFactory, query);
+		}
+
+		public SpanQuery getSpanQuery() {
+			return (SpanQuery) getQuery();
+		}
+
+		@Override
+		public void setQuery(Query query) {
+			if (query instanceof SpanQuery == false) {
+				throw new IllegalArgumentException("must be a SpanQuery, was " + query);
+			}
+			super.setQuery(query);
 		}
 
 	}
@@ -194,7 +206,7 @@ public class ElasticSearchEngineQuery implements SearchEngineQuery, Cloneable {
 	}
 
 	public long count(SearchEngine searchEngine, float minimumScore) {
-		throw new NotImplementedException();
+		return ((ElasticSearchEngine) searchEngine).count(this);
 	}
 
 	public ElasticSearchEngineQuery setBoost(float boost) {

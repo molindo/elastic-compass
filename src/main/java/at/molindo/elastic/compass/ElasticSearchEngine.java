@@ -205,6 +205,10 @@ public class ElasticSearchEngine implements SearchEngine {
 		return doFind(searchEngineQuery);
 	}
 
+	public long count(ElasticSearchEngineQuery searchEngineQuery) {
+		return doCount(searchEngineQuery);
+	}
+	
 	@Override
 	public void delete(SearchEngineQuery searchEngineQuery) {
 		doDelete(searchEngineQuery);
@@ -242,6 +246,10 @@ public class ElasticSearchEngine implements SearchEngine {
 		return _client.find((ElasticSearchEngineQuery) searchEngineQuery);
 	}
 
+	protected long doCount(SearchEngineQuery searchEngineQuery) {
+		return _client.count((ElasticSearchEngineQuery) searchEngineQuery);
+	}
+	
 	protected void doDelete(SearchEngineQuery searchEngineQuery) {
 		_client.delete((ElasticSearchEngineQuery) searchEngineQuery);
 	}
@@ -273,5 +281,5 @@ public class ElasticSearchEngine implements SearchEngine {
     public SearchEngineAnalyzerHelper analyzerHelper() {
         return new ElasticSearchEngineAnalyzerHelper(this);
     }
-    
+
 }

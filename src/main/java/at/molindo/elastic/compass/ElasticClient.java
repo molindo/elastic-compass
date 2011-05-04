@@ -46,6 +46,7 @@ import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.action.bulk.BulkRequestBuilder;
+import org.elasticsearch.client.action.count.CountRequestBuilder;
 import org.elasticsearch.client.action.delete.DeleteRequestBuilder;
 import org.elasticsearch.client.action.index.IndexRequestBuilder;
 import org.elasticsearch.client.action.search.SearchRequestBuilder;
@@ -282,7 +283,7 @@ public class ElasticClient {
 
 		SearchRequestBuilder search = _client.prepareSearch(_indexName).setQuery(query.getQuery()
 				.getBuilder());
-
+		
 		String[] aliases = toAliases(query);
 
 		search.setTypes(aliases);
@@ -338,6 +339,15 @@ public class ElasticClient {
 		return reverse ? SortOrder.DESC : SortOrder.ASC;
 	}
 
+	public long count(ElasticSearchEngineQuery query) {
+		CountRequestBuilder search = _client.prepareCount(_indexName).setQuery(query.getQuery()
+				.getBuilder());
+
+		search.setTypes(toAliases(query));
+
+		return search.execute().actionGet().count();
+	}
+	
 	public void delete(ElasticSearchEngineQuery query) {
 		_client.prepareDeleteByQuery(_indexName).setQuery(query.getQuery().getBuilder())
 				.setTypes(toAliases(query)).execute();
@@ -461,4 +471,5 @@ public class ElasticClient {
 		default: throw new SearchEngineException("unexpected TermVector value " + tf);
 		}
 	}
+
 }

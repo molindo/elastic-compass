@@ -24,13 +24,20 @@ import org.compass.core.engine.SearchEngineQuery;
 import org.compass.core.engine.SearchEngineQuery.SearchEngineSpanQuery;
 import org.compass.core.engine.SearchEngineQueryBuilder;
 
+import at.molindo.elastic.compass.ElasticSearchEngineQuery.ElasticSearchEngineSpanQuery;
 import at.molindo.elastic.compass.query.ElasticSearchEngineBooleanQueryBuilder;
 import at.molindo.elastic.compass.query.ElasticSearchEngineQueryStringBuilder;
 import at.molindo.elastic.query.ConstantScoreQuery;
+import at.molindo.elastic.query.FuzzyQuery;
 import at.molindo.elastic.query.MatchAllQuery;
+import at.molindo.elastic.query.PrefixQuery;
 import at.molindo.elastic.query.Query;
 import at.molindo.elastic.query.RangeQuery;
+import at.molindo.elastic.query.SpanFirstQuery;
+import at.molindo.elastic.query.SpanNotQuery;
+import at.molindo.elastic.query.SpanTermQuery;
 import at.molindo.elastic.query.TermQuery;
+import at.molindo.elastic.query.WildcardQuery;
 import at.molindo.elastic.term.Term;
 
 public class ElasticSearchEngineQueryBuilder implements SearchEngineQueryBuilder {
@@ -68,7 +75,7 @@ public class ElasticSearchEngineQueryBuilder implements SearchEngineQueryBuilder
 
 	@Override
 	public SearchEngineQuery wildcard(String resourcePropertyName, String wildcard) {
-		throw new NotImplementedException();
+		return new ElasticSearchEngineQuery(_searchEngineFactory, new WildcardQuery(resourcePropertyName, wildcard));
 	}
 
 	@Override
@@ -123,37 +130,39 @@ public class ElasticSearchEngineQueryBuilder implements SearchEngineQueryBuilder
 
 	@Override
 	public SearchEngineQuery prefix(String resourcePropertyName, String prefix) {
-		throw new NotImplementedException();
+		return new ElasticSearchEngineQuery(_searchEngineFactory, new PrefixQuery(resourcePropertyName, prefix));
 	}
 
 	@Override
 	public SearchEngineQuery fuzzy(String resourcePropertyName, String value) {
-		throw new NotImplementedException();
+		return new ElasticSearchEngineQuery(_searchEngineFactory, new FuzzyQuery(resourcePropertyName, value));
 	}
 
 	@Override
 	public SearchEngineQuery fuzzy(String resourcePropertyName, String value, float minimumSimilarity) {
-		throw new NotImplementedException();
+		return new ElasticSearchEngineQuery(_searchEngineFactory, new FuzzyQuery(resourcePropertyName, value).setMinSimilarity(minimumSimilarity));
 	}
 
 	@Override
 	public SearchEngineQuery fuzzy(String resourcePropertyName, String value, float minimumSimilarity, int prefixLength) {
-		throw new NotImplementedException();
+		return new ElasticSearchEngineQuery(_searchEngineFactory, new FuzzyQuery(resourcePropertyName, value).setMinSimilarity(minimumSimilarity).setPrefixLength(prefixLength));
 	}
 
 	@Override
 	public SearchEngineSpanQuery spanEq(String resourcePropertyName, String value) {
-		throw new NotImplementedException();
+		return new ElasticSearchEngineSpanQuery(_searchEngineFactory, new SpanTermQuery(resourcePropertyName, value));
 	}
 
 	@Override
 	public SearchEngineSpanQuery spanFirst(SearchEngineSpanQuery searchEngineSpanQuery, int end) {
-		throw new NotImplementedException();
+		// TODO validate the assumption, that end param changed from Compass to ES
+		SpanFirstQuery spanQuery = new SpanFirstQuery(((ElasticSearchEngineSpanQuery) searchEngineSpanQuery).getSpanQuery(), end+1);
+        return new ElasticSearchEngineSpanQuery(_searchEngineFactory, spanQuery);
 	}
 
 	@Override
 	public SearchEngineSpanQuery spanFirst(String resourcePropertyName, String value, int end) {
-		throw new NotImplementedException();
+		return spanFirst(spanEq(resourcePropertyName, value), end);
 	}
 
 	@Override
@@ -163,7 +172,8 @@ public class ElasticSearchEngineQueryBuilder implements SearchEngineQueryBuilder
 
 	@Override
 	public SearchEngineSpanQuery spanNot(SearchEngineSpanQuery include, SearchEngineSpanQuery exclude) {
-		throw new NotImplementedException();
+		SpanNotQuery spanQuery = new SpanNotQuery(((ElasticSearchEngineSpanQuery) include).getSpanQuery(), ((ElasticSearchEngineSpanQuery) exclude).getSpanQuery());
+        return new ElasticSearchEngineSpanQuery(_searchEngineFactory, spanQuery);
 	}
 
 	@Override
