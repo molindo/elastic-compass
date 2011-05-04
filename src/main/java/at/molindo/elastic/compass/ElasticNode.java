@@ -60,7 +60,9 @@ public class ElasticNode implements CompassConfigurable {
 						.put("cluster.name", _settings.getClusterName());
 				
 				if (local) {
+					// TODO some hard coded testing preferences
 					settingsBuilder.put("index.store.type", "ram");
+					settingsBuilder.put("index.refresh_interval", "-1");
 				}
 				
 				Node node = nodeBuilder().local(local).client(!local).data(local)
