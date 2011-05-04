@@ -89,7 +89,9 @@ public class ElasticSearchEngineQueryStringBuilder implements SearchEngineQueryS
 		String defaultField = !StringUtils.empty(_defaultSearchProperty) ? _defaultSearchProperty : _searchEngineFactory
 				.getElasticSettings().getDefaultSearchPropery();
 
-		StringQuery query = new StringQuery(_queryString).setAnalyzer(_analyzer).setDefaultOperator(_operator).setDefaultField(defaultField);
+		Operator operator = _operator != null ? _operator : _searchEngineFactory.getElasticSettings().getDefaultOperator();
+		
+		StringQuery query = new StringQuery(_queryString).setAnalyzer(_analyzer).setDefaultOperator(operator).setDefaultField(defaultField);
 		return new ElasticSearchEngineQuery(_searchEngineFactory, query);
 	}
 }
