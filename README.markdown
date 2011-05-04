@@ -33,6 +33,7 @@ Unsupported features
 - poly alias query not yet supported
 - extended aliases not stored in all property
 - class level boosting
+- adding custom properties
 
 Migration Guide
 ---------------
