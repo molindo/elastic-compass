@@ -26,6 +26,7 @@ import org.junit.Ignore;
 /**
  * @author kimchy
  */
+@Ignore("analyzers not supported")
 @SuppressWarnings("deprecation")
 public class AnalyzerSpecificQueryStringTests extends AbstractTestCase {
 
@@ -39,7 +40,6 @@ public class AnalyzerSpecificQueryStringTests extends AbstractTestCase {
                 new String[]{LuceneEnvironment.Analyzer.CoreTypes.WHITESPACE});
     }
 
-    @Ignore("analyzers not supported")
     public void testAnalyzerSpecificQueryString() {
         CompassSession session = openSession();
 
