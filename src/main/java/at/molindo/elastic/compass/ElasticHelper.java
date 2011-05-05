@@ -90,7 +90,7 @@ public abstract class ElasticHelper {
      * @param query The compass query to extract the lucene search engine query from
      * @return The lucene search engine query extracted from the compass query
      */
-    public static ElasticSearchEngineQuery getLuceneSearchEngineQuery(CompassQuery query) {
+    public static ElasticSearchEngineQuery getElasticSearchEngineQuery(CompassQuery query) {
         return (ElasticSearchEngineQuery) ((DefaultCompassQuery) query).getSearchEngineQuery();
     }
 
@@ -175,4 +175,5 @@ public abstract class ElasticHelper {
         resource = ((InternalCompassSession) session).getResourceByIdResourceNoCache(resource);
         return getElasticInternalSearch(session).getClient().getTermFreqVector(resource.getAlias(), ((ElasticResource)resource).getDocId(), field);
 	}
+
 }
