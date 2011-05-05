@@ -26,7 +26,7 @@ Unsupported features
 - transactions
 - no query.toString()
 - no dotted paths
-- alials property
+- alias property
 - multiple @SearchableId not supported
 - polymorphism not yet supported
 - _analyzer property not working as expected
@@ -37,6 +37,8 @@ Unsupported features
 - analyzers
 - escaping of dotted paths (e.g. "'test.me':test)
 - more like this
+- formatting values
+- 'now' in range queries
 
 Migration Guide
 ---------------
