@@ -7,6 +7,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.compass.core.Compass;
 import org.compass.core.CompassException;
+import org.compass.core.CompassIndexSession;
 import org.compass.core.CompassQueryBuilder;
 import org.compass.core.CompassQueryFilterBuilder;
 import org.compass.core.CompassSearchSession;
@@ -119,8 +120,13 @@ public class RefreshableCompass implements InternalCompass {
 	public CompassSearchSession openSearchSession() {
 		return compass.openSearchSession();
 	}
+	
+    @Override
+	public CompassIndexSession openIndexSession() {
+		return compass.openIndexSession();
+	}
 
-    public CompassQueryBuilder queryBuilder() throws CompassException {
+	public CompassQueryBuilder queryBuilder() throws CompassException {
         return compass.queryBuilder();
     }
 

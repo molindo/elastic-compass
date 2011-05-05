@@ -30,6 +30,8 @@ public interface Compass {
 	SearchEngineIndexManager getSearchEngineIndexManager();
 
 	CompassSearchSession openSearchSession();
+
+	CompassIndexSession openIndexSession();
 	
 	CompassSession openSession();
 
