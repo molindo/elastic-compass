@@ -34,6 +34,7 @@ Unsupported features
 - extended aliases not stored in all property
 - class level boosting
 - adding custom properties
+- analyzers
 
 Migration Guide
 ---------------
