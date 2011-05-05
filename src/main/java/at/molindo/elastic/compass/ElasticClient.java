@@ -60,7 +60,6 @@ import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 
-import at.molindo.elastic.query.IdsQuery;
 import at.molindo.elastic.query.SortField;
 import at.molindo.elastic.term.TermFreqVector;
 import at.molindo.elastic.term.TermPositionVector;
@@ -70,6 +69,9 @@ public class ElasticClient {
 
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory
 			.getLogger(ElasticClient.class);
+
+	// FIXME no paging yet!!!
+	private static final int DEFAULT_FETCH_SIZE = 100;
 
 	private final ElasticSearchEngineFactory _searchEngineFactory;
 	private final ElasticIndex _index;
@@ -334,6 +336,9 @@ public class ElasticClient {
 			search.addSort(builder);
 		}
 
+		search.setFrom(0);
+		search.setSize(DEFAULT_FETCH_SIZE);
+		
 		return new ElasticSearchEngineHits(this, search.execute().actionGet().hits());
 	}
 
