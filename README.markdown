@@ -36,6 +36,7 @@ Unsupported features
 - adding custom properties
 - analyzers
 - escaping of dotted paths (e.g. "'test.me':test)
+- more like this
 
 Migration Guide
 ---------------
