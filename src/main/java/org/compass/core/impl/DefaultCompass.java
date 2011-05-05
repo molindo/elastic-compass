@@ -15,6 +15,7 @@ import org.compass.core.ResourceFactory;
 import org.compass.core.SessionFactoryFactory;
 import org.compass.core.cache.first.FirstLevelCache;
 import org.compass.core.cache.first.FirstLevelCacheFactory;
+import org.compass.core.config.CompassConfiguration;
 import org.compass.core.config.CompassEnvironment;
 import org.compass.core.config.CompassSettings;
 import org.compass.core.config.RuntimeCompassSettings;
@@ -272,7 +273,14 @@ public class DefaultCompass implements InternalCompass {
 	public CompassEventManager getEventManager() {
 		return eventManager;
 	}
+	
+    public CompassConfiguration getConfig() {
+        throw new UnsupportedOperationException();
+    }
 
+    public void rebuild() {
+        throw new UnsupportedOperationException();
+    }
 
 
 	/**

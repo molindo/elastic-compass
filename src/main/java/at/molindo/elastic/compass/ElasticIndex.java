@@ -97,9 +97,9 @@ public class ElasticIndex {
 			addFields(rootMapping, map, new HashSet<ResourceMapping>());
 
 			if (log.isDebugEnabled()) {
-				log.debug("alias '"+rootMapping.getAlias()+"' with fields " + map.keySet());
+				log.debug("alias '" + rootMapping.getAlias() + "' with fields " + map.keySet());
 			}
-			
+
 			_aliasFields.put(rootMapping.getAlias(), Collections.unmodifiableMap(map));
 		}
 	}
@@ -108,7 +108,7 @@ public class ElasticIndex {
 		if (!added.add(mapping)) {
 			return;
 		}
-		
+
 		if (mapping.getUIDPath() != null) {
 			map.put(mapping.getUIDPath(), mapping);
 		}
@@ -131,13 +131,14 @@ public class ElasticIndex {
 				}
 			}
 		}
-		
+
 		for (Mapping m : IteratorUtils.iterable(mapping.mappingsIt())) {
 			if (m instanceof AbstractCollectionMapping) {
 				AbstractCollectionMapping col = (AbstractCollectionMapping) m;
-		        if (col.getCollectionType() == AbstractCollectionMapping.CollectionType.UNKNOWN && col.getCollectionTypePath() != null) {
-		        	map.put(col.getCollectionTypePath().getPath(), col);
-		        }
+				if (col.getCollectionType() == AbstractCollectionMapping.CollectionType.UNKNOWN
+						&& col.getCollectionTypePath() != null) {
+					map.put(col.getCollectionTypePath().getPath(), col);
+				}
 				if (col.getColSizePath() != null) {
 					map.put(col.getColSizePath().getPath(), col);
 				}
@@ -180,18 +181,22 @@ public class ElasticIndex {
 		indicesAdminClient.prepareCreate(getIndex()).execute().actionGet();
 		indicesAdminClient.prepareAliases().addAlias(getIndex(), _alias).execute().actionGet();
 
-		// push mappings
-		for (ResourceMapping mapping : _mapping.getRootMappings()) {
+		putMappings();
+	}
 
+	public void putMappings() {
+		for (ResourceMapping mapping : _mapping.getRootMappings()) {
+			
 			indicesAdminClient().preparePutMapping(getIndex()).setType(mapping.getAlias())
 					.setSource(toMappingSource((AbstractResourceMapping) mapping)).execute()
 					.actionGet();
-
+			
 			// if (!resp.acknowledged()) {
 			// throw new SearchEngineException("failed to put mapping for type "
 			// + mapping.getAlias());
 			// }
 		}
+
 	}
 
 	public synchronized void deleteIndex() {
@@ -204,7 +209,7 @@ public class ElasticIndex {
 			} catch (IndexMissingException e) {
 				log.trace("alias " + _alias + " didn't exist, ignore");
 			}
-			
+
 			ClusterStateResponse state = adminClient().cluster().prepareState().execute()
 					.actionGet();
 			IndexMetaData indexState = state.getState().getMetaData().getIndices().get(index);
@@ -241,7 +246,7 @@ public class ElasticIndex {
 				// alias without index
 				throw new IndexMissingException(null);
 			}
-			
+
 			_index = indexStatus.getIndex();
 			if (getIndex().equals(_alias)) {
 				throw new SearchEngineException("alias name must not point to index, was '"
@@ -249,6 +254,10 @@ public class ElasticIndex {
 			}
 
 			log.info("index '" + _alias + "' verified successfully");
+
+			// verify mappings
+			putMappings();
+
 		} catch (IndexMissingException e) {
 			// alias unknown, create new index
 			createIndex();
