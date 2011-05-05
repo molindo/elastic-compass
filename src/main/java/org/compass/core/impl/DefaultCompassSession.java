@@ -9,6 +9,8 @@ import org.compass.core.CompassHits;
 import org.compass.core.CompassQuery;
 import org.compass.core.CompassQueryBuilder;
 import org.compass.core.CompassQueryFilterBuilder;
+import org.compass.core.CompassSession;
+import org.compass.core.CompassSessionFactory;
 import org.compass.core.Resource;
 import org.compass.core.cache.first.FirstLevelCache;
 import org.compass.core.cascade.CascadingManager;
@@ -31,6 +33,7 @@ import org.compass.core.spi.InternalCompassSession;
 import org.compass.core.spi.InternalResource;
 import org.compass.core.spi.InternalSessionDelegateClose;
 import org.compass.core.spi.ResourceKey;
+import org.hibernate.SessionFactory;
 
 public class DefaultCompassSession implements InternalCompassSession {
 
@@ -393,7 +396,12 @@ public class DefaultCompassSession implements InternalCompassSession {
 		for (InternalSessionDelegateClose delegateClose : this.delegateClose) {
 			delegateClose.close();
 		}
-		closed = true;
+        CompassSession transactionBoundSession = compass.getCompassSessionFactory().getTransactionBoundSession();
+        if (transactionBoundSession == this) {
+        	compass.getCompassSessionFactory().setTransactionBoundSession(null);
+        }
+        evictAll();
+        closed = true;
 	}
 
 	public CompassHits find(String query) throws CompassException {
@@ -656,4 +664,19 @@ public class DefaultCompassSession implements InternalCompassSession {
         return new DefaultCompassAnalyzerHelper(analyzerHelper, this);
     }
 
+	@Override
+	public final void beginTransaction() {
+		bindSession();
+	}
+
+	@Override
+	public void bindSession() {
+		CompassSessionFactory sessionFactory = compass.getCompassSessionFactory();
+        CompassSession boundSession = sessionFactory.getTransactionBoundSession();
+        if (boundSession == null || boundSession != this) {
+        	sessionFactory.setTransactionBoundSession(this);
+        }
+	}
+
+    
 }

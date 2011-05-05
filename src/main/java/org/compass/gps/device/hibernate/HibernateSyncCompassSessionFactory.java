@@ -86,8 +86,13 @@ public class HibernateSyncCompassSessionFactory implements CompassSessionFactory
 		return currentSessionMap.get(session.getTransaction());
 	}
 
-	public void unbindSessionFromTransaction(Transaction transaction, CompassSession session) {
-		currentSessionMap.remove(transaction);
+	@Override
+	public void setTransactionBoundSession(CompassSession session) {
+		if (session == null) {
+			currentSessionMap.remove(sessionFactory.getCurrentSession().getTransaction());
+		} else {
+			currentSessionMap.put(sessionFactory.getCurrentSession().getTransaction(), session);
+		}
 	}
 
 	public SessionFactory getSessionFactory() {

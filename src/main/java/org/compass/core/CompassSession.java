@@ -36,4 +36,13 @@ public interface CompassSession extends CompassSearchSession, CompassIndexSessio
 	CompassQueryFilterBuilder queryFilterBuilder() throws CompassException;
 	
     CompassAnalyzerHelper analyzerHelper() throws CompassException;
+
+    /**
+     * @deprecated use {@link #bindSession()} instead
+     */
+    @Deprecated
+	void beginTransaction();
+    
+    void bindSession();
+    
 }

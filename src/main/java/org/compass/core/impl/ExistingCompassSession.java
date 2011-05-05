@@ -303,6 +303,14 @@ public class ExistingCompassSession implements InternalCompassSession {
 	public Resource getResourceByIdResourceNoCache(Resource idResource) throws CompassException {
 		return session.getResourceByIdResourceNoCache(idResource);
 	}
+
+	public final void beginTransaction() {
+		bindSession();
+	}
+
+	public void bindSession() {
+		session.bindSession();
+	}
 	
 	
 }

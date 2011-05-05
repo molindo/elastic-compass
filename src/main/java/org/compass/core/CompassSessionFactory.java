@@ -38,4 +38,8 @@ public interface CompassSessionFactory extends TransactionFactory {
      */
     CompassSession getTransactionBoundSession() throws CompassException;
 
+    /**
+     * @param session may be null
+     */
+    void setTransactionBoundSession(CompassSession session);
 }

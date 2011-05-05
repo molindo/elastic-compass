@@ -16,6 +16,7 @@
 
 package org.compass.core;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.compass.core.Compass;
@@ -61,6 +62,28 @@ public class LocalCompassSessionFactory implements CompassSessionFactory {
 		} else {
 			return sessionMap.get(compass);
 		}
+	}
+
+	
+	
+	@Override
+	public void setTransactionBoundSession(CompassSession session) {
+        if (disableThreadBoundTx) {
+            return;
+        }
+        if (session == null) {
+            Map<Compass, CompassSession> sessionMap = sessionMap();
+            if (sessionMap != null) {
+            	sessionMap.remove(compass);
+            }
+        } else {
+            Map<Compass, CompassSession> sessionMap = sessionMap();
+            if (sessionMap == null) {
+                sessionMap = new HashMap<Compass, CompassSession>();
+                context.set(sessionMap);
+            }
+            sessionMap.put(compass, session);
+        }
 	}
 
 	private static Map<Compass, CompassSession> sessionMap() {
