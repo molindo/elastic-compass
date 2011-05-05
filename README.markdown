@@ -35,6 +35,7 @@ Unsupported features
 - class level boosting
 - adding custom properties
 - analyzers
+- escaping of dotted paths (e.g. "'test.me':test)
 
 Migration Guide
 ---------------
