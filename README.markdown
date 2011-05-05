@@ -39,6 +39,7 @@ Unsupported features
 - more like this
 - formatting values
 - 'now' in range queries
+- reverse
 
 Migration Guide
 ---------------
