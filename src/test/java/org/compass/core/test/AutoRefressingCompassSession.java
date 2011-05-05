@@ -226,7 +226,15 @@ public class AutoRefressingCompassSession implements InternalCompassSession {
 	public void evict(Resource resource) {
 		_wrapped.evict(resource);
 	}
-	
+
+	public final void beginTransaction() {
+		bindSession();
+	}
+
+	public void bindSession() {
+		_wrapped.bindSession();
+	}
+
 	// InternalCompassSession
 
 	public InternalCompass getCompass() {
@@ -297,7 +305,7 @@ public class AutoRefressingCompassSession implements InternalCompassSession {
 	}
 
 	// refreshing
-	
+
 	void refreshIfDirty() {
 		if (_dirty) {
 			refresh();
