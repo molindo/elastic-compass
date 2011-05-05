@@ -167,22 +167,25 @@ public class ElasticClient {
 		}
 		Resource[] resources = new Resource[ids.length];
 
+		
 		if (ids.length > 1) {
-			Map<String, Integer> idStrings = new HashMap<String, Integer>();
-			for (int i = 0; i < ids.length; i++) {
-				idStrings.put(ids[i].getStringValue(), i);
-			}
-
-			IdsQuery idsQuery = new IdsQuery(key.getAlias()).addIds(idStrings.keySet()
-					.toArray(new String[idStrings.size()]));
-			ElasticSearchEngineQuery query = new ElasticSearchEngineQuery(_searchEngineFactory, idsQuery)
-					.setAlias(key.getAlias());
-
-			SearchEngineHits hits = find(query);
-			for (int i = 0; i < hits.getLength(); i++) {
-				Resource r = hits.getResource(i);
-				resources[idStrings.get(r.getId())] = r;
-			}
+			// FIXME ids.length > 1 si a composite id
+			throw new NotImplementedException("composite ids not implemented");
+//			Map<String, Integer> idStrings = new HashMap<String, Integer>();
+//			for (int i = 0; i < ids.length; i++) {
+//				idStrings.put(ids[i].getStringValue(), i);
+//			}
+//
+//			IdsQuery idsQuery = new IdsQuery(key.getAlias()).addIds(idStrings.keySet()
+//					.toArray(new String[idStrings.size()]));
+//			ElasticSearchEngineQuery query = new ElasticSearchEngineQuery(_searchEngineFactory, idsQuery)
+//					.setAlias(key.getAlias());
+//
+//			SearchEngineHits hits = find(query);
+//			for (int i = 0; i < hits.getLength(); i++) {
+//				Resource r = hits.getResource(i);
+//				resources[idStrings.get(r.getId())] = r;
+//			}
 		} else {
 			String[] fields = _typeFields.get(key.getAlias());
 			if (fields == null) {
