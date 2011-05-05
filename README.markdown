@@ -40,6 +40,8 @@ Unsupported features
 - formatting values
 - 'now' in range queries
 - reverse
+- spell checking
+- sub indexes
 
 Migration Guide
 ---------------
