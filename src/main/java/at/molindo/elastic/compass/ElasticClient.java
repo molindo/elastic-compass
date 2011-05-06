@@ -61,6 +61,7 @@ import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 
 import at.molindo.elastic.query.SortField;
+import at.molindo.elastic.query.SortField.SortType;
 import at.molindo.elastic.term.TermFreqVector;
 import at.molindo.elastic.term.TermPositionVector;
 import at.molindo.utils.collections.ArrayUtils;
@@ -332,7 +333,7 @@ public class ElasticClient {
 				throw new SearchEngineException("unknown SortType " + sort.getType());
 			}
 
-			builder.order(toOrder(sort.isReverse()));
+			builder.order(toOrder(sort.getType(), sort.isReverse()));
 			search.addSort(builder);
 		}
 
@@ -342,8 +343,13 @@ public class ElasticClient {
 		return new ElasticSearchEngineHits(this, search.execute().actionGet().hits());
 	}
 
-	private SortOrder toOrder(boolean reverse) {
-		return reverse ? SortOrder.DESC : SortOrder.ASC;
+	private SortOrder toOrder(SortType sortType, boolean reverse) {
+		if (sortType == SortType.SCORE) {
+			// default ist DESC
+			return reverse ? SortOrder.ASC : SortOrder.DESC;
+		} else {
+			return reverse ? SortOrder.DESC : SortOrder.ASC;
+		}
 	}
 
 	public long count(ElasticSearchEngineQuery query) {
