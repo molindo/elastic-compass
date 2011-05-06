@@ -125,7 +125,7 @@ public class ElasticIndex {
 
 		if (mapping.getResourcePropertyMappings() != null) {
 			for (ResourcePropertyMapping property : mapping.getResourcePropertyMappings()) {
-				if (property.getStore() != Store.NO) {
+				if (property.getPath() != null && property.getStore() != Store.NO) {
 					String field = property.getPath().getPath();
 					map.put(field, property);
 				}
