@@ -383,23 +383,25 @@ public class ElasticIndex {
 	private ElasticType toType(Mapping m) {
 		if (m instanceof ResourcePropertyMapping) {
 			ResourcePropertyMapping property = (ResourcePropertyMapping) m;
-			Class<?> converterClass = property.getConverter().getClass();
-			Class<?> type = ClassUtils.getTypeArgument(converterClass, Converter.class);
-			if (type != null) {
-				if (Number.class.isAssignableFrom(type)) {
-					if (Integer.class.isAssignableFrom(type)) {
-						return ElasticType.INTEGER;
-					} else if (Long.class.isAssignableFrom(type)) {
-						return ElasticType.LONG;
-					} else if (Float.class.isAssignableFrom(type)) {
-						return ElasticType.FLOAT;
-					} else if (Double.class.isAssignableFrom(type)) {
-						return ElasticType.DOUBLE;
-					} 
-				} else if (Date.class.isAssignableFrom(type)) {
-					return ElasticType.DATE;
-				} else if (Boolean.class.isAssignableFrom(type)) {
-					return ElasticType.BOOLEAN;
+			if (property.getConverter() != null) {
+				Class<?> converterClass = property.getConverter().getClass();
+				Class<?> type = ClassUtils.getTypeArgument(converterClass, Converter.class);
+				if (type != null) {
+					if (Number.class.isAssignableFrom(type)) {
+						if (Integer.class.isAssignableFrom(type)) {
+							return ElasticType.INTEGER;
+						} else if (Long.class.isAssignableFrom(type)) {
+							return ElasticType.LONG;
+						} else if (Float.class.isAssignableFrom(type)) {
+							return ElasticType.FLOAT;
+						} else if (Double.class.isAssignableFrom(type)) {
+							return ElasticType.DOUBLE;
+						} 
+					} else if (Date.class.isAssignableFrom(type)) {
+						return ElasticType.DATE;
+					} else if (Boolean.class.isAssignableFrom(type)) {
+						return ElasticType.BOOLEAN;
+					}
 				}
 			}
 		}
