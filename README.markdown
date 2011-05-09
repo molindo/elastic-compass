@@ -42,6 +42,7 @@ Unsupported features
 - reverse
 - spell checking
 - sub indexes
+- sorting by doc id
 
 Migration Guide
 ---------------
