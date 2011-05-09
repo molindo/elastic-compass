@@ -19,6 +19,7 @@ package at.molindo.elastic.compass;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 import java.io.IOException;
+import java.sql.Date;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -29,6 +30,7 @@ import java.util.UUID;
 import org.compass.core.Property.Index;
 import org.compass.core.Property.Store;
 import org.compass.core.Property.TermVector;
+import org.compass.core.converter.Converter;
 import org.compass.core.engine.SearchEngineException;
 import org.compass.core.mapping.AllMapping;
 import org.compass.core.mapping.BoostPropertyMapping;
@@ -55,6 +57,7 @@ import org.elasticsearch.indices.IndexMissingException;
 import at.molindo.utils.collections.CollectionUtils;
 import at.molindo.utils.collections.IteratorUtils;
 import at.molindo.utils.data.StringUtils;
+import at.molindo.utils.reflect.ClassUtils;
 
 /**
  * manages an index
@@ -186,11 +189,11 @@ public class ElasticIndex {
 
 	public void putMappings() {
 		for (ResourceMapping mapping : _mapping.getRootMappings()) {
-			
+
 			indicesAdminClient().preparePutMapping(getIndex()).setType(mapping.getAlias())
 					.setSource(toMappingSource((AbstractResourceMapping) mapping)).execute()
 					.actionGet();
-			
+
 			// if (!resp.acknowledged()) {
 			// throw new SearchEngineException("failed to put mapping for type "
 			// + mapping.getAlias());
@@ -289,7 +292,7 @@ public class ElasticIndex {
 				Mapping m = e.getValue();
 				
 				// TODO should we really use string only?
-				ElasticType type = ElasticType.STRING;
+				ElasticType type = toType(m);
 
 				if (m instanceof ResourcePropertyMapping) {
 					ResourcePropertyMapping property = (ResourcePropertyMapping) m;
@@ -302,6 +305,8 @@ public class ElasticIndex {
 							.field("include_in_all", includeInAll(property.getExcludeFromAll()))
 							.field("term_vector", termVector(property.getTermVector()))
 							.field("boost", property.getBoost());
+					
+					
 					
 					String analyzer = analyzer(mapping, property);
 					if (!StringUtils.empty(analyzer)) {
@@ -374,6 +379,33 @@ public class ElasticIndex {
 		}
 	}
 	// @formatter:on
+
+	private ElasticType toType(Mapping m) {
+		if (m instanceof ResourcePropertyMapping) {
+			ResourcePropertyMapping property = (ResourcePropertyMapping) m;
+			Class<?> converterClass = property.getConverter().getClass();
+			Class<?> type = ClassUtils.getTypeArgument(converterClass, Converter.class);
+			if (type != null) {
+				if (Number.class.isAssignableFrom(type)) {
+					if (Integer.class.isAssignableFrom(type)) {
+						return ElasticType.INTEGER;
+					} else if (Long.class.isAssignableFrom(type)) {
+						return ElasticType.LONG;
+					} else if (Float.class.isAssignableFrom(type)) {
+						return ElasticType.FLOAT;
+					} else if (Double.class.isAssignableFrom(type)) {
+						return ElasticType.DOUBLE;
+					} 
+				} else if (Date.class.isAssignableFrom(type)) {
+					return ElasticType.DATE;
+				} else if (Boolean.class.isAssignableFrom(type)) {
+					return ElasticType.BOOLEAN;
+				}
+			}
+		}
+
+		return ElasticType.STRING;
+	}
 
 	@SuppressWarnings("deprecation")
 	private String index(Index index) {

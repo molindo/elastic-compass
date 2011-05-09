@@ -18,40 +18,51 @@ package at.molindo.elastic.compass;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
+
+import at.molindo.utils.collections.CollectionUtils;
 
 public enum ElasticType {
 	// TODO finish
 	STRING("string", "store", "index"),
-	
-	NUMBER, DATE, BOOLEAN, BINARY; 
-	
+
+	INTEGER("integer"),
+	LONG("long"),
+	FLOAT("float"),
+	DOUBLE("double"),
+
+	DATE,
+	BOOLEAN,
+	BINARY;
+
 	private final String _name;
-	private final Set<String> _properties;
-	
+	private final Set<String> _supportedProperties;
+
 	private ElasticType() {
 		_name = name().toLowerCase();
-		_properties = Collections.emptySet();
+		_supportedProperties = Collections.emptySet();
 	}
-	
-	private ElasticType(String name, String ... properties) {
-		_name = name().toLowerCase();
-		_properties = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(properties)));
+
+	private ElasticType(String name, String... supportedProperties) {
+		this(name, CollectionUtils.set(Arrays.asList(supportedProperties)));
+	}
+
+	private ElasticType(String name, Set<String> supportedProperties) {
+		_name = name;
+		_supportedProperties = CollectionUtils.unmodifiableSet(supportedProperties);
 	}
 
 	public String getName() {
 		return _name;
 	}
-	
+
 	public boolean isPropertySupported(String property) {
-		return _properties.contains(property);
+		return _supportedProperties.contains(property);
 	}
 
 	@Override
 	public String toString() {
 		return getName();
 	}
-	
-	
+
 }

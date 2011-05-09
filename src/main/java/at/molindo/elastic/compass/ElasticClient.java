@@ -395,6 +395,11 @@ public class ElasticClient {
 		Property[] properties = new ElasticProperty[values.size()];
 		int i = 0;
 		for (Object value : values) {
+			if (value != null && value instanceof String == false) {
+				// compass expects all strings
+				value = value.toString();
+			}
+			
 			Property property;
 			if (m instanceof ResourcePropertyMapping) {
 				ResourcePropertyMapping propertyMapping = (ResourcePropertyMapping) m;
